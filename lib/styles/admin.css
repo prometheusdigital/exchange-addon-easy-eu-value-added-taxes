@@ -1,0 +1,21 @@
+/** -----------------------------------------------------:[ Settings Table ]:---------- */
+#value-added-tax-rate-table {overflow: hidden;background: #FFF;border: 1px solid #DEDEDE;width: 100%;max-width: 800px;}
+#value-added-tax-rate-table .block-row {border-bottom: 1px solid #DEDEDE;overflow:hidden;}
+#value-added-tax-rate-table .heading-column {font-weight: bold;}
+#value-added-tax-rate-table .heading-column p.heading {margin: 0;}
+
+#value-added-tax-rate-table .block-column {float:left;padding: .5em;}
+#value-added-tax-rate-table .block-column input,
+#value-added-tax-rate-table .block-column select {max-width: 100%;}
+#value-added-tax-rate-table .block-column input {max-width: 75%;}
+#value-added-tax-rate-table .block-column select {margin: 10px 0;}
+#value-added-tax-rate-table .block-column input[type="checkbox"] {margin: 15px 0;}
+#value-added-tax-rate-table .block-column-1 {width: 30%;}
+#value-added-tax-rate-table .block-column-2 {width: 15%;}
+#value-added-tax-rate-table .block-column-3 {width: 20%;}
+#value-added-tax-rate-table .block-column-4 {width: 20%;}
+#value-added-tax-rate-table .block-column-delete {width: 5%; float:right;}
+
+.it-exchange-remove-item {-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;display:inline-block;width:20px;height:20px;margin-top:12px;margin-right:12px;border:2px solid transparent;border-radius:50%;font-size:14px;line-height:1.4em;text-decoration:none;text-align:center;color:#BBB;-webkit-transition:all .2s linear;-moz-transition:all .2s linear;transition:all .2s linear;}
+.it-exchange-remove-item:active{outline:none;opacity:.8;}
+.it-exchange-remove-item:hover{border-color:#E1797A !important;color:#E1797A;}

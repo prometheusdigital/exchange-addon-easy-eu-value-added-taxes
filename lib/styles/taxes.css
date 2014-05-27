@@ -1,0 +1,3 @@
+ul.value-added-taxes {list-style:none;margin:0;padding:0;}
+ul.value-added-taxes li {margin:0 0 .25em 0;padding:0;line-height:1.2em;}
+ul.value-added-taxes li:last-child{margin-bottom:0;}
