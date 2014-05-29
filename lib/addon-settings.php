@@ -29,14 +29,16 @@ function it_exchange_easy_value_added_taxes_default_settings( $defaults ) {
 		'vat-number' => '',
 		'tax-rates' => array(
 			array(
-				'label' => __( 'Reduced Rate', 'LION' ),
-				'rate' => 6,
+				'label'    => __( 'Reduced Rate', 'LION' ),
+				'rate'     => 6,
 				'shipping' => false,
+				'default'  => 'unchecked',
 			),
 			array(
-				'label' => __( 'Standard Rate', 'LION' ),
-				'rate' => 21,
+				'label'    => __( 'Standard Rate', 'LION' ),
+				'rate'     => 21,
 				'shipping' => false,
+				'default'  => 'checked',
 			),
 		),
 	);
@@ -144,13 +146,21 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
             	<?php _e( 'Current Tax Rates and Settings', 'LION' ) ?> 
             </h4>
             
-            <div id="value-added-tax-number">
+            <p>
+                <label for="easy-value-added-taxes-vat-number"><?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
 				<?php $form->add_text_box( 'vat-number' ); ?>
-			</div>
+				<?php $form->add_hidden( 'tax-rates' ); ?>
+            </p>
+
+            <p>
+                <label for="easy-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
+            </p>
+            
 			<div id="value-added-tax-rate-table">
+            
 			<?php
 			$headings = array(
-				__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' )
+				__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' ), __( 'Default?', 'LION' )
 			);
 			?>
 			<div class="heading-row block-row">
@@ -164,20 +174,20 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 				<div class="heading-column block-column block-column-delete"></div>
 			</div>
 			<?php
-			$row = 0;
+			$last_key = 0;
 			//Alpha Sort
 			$tax_rates = $settings['tax-rates'];
 			if ( !empty( $tax_rates ) ) {
 				ksort( $tax_rates );
-				foreach( $tax_rates as $rate ) {
-					echo it_exchange_easy_value_added_taxes_get_tax_row_settings( $row, $rate );
-					$row++;
+				foreach( $tax_rates as $key => $rate ) {
+					echo it_exchange_easy_value_added_taxes_get_tax_row_settings( $key, $rate );
+					$last_key = $key;
 				}
 			}
 			?>
 			</div>
 			<script type="text/javascript" charset="utf-8">
-	            var it_exchange_easy_value_added_taxes_addon_iteration = <?php echo $row; ?>;
+	            var it_exchange_easy_value_added_taxes_addon_iteration = <?php echo $last_key; ?>;
 	        </script>
 
 			<p class="add-new">
@@ -197,7 +207,6 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
     function save_settings() {
         $defaults = it_exchange_get_option( 'addon_easy_value_added_taxes' );
         $new_values = wp_parse_args( ITForm::get_post_data(), $defaults );
-		$organized_values = array();
                 
         // Check nonce
         if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'it-exchange-easy-value-added-taxes-settings' ) ) {
@@ -207,7 +216,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 
         $errors = apply_filters( 'it_exchange_add_on_easy_value_added_taxes_validate_settings', $this->get_form_errors( $new_values ), $new_values );
                                 
-        if ( ! $errors && it_exchange_save_option( 'addon_easy_value_added_taxes', $organized_values ) ) {
+        if ( ! $errors && it_exchange_save_option( 'addon_easy_value_added_taxes', $new_values ) ) {
             ITUtility::show_status_message( __( 'Settings saved.', 'LION' ) );
         } else if ( $errors ) {
             $errors = implode( '<br />', $errors );
@@ -226,18 +235,27 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
      * @return void
     */
     public function get_form_errors( $values ) {
+    	$errors = array();
+    	$default_set = false;
+    
     	if ( empty( $values['vat-number'] ) )
             $errors[] = __( 'Missing VAT Number.', 'LION' );
     
-        foreach( $values['tax_rates'] as $tax_rate ) {
-        	if ( empty( $tax_rate['label'] ) || empty( $provinces[$tax_rate['label']] ) ) {
+        foreach( $values['tax-rates'] as $tax_rate ) {
+        	if ( empty( $tax_rate['label'] ) ) {
                 $errors[] = __( 'Missing or Invalid VAT Label.', 'LION' );
 	        	break;
         	} else if ( empty( $tax_rate['rate'] ) ) {
                 $errors[] = __( 'Missing or Invalid Tax Rate.', 'LION' );
 	        	break;
         	}
+        	
+        	if ( 'checked' === $tax_rate['default'] )
+        		$default_set = true;
         }
+        
+        if ( !$default_set )
+            $errors[] = __( 'You must set a default tax rate.', 'LION' );
 
         return $errors;
     }

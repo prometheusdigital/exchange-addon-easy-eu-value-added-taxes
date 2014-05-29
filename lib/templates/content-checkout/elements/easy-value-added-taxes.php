@@ -16,18 +16,5 @@
 ?>
 
 <?php do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_element' ); ?>
-<div class="it-exchange-cart-totals-title it-exchange-table-column">
-	<?php do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_label' ); ?>
-	<div class="it-exchange-table-column-inner">
-		<?php _e( 'Tax', 'LION' ); ?>
-	</div>
-	<?php do_action( 'it_exchange_content_checkout_after_easy_valued_added_taxes_label' ); ?>
-</div>
-<div class="it-exchange-cart-totals-amount it-exchange-table-column">
-	<?php do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_value' ); ?>
-	<div class="it-exchange-table-column-inner">
-		<?php it_exchange( 'value-added-taxes', 'taxes' ); ?>
-	</div>
-	<?php do_action( 'it_exchange_content_checkout_after_easy_valued_added_taxes_value' ); ?>
-</div>
+<?php it_exchange( 'value-added-taxes', 'taxes' ); ?>
 <?php do_action( 'it_exchange_content_checkout_after_easy_valued_added_taxes_element' ); ?>

@@ -30,6 +30,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	public $_tag_map = array(
 		'taxes'             => 'taxes',
 		'confirmationtaxes' => 'confirmation_taxes',
+		'vatsummary'        => 'vat_summary',
 	);
 
 	/**
@@ -73,39 +74,45 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 			'format_price' => true,
 		);
 		$options      = ITUtility::merge_defaults( $options, $defaults );
-		
 
-		$result .= $options['before'];
+		$result .= $options['before'];	
 		if ( it_exchange_easy_value_added_taxes_setup_session() ) {
 			$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
-			$result .= '<ul class="value-added-taxes">';
-			$total_tax = 0;
-			foreach ( $tax_session['taxes'] as $tax ) {
-				if ( $tax['shipping'] ) {
-					$taxes = $tax_session['cart_subtotal_w_shipping'] * ( $tax['rate'] / 100 );
-				} else {
-					$taxes = $tax_session['cart_subtotal'] * ( $tax['rate'] / 100 );
-				}
-				$total_tax += $taxes;
-				if ( !empty( $taxes ) ) {
-					if ( $options['format_price'] )
-						$taxes = it_exchange_format_price( $taxes );
-					$result .= '<li>' . $taxes . ' (' . $tax['type'] . ')</li>';
-				}
-			}
 			
-			if ( empty( $total_tax ) ) {
-				if ( $options['format_price'] )
-					$total_tax = it_exchange_format_price( $total_tax );
-				$result .= '<li>' . $total_tax . '</li>';
+			$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
+			do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_label' );
+			$result .= '    <div class="it-exchange-table-column-inner">';
+			$result .=      __( 'Tax', 'LION' );
+			$result .= '    </div>';
+			foreach ( $tax_session['taxes'] as $tax ) {
+				if ( !empty( $tax['total'] ) ) {
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .=  sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+					$result .= '</div>';
+				}
 			}
-			$result .= '</ul>';
-		} else {		
-			if ( $options['format_price'] )
-				$taxes = it_exchange_format_price( $taxes );
-			$result .= $taxes;
+			do_action( 'it_exchange_content_checkout_after_easy_valued_added_taxes_label' );
+			$result .= '</div>';
+					
+			$result .= '<div class="it-exchange-cart-totals-amount it-exchange-table-column">';
+			do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_value' );
+			$result .= '    <div class="it-exchange-table-column-inner">&nbsp;</div>';
+			foreach ( $tax_session['taxes'] as $tax ) {
+				if ( !empty( $tax['total'] ) ) {
+					$tax_total = $tax['total'];
+					if ( $options['format_price'] )
+						$tax_total = it_exchange_format_price( $tax_total );
+					
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .= $tax_total;
+					$result .= '</div>';
+				}
+			}
+			do_action( 'it_exchange_content_checkout_after_easy_valued_added_taxes_value' );
+			$result .= '</div>';
+			
 		}
-		$result .= $options['after'];
+		$result .= $options['after'];	
 		
 		return $result;
 					
@@ -125,19 +132,91 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	        $transaction = $GLOBALS['it_exchange']['transaction'];
 	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );
 	    }
-						
-		$result .= $options['before'];
-		$result .= '<ul class="value-added-taxes">';
-		foreach ( $tax_items as $tax ) {
-			if ( !empty( $tax['total'] ) ) {
-				if ( $options['format_price'] )
-					$tax['total'] = it_exchange_format_price( $tax['total'] );
-				$result .= '<li>' . $tax['total'] . ' (' . $tax['type'] . ')</li>';
+			
+		$result .= $options['before'];	
+		if ( !empty( $tax_items ) ) {
+			$result .= '<div class="it-exchange-confirmation-totals-title it-exchange-table-column">';
+			do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_label' );
+			$result .= '    <div class="it-exchange-table-column-inner">';
+			$result .=      __( 'Tax', 'LION' );
+			$result .= '    </div>';
+			foreach ( $tax_items as $tax ) {
+				if ( !empty( $tax['total'] ) ) {
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .=  sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+					$result .= '</div>';
+				}
 			}
+			do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_label' );
+			$result .= '</div>';
+					
+			$result .= '<div class="it-exchange-confirmation-totals-amount it-exchange-table-column">';
+			do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_value' );
+			$result .= '    <div class="it-exchange-table-column-inner">&nbsp;</div>';
+			foreach ( $tax_items as $tax ) {
+				if ( !empty( $tax['total'] ) ) {
+					$tax_total = $tax['total'];
+					if ( $options['format_price'] )
+						$tax_total = it_exchange_format_price( $tax_total );
+					
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .= $tax_total;
+					$result .= '</div>';
+				}
+			}
+			do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_value' );
+			$result .= '</div>';
 		}
-		$result .= '</ul>';
 		$result .= $options['after'];
 		
 		return $result;
+	}
+		
+	function vat_summary( $options=array() ) {
+		$settings  = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+		$result = '';
+		
+		$defaults      = array(
+			'before'       => '',
+			'after'        => '',
+			'label'        => __( 'VAT Summary', 'LION' ),
+			'format_price' => true,
+		);
+		$options      = ITUtility::merge_defaults( $options, $defaults );
+		
+	    if ( !empty( $GLOBALS['it_exchange']['transaction'] ) ) {
+	        $transaction = $GLOBALS['it_exchange']['transaction'];
+	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );
+	        $customer_vat = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_customer_vat', true );
+	    }
+											
+		$result .= $options['before'];
+		$result .= '<h3>' . $options['label'] . '</h3>';
+		$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s', 'LION' ), $settings['vat-number'] ) . '</p>';
+		if ( !empty( $customer_vat ) )
+			$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s', 'LION' ), $customer_vat ) . '</p>';
+		
+		$result .= '<div class="vat-summary-table">';
+		$result .= '<div class="vat-label-heading">' . __( 'VAT Type', 'LION' ) . '</div>';
+		$result .= '<div class="vat-net-taxable-amount-heading">' . __( 'Net Taxable Amount', 'LION' ) . '</div>';
+		if ( !empty( $settings['tax-rates'] ) && !empty( $tax_items ) ) {
+			foreach( $tax_items as $tax ) {
+				$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
+				$result .= '<div class="vat-label">';
+				$result .= sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+				$result .= '</div>';
+		
+				if ( $options['format_price'] )
+					$net = it_exchange_format_price( $net );
+				$result .= '<div class="vat-net-taxable-amount">';
+				$result .= $net;
+				$result .= '</div>';
+			}
+		}
+		$result .= '</div>';
+		$result .= $options['after'];
+		
+		return $result;
+
 	}
 }

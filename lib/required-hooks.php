@@ -82,6 +82,9 @@ function it_exchange_easy_value_added_taxes_addon_admin_wp_enqueue_scripts( $hoo
 		$deps = array( 'jquery' );
 		wp_enqueue_script( 'it-exchange-easy-value-added-taxes-addon-admin-js', $url_base . '/js/admin.js' );
 
+	} else if ( isset( $post_type ) && 'it_exchange_prod' === $post_type ) {
+		$deps = array( 'jquery' );
+		wp_enqueue_script( 'it-exchange-easy-value-added-taxes-addon-add-edit-product', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-edit-product.js', $deps );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'it_exchange_easy_value_added_taxes_addon_admin_wp_enqueue_scripts' );
@@ -170,6 +173,20 @@ add_filter( 'it_exchange_get_content_checkout_totals_elements', 'it_exchange_eas
 add_filter( 'it_exchange_get_content_confirmation_transaction_summary_elements', 'it_exchange_easy_value_added_taxes_addon_add_taxes_to_template_totals_elements' );
 
 /**
+ * Add Easy Value Added Taxes to the confirmation loop
+ *
+ * @since 1.0.0
+ *
+ * @param array $elements list of existing elements
+ * @return array
+*/
+function it_exchange_easy_value_added_taxes_addon_get_content_confirmation_transaction_meta_elements( $elements ) {
+	$elements[] = 'easy-value-added-taxes-vat-summary'; //we always want it at the end
+	return $elements;
+}
+add_filter( 'it_exchange_get_content_confirmation_transaction_meta_elements', 'it_exchange_easy_value_added_taxes_addon_get_content_confirmation_transaction_meta_elements' );
+
+/**
  * Add Easy Value Added Taxes to the super-widget-checkout totals loop
  *
  * @since 1.0.0
@@ -208,6 +225,7 @@ function it_exchange_easy_value_added_taxes_addon_taxes_register_templates( $tem
 	$templates = array(
 		'content-checkout/elements/easy-value-added-taxes.php',
 		'content-confirmation/elements/easy-value-added-taxes.php',
+		'content-confirmation/elements/easy-value-added-taxes-vat-summary.php',
 		'super-widget-checkout/loops/easy-value-added-taxes.php',
 	);
 	foreach( $templates as $template ) {
@@ -249,6 +267,9 @@ function it_exchange_easy_value_added_taxes_transaction_hook( $transaction_id ) 
 	
 	if ( !empty( $tax_session['taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes', $tax_session['taxes'] );
+	}
+	if ( !empty( $tax_session['vat_number'] ) ) {
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_customer_vat', $tax_session['vat_number'] );
 	}
 	if ( !empty( $tax_session['total_taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_total', $tax_session['total_taxes'] );

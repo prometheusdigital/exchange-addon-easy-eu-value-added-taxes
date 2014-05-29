@@ -15,11 +15,11 @@ function it_exchange_easy_value_added_taxes_addon_ajax_add_new_rate() {
 	
 	$return = '';
 	
-	if ( isset( $_REQUEST['count'] ) ) { //use isset() in case count is 0
+	if ( isset( $_REQUEST['key'] ) ) { //use isset() in case count is 0
 		
-		$count = $_REQUEST['count'];
+		$key = $_REQUEST['key'];
 
-		die( it_exchange_easy_value_added_taxes_get_tax_row_settings( $count ) );		
+		die( it_exchange_easy_value_added_taxes_get_tax_row_settings( $key ) );		
 	
 	}
 	

@@ -5,28 +5,34 @@
  * @since 1.0.0
 */
 
-function it_exchange_easy_value_added_taxes_get_tax_row_settings( $row, $rate=array() ) {
+function it_exchange_easy_value_added_taxes_get_tax_row_settings( $key, $rate=array() ) {
 	if ( empty( $rate ) ) { //just set some defaults
 		$rate = array( //Member State
 				'label'    => '',
 				'rate'     => 0,
 				'shipping' => false,
+				'default'  => 'unchecked',
 			);
 	}
 		
 	$output  = '<div class="item-row block-row">'; //start block-row
 	
 	$output .= '<div class="item-column block-column block-column-1">';
-	$output .= '<input type="text" name="tax-rates[' . $row . '][label]" value="' . $rate['label'] . '" />';
+	$output .= '<input type="text" name="it-exchange-add-on-easy-value-added-taxes-tax-rates[' . $key . '][label]" value="' . $rate['label'] . '" />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-2">';
-	$output .= '<input type="text" name="tax-rates[' . $row . '][rate]" value="' . $rate['rate'] . '" />';
+	$output .= '<input type="text" name="it-exchange-add-on-easy-value-added-taxes-tax-rates[' . $key . '][rate]" value="' . $rate['rate'] . '" />';
 	$output .= '</div>';
 	
-	$output .= '<div class="item-column block-column block-column-4">';
+	$output .= '<div class="item-column block-column block-column-3">';
 	$shipping = empty( $rate['shipping'] ) ? false : true;
-	$output .= '<input type="checkbox" name="tax-rates[' . $row . '][shipping]" ' . checked( $shipping, true, false ) . ' />';
+	$output .= '<input type="checkbox" name="it-exchange-add-on-easy-value-added-taxes-tax-rates[' . $key . '][shipping]" ' . checked( $shipping, true, false ) . ' />';
+	$output .= '</div>';
+	
+	$output .= '<div class="item-column block-column block-column-default">';
+	$output .= '<span class="it-exchange-easy-value-added-taxes-addon-default-checkmark it-exchange-easy-value-added-taxes-addon-default-checkmark-' . $rate['default'] . '"></span>';	
+	$output .= '<input type="hidden" class="it-exchange-easy-value-added-taxes-addon-default-checkmark" name="it-exchange-add-on-easy-value-added-taxes-tax-rates[' . $key . '][default]" value="' . $rate['default'] . '" />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-delete">';
@@ -48,38 +54,33 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 	$address = it_exchange_get_cart_shipping_address();
 	
 	//We only care about the province!
-	if ( empty( $address['state'] ) ) 
+	if ( empty( $address['country'] ) ) 
 		$address = it_exchange_get_cart_billing_address();
 	
-	//State = Province in Canada
-	if ( !empty( $address['state'] ) && !empty( $settings['tax-rates'][$address['state']] ) ) {
-		if ( !empty( $address['country'] ) && 'CA' !== $address['country'] ) {
-			return false;
-		}
-	} else {
+	//If not a member state, not taxable
+	$memberstates = it_exchange_get_data_set( 'eu-member-states' );
+	if ( !empty( $address['country'] ) && empty( $memberstates[$address['country']] ) ) {
 		return false;
 	}
-
-	$cart_subtotal = 0;
+		
 	if ( ! $products = it_exchange_get_cart_products() )
 		return false;
-
+	
+	$cart_subtotal = 0;
 	foreach( (array) $products as $product ) {
-		if ( !it_exchange_product_supports_feature( $product['product_id'], 'value-added-tax-exempt-status' )	
-				|| !it_exchange_product_has_feature( $product['product_id'], 'value-added-tax-exempt-status' ) ) {
-			$cart_subtotal += it_exchange_get_cart_product_subtotal( $product, false );
-		}
+		$cart_subtotal += it_exchange_get_cart_product_subtotal( $product, false );
 	}
 	$cart_subtotal = apply_filters( 'it_exchange_get_cart_subtotal', $cart_subtotal );
-	$cart_subtotal_w_shipping = $cart_subtotal + it_exchange_get_cart_shipping_cost( false, false );
+	$shipping_cost = it_exchange_get_cart_shipping_cost( false, false );
 	
 	if ( !empty( $tax_session ) ) {
-		//We want to store the province, in case it changes so we know we need to recalculate tax
-		if ( empty( $tax_session['province'] ) || $address['state'] != $tax_session['province'] ) {
-			$tax_session['province'] = $address['state'];
+
+		//We want to store the cart subtotal, in case it changes so we know we need to recalculate tax
+		if ( empty( $tax_session['country'] ) || $address['country'] != $tax_session['country'] ) {
+			$tax_session['country'] = $address['country'];
 			$clear_cache = true; //re-calculate taxes
 		}
-	
+
 		//We want to store the cart subtotal, in case it changes so we know we need to recalculate tax
 		if ( empty( $tax_session['cart_subtotal'] ) || $cart_subtotal != $tax_session['cart_subtotal'] ) {
 			$tax_session['cart_subtotal'] = $cart_subtotal;
@@ -87,8 +88,8 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 		}
 		
 		//We want to store the cart subtotal with shipping, in case it changes so we know we need to recalculate tax
-		if ( empty( $tax_session['cart_subtotal_w_shipping'] ) || $cart_subtotal_w_shipping != $tax_session['cart_subtotal_w_shipping'] ) {
-			$tax_session['cart_subtotal_w_shipping'] = $cart_subtotal_w_shipping;
+		if ( empty( $tax_session['shipping_cost'] ) || $shipping_cost != $tax_session['shipping_cost'] ) {
+			$tax_session['shipping_cost'] = $shipping_cost;
 			$clear_cache = true; //re-calculate taxes
 		}
 		
@@ -96,17 +97,57 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 		$clear_cache = true; //not really any cache, but it's easier this way :)
 	}
 	
+	$clear_cache = true;
+	
 	if ( $clear_cache ) {
-		$tax_rates = $settings['tax-rates'][$address['state']];
-		foreach ( $tax_rates as $tax ) {
-			if ( $tax['shipping'] ) {
-				$tax['total'] = ( $tax_session['cart_subtotal_w_shipping'] * ( $tax['rate'] / 100 ) );
-			} else {
-				$tax['total'] = ( $tax_session['cart_subtotal'] * ( $tax['rate'] / 100 ) );
-			}
-			$taxes[] = $tax;
-			$total_taxes += $tax['total'];
+	
+		$subtotals = array( 'zero' => 0 );
+		$default_rate = 0;
+		foreach ( $settings['tax-rates'] as $key => $rate ) {
+			$subtotals[$key] = 0;
+			if ( $rate['default'] )
+				$default_rate = $key;
 		}
+		
+		foreach( (array) $products as $product ) {		
+	
+			if ( it_exchange_product_supports_feature( $product['product_id'], 'value-added-taxes' ) ) {
+				if ( !it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
+					$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
+					
+					if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type )
+						$tax_type = $default_rate;
+						
+					if ( empty( $subtotals[$tax_type] ) )
+						$subtotals[$tax_type] = 0;
+						
+					$subtotals[$tax_type] += it_exchange_get_cart_product_subtotal( $product, false );
+				}
+			}
+		}
+	
+		$taxes = array();
+		$total_taxes = 0;
+		foreach( $subtotals as $key => $subtotal ) {
+			$taxable_amount = 0;
+			if ( 'zero' === $key ) {
+				$tax = 0;
+				$taxable_amount = $subtotal;
+				$taxes[$key]['tax-rate'] = array( 'label' => __( 'Zero Rate', 'LION' ), 'rate' => '0' );
+			} else {
+				if ( !empty( $settings['tax-rates'][$key]['shipping'] ) ) {
+					$taxable_amount = $subtotal + $shipping_cost;
+				} else {
+					$taxable_amount = $subtotal;
+				}
+				$tax = $taxable_amount * ( $settings['tax-rates'][$key]['rate'] / 100 );
+				$taxes[$key]['tax-rate'] = $settings['tax-rates'][$key];
+			}
+			$taxes[$key]['total'] = $tax;
+			$taxes[$key]['taxable_amount'] = $taxable_amount;
+			$total_taxes += $tax;
+		}
+		
 	} else {
 		$taxes = $tax_session['taxes'];
 		$total_taxes = $tax_session['total_taxes'];
@@ -121,7 +162,7 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 }
 
 /**
- * Gets tax information from TaxCloud based on products in cart
+ * Gets tax taxes based on products in cart
  *
  * @since 1.0.0
  *

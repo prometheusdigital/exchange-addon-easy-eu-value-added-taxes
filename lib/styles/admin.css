@@ -19,3 +19,7 @@
 .it-exchange-remove-item {-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;display:inline-block;width:20px;height:20px;margin-top:12px;margin-right:12px;border:2px solid transparent;border-radius:50%;font-size:14px;line-height:1.4em;text-decoration:none;text-align:center;color:#BBB;-webkit-transition:all .2s linear;-moz-transition:all .2s linear;transition:all .2s linear;}
 .it-exchange-remove-item:active{outline:none;opacity:.8;}
 .it-exchange-remove-item:hover{border-color:#E1797A !important;color:#E1797A;}
+
+.it-exchange-easy-value-added-taxes-addon-default-checkmark{display:block;width:15px;height:17px;background:url('../images/check-gray.png') center center no-repeat;cursor:pointer;}
+.it-exchange-easy-value-added-taxes-addon-default-checkmark:hover,
+.it-exchange-easy-value-added-taxes-addon-default-checkmark-checked{background:url('../images/check-green.png') center center no-repeat;border:none;cursor:pointer;}
