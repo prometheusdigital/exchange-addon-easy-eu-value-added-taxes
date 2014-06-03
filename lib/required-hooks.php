@@ -296,33 +296,3 @@ function it_exchange_easy_value_added_taxes_transaction_hook( $transaction_id ) 
 	return;
 }
 add_action( 'it_exchange_add_transaction_success', 'it_exchange_easy_value_added_taxes_transaction_hook' );
-
-
-/**
- * Registers our purchase requirements
- *
- * @since 1.0.0
-*/
-function it_exchange_easy_value_added_taxes_register_purchase_requirements() {
-
-	// Link vars
-	$login      = __( 'Log in', 'LION' );
-	$register   = __( 'register', 'LION' );
-	$cart       = __( 'edit your cart', 'LION' );
-	$login_link = '<a href="' . it_exchange_get_page_url( 'login' ) . '" class="it-exchange-login-requirement-login">';
-	$reg_link   = '<a href="' . it_exchange_get_page_url( 'registration' ) . '" class="it-exchange-login-requirement-registration">';
-	$cart_link  = '<a href="' . it_exchange_get_page_url( 'cart' ) . '">';
-	$close_link = '</a>';
-
-	// Billing Address Purchase Requirement
-	$properties = array(
-		'requirement-met'        => 'it_exchange_easy_value_added_taxes_get_customer_vat_details', //callback
-		'sw-template-part'       => 'customer-eu-vat-number',
-		'checkout-template-part' => 'customer-eu-vat-number',
-		'notification'           => __( 'You must enter a valid EU VAT number before you can checkout', 'LION' ),
-		'priority'               => 5.13
-	);
-		
-	it_exchange_register_purchase_requirement( 'customer-eu-vat-number', $properties );
-}
-add_action( 'init', 'it_exchange_easy_value_added_taxes_register_purchase_requirements' );
