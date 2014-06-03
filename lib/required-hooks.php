@@ -137,12 +137,26 @@ add_action( 'admin_print_styles', 'it_exchange_easy_value_added_taxes_addon_admi
 */
 function it_exchange_easy_value_added_taxes_load_public_scripts( $current_view ) {
 	
-	if ( it_exchange_is_page( 'checkout' ) || it_exchange_is_page( 'confirmation' ) || it_exchange_in_superwidget() ) {
+	if ( it_exchange_is_page( 'checkout' ) || it_exchange_in_superwidget() ) {
 
 		$url_base = ITUtility::get_url_from_file( dirname( __FILE__ ) );
 		wp_enqueue_style( 'ite-easy-value-added-taxes-addon', $url_base . '/styles/taxes.css' );
 		
+		if ( it_exchange_is_page( 'checkout' ) )
+			wp_enqueue_script( 'ite-vat-addon-checkout-page-var',  $url_base . '/js/checkout-page.js' );
+
+		$deps = array( 'jquery', 'wp-backbone', 'underscore' );
+		wp_enqueue_script( 'ite-vat-addon-vat-number-views',  $url_base . '/js/views/vat-number-views.js', $deps );
+		$deps[] =  'ite-vat-addon-vat-number-views';
+		wp_enqueue_script( 'ite-vat-addon-vat-number-manager', $url_base . '/js/vat-number-manager.js', $deps );
+		
+		wp_enqueue_style( 'ite-vat-addon-vat-number-manager', $url_base . '/styles/vat-number-manager.css' );
+		
+		add_action( 'wp_footer', 'it_exchange_easy_value_added_taxes_addon_vat_number_manager_backbone_template' );
+		
 	}
+	
+	
 
 }
 add_action( 'wp_enqueue_scripts', 'it_exchange_easy_value_added_taxes_load_public_scripts' );
@@ -296,3 +310,64 @@ function it_exchange_easy_value_added_taxes_transaction_hook( $transaction_id ) 
 	return;
 }
 add_action( 'it_exchange_add_transaction_success', 'it_exchange_easy_value_added_taxes_transaction_hook' );
+
+/**
+ * Backbone template for primary EU VAT Number Manager screen.
+ * Invoked by wp.template() and WordPress 
+ *
+ * add_action( 'wp_footer', 'it_exchange_easy_value_added_taxes_addon_vat_number_manager_backbone_template' );
+ *
+ * @since 1.0.0
+ */
+function it_exchange_easy_value_added_taxes_addon_vat_number_manager_backbone_template() {
+	$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
+	?>
+	<div id="it-exchange-easy-value-added-taxes-vat-manager-wrapper" class="it-exchange-hidden"></div>
+	<script type="text/template" id="tmpl-it-exchange-easy-value-added-taxes-vat-manager-container">
+		<span class="it-exchange-evat-close-vat-manager"><a href="">&times;</a></span>
+		<div id="it-exchange-easy-value-added-taxes-vat-manager">
+			<div id="it-exchange-easy-value-added-taxes-vat-manager-title-area">
+				<h3 class="it-exchange-evat-tax-emeption-title">
+					<?php _e( 'VAT Manager', 'LION' ); ?>
+				</h3>
+			</div>
+		
+			<div id="it-exchange-easy-value-added-taxes-vat-manager-content-area">
+				<div id="it-exchange-easy-value-added-taxes-vat-manager-error-area"></div>
+				<form id="it-exchange-add-on-easy-value-added-taxes-add-edit-vat" name="it-exchange-add-on-easy-value-added-taxes-add-edit-vat" action="POST">
+				<?php
+				if ( !empty( $tax_session['vat_country'] ) ) {
+					$vat_country = $tax_session['vat_country'];
+				} else {
+					$vat_country = '';
+				}
+				
+				if ( !empty( $tax_session['vat_number'] ) ) {
+					$vat_number = $tax_session['vat_number'];
+				} else {
+					$vat_number = '';
+				}
+				
+				$output = '<select id="it-exchange-evat-eu-vat-country" name="eu-vat-country">';
+				$memberstates = it_exchange_get_data_set( 'eu-member-states' );
+				foreach( $memberstates as $abbr => $name ) {					
+					$output .= '<option value="' . $abbr . '" ' . selected( $abbr, $vat_country, false ) . '>' . $name . '</option>';
+				}
+				$output .= '</select>';
+				
+				$output .= '<input type="text" id="it-exchange-evat-eu-vat-number" name="eu-vat-number" value="' . $vat_number . '" />';
+				
+				echo $output;
+				?>
+			
+				<div class="field it-exchange-add-vat-submit">
+					<input type="submit" value="<?php _e( 'Verify and Save VAT Number', 'LION' ); ?>" class="button button-large it-exchange-evat-save-vat-button" id="save" name="save">
+					<input type="submit" value="Cancel" class="button button-large it-exchange-evat-cancel-vat-button" id="cancel" name="cancel">
+					<?php wp_nonce_field( 'it-exchange-easy-value-added-taxes-add-edit-vat-number', 'it-exchange-easy-value-added-taxes-add-edit-vat-number-nonce' ); ?>
+				</div>
+				</form>
+			</div>
+		</div>
+	</script>
+	<?php
+}

@@ -56,7 +56,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		//We only care about the province!
 		if ( empty( $this->_address['state'] ) ) 
 			$this->_address = it_exchange_get_cart_billing_address();
-		$this->_vat_number = it_exchange_easy_value_added_taxes_get_cart_vat_number();
+	//	$this->_vat_number = it_exchange_easy_value_added_taxes_get_cart_vat_number();
 	}
 
 	/**
@@ -93,9 +93,9 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 			
 			$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
 			do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_label' );
-			$result .= '    <div class="it-exchange-table-column-inner">';
-			$result .=      __( 'Tax', 'LION' );
-			$result .= '    </div>';
+			$result .= '<div class="it-exchange-table-column-inner">';
+			$result .= __( 'Tax', 'LION' );
+			$result .= '</div>';
 			foreach ( $tax_session['taxes'] as $tax ) {
 				if ( !empty( $tax['total'] ) ) {
 					$result .= '<div class="it-exchange-table-column-inner">';
@@ -108,7 +108,14 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 					
 			$result .= '<div class="it-exchange-cart-totals-amount it-exchange-table-column">';
 			do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_value' );
-			$result .= '    <div class="it-exchange-table-column-inner">&nbsp;</div>';
+			$result .= '<div class="it-exchange-table-column-inner">';
+			$result .= '<div class="it-exchange-cart-vat-details">';
+			if ( !empty( $tax_session['vat_country'] ) && !empty( $tax_session['vat_number'] ) )
+				$result .= $tax_session['vat_country'] .'-'. $tax_session['vat_number'];
+				
+			$result .= '</div>';
+			$result .= '<a href="#" id="it-exchange-add-edit-vat-number">' . sprintf( __( '%s EU VAT Number', 'LION' ), ( !empty( $tax_session['vat_number'] ) ? __( 'Edit', 'LION' ) : __( 'Add', 'LION' ) ) ) . '</a>';
+			$result .= '</div>';
 			foreach ( $tax_session['taxes'] as $tax ) {
 				if ( !empty( $tax['total'] ) ) {
 					$tax_total = $tax['total'];
@@ -232,62 +239,5 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		
 		return $result;
 
-	}
-	
-	function vat_country( $options=array() ) {
-		$defaults      = array(
-			'format' => 'html',
-			'label'  => __( 'VAT Country', 'LION' ),
-		);
-		$options = ITUtility::merge_defaults( $options, $defaults );
-
-		$options['field_id']   = 'it-exchange-eu-vat-country';
-		$options['field_name'] = 'it-exchange-eu-vat-country ';
-		$options['value']      = '';
-
-		$output  = empty( $options['label'] ) ? '' : '<label for="' . esc_attr( $options['field_id'] ) . '">' . $options['label'];
-		$output .= '<input type="text" id="' . esc_attr( $options['field_id'] ) . '" name="' . esc_attr( $options['field_name'] ) . '" value="'. esc_attr( $options['value'] ) .'" />';
-		return $output;
-
-	}
-	
-	function vat_number( $options=array() ) {
-		$defaults      = array(
-			'format' => 'html',
-			'label'  => __( 'VAT Number', 'LION' ),
-		);
-		$options = ITUtility::merge_defaults( $options, $defaults );
-
-		$options['field_id']   = 'it-exchange-eu-vat-number';
-		$options['field_name'] = 'it-exchange-eu-vat-number ';
-		$options['value']      = '';
-
-		$output  = empty( $options['label'] ) ? '' : '<label for="' . esc_attr( $options['field_id'] ) . '">' . $options['label'];
-		$output .= '<input type="text" id="' . esc_attr( $options['field_id'] ) . '" name="' . esc_attr( $options['field_name'] ) . '" value="'. esc_attr( $options['value'] ) .'" />';
-		return $output;
-
-	}
-			
-	function submit( $options=array() ) {
-		$defaults      = array(
-			'format' => 'html',
-			'label'  => __( 'Submit', 'LION' ),
-			'name'   => '',
-		);
-		$options = ITUtility::merge_defaults( $options, $defaults );
-
-		$options['field_id']   = 'it-exchange-eu-vat-number-submit';
-
-		return '<input type="submit" id="' . esc_attr( $options['field_id'] ) . '" name="' . esc_attr( $options['name'] ) . '" value="'. esc_attr( $options['label'] ) .'" />';
-	}
-	
-	function cancel( $options=array() ) {
-		$defaults      = array(
-			'format' => 'html',
-			'label'  => __( 'Cancel', 'LION' ),
-		);
-		$options = ITUtility::merge_defaults( $options, $defaults );
-
-		return '<a class="it-exchange-eu-vat-number-requirement-cancel" href="' . it_exchange_get_page_url( 'checkout' ) . '">' . $options['label'] . '</a>';
 	}
 }

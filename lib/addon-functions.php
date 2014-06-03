@@ -62,7 +62,8 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 	if ( !empty( $address['country'] ) && empty( $memberstates[$address['country']] ) ) {
 		return false;
 	} else {
-		$tax_session['vat_country'] = $address['country'];
+		if ( empty( $tax_session['vat_country'] ) && empty( $tax_session['vat_number'] ) )
+			$tax_session['vat_country'] = $address['country'];
 	}
 		
 	if ( ! $products = it_exchange_get_cart_products() )
@@ -206,8 +207,7 @@ function it_exchange_easy_value_added_taxes_addon_verify_vat( $country_code, $va
 		}
 	}
     catch( Exception $e ) {
-		// CHANGEME
-		//output error
+		return $e->getMessage();
     }
     
     return false;
@@ -234,11 +234,4 @@ function it_exchange_easy_value_added_taxes_get_customer_vat_details( $customer_
 		}
 	}
 	return -1;
-}
-
-function it_exchange_easy_value_added_taxes_get_cart_vat_number() {
-	// If user is logged in, grab their data
-	$customer = it_exchange_get_current_customer();
-	$customer_data = empty( $customer->data ) ? new stdClass() : $customer->data;
-	return false;
 }
