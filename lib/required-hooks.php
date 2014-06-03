@@ -224,7 +224,6 @@ function it_exchange_easy_value_added_taxes_addon_taxes_register_templates( $tem
 	$add_path = false;
 	$templates = array(
 		'content-checkout/elements/easy-value-added-taxes.php',
-		'content-checkout/elements/purchase-requirements/customer-eu-vat-number.php',
 		'content-confirmation/elements/easy-value-added-taxes.php',
 		'content-confirmation/elements/easy-value-added-taxes-vat-summary.php',
 		'super-widget-checkout/loops/easy-value-added-taxes.php',
