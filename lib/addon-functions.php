@@ -61,6 +61,8 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 	$memberstates = it_exchange_get_data_set( 'eu-member-states' );
 	if ( !empty( $address['country'] ) && empty( $memberstates[$address['country']] ) ) {
 		return false;
+	} else {
+		$tax_session['vat_country'] = $address['country'];
 	}
 		
 	if ( ! $products = it_exchange_get_cart_products() )
@@ -183,4 +185,60 @@ function it_exchange_easy_value_added_taxes_addon_get_total_taxes_for_cart( $for
 	if ( $format_price )
 		$taxes = it_exchange_format_price( $taxes );
 	return $taxes;
+}
+
+function it_exchange_easy_value_added_taxes_addon_verify_vat( $country_code, $vat_number ) {
+	$soap_url = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
+	$soap_client = new SOAPClient( $soap_url );
+	$query = array(
+		'countryCode' => strtoupper( trim( $country_code ) ),
+		'vatNumber'   => strtoupper( trim( $vat_number ) ),
+	);
+	$result = $soap_client->checkVat( $query );
+	
+	try {
+		if ( is_soap_fault( $result ) ) {
+			throw new Exception( $result->faultstring() );
+		} else if ( !empty( $result->valid ) && $result->valid ) {
+			return true;
+		} else {
+			throw new Exception( sprintf( __( 'Error trying to verify VAT number: %s-%s.', 'LION' ), $country_code, $vat_number ) );
+		}
+	}
+    catch( Exception $e ) {
+		// CHANGEME
+		//output error
+    }
+    
+    return false;
+}
+
+/**
+ * Get Customer EU VAT Details
+ *
+ * Among other things this function is used as a callback for the customer EU VAT 
+ * purchase requriement.
+ *
+ * @since 1.0.0
+ *
+ * @param integer $customer_id the customer id. leave blank to use the current customer.
+ * @return array
+*/
+function it_exchange_easy_value_added_taxes_get_customer_vat_details( $customer_id=false ) {
+	if ( it_exchange_easy_value_added_taxes_setup_session() ) {
+		$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
+		//We only want to require the VAT details if the user is in an EU Memberstate
+		if ( !empty( $tax_session['vat_country'] ) ) {
+			$vat_details = it_exchange_get_customer_data( 'eu_vat_details', $customer_id );
+			return apply_filters( 'it_exchange_easy_value_added_taxes_get_customer_vat_details', $vat_details, $customer_id );
+		}
+	}
+	return -1;
+}
+
+function it_exchange_easy_value_added_taxes_get_cart_vat_number() {
+	// If user is logged in, grab their data
+	$customer = it_exchange_get_current_customer();
+	$customer_data = empty( $customer->data ) ? new stdClass() : $customer->data;
+	return false;
 }

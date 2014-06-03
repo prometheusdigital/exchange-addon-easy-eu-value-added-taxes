@@ -23,6 +23,13 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	private $_address = '';
 	
 	/**
+	 * Current customer VAT Number
+	 * @var string $_vat_number
+	 * @since 1.4.0
+	*/
+	private $_vat_number = '';
+	
+	/**
 	 * Maps api tags to methods
 	 * @var array $_tag_map
 	 * @since 1.0.0
@@ -31,6 +38,10 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		'taxes'             => 'taxes',
 		'confirmationtaxes' => 'confirmation_taxes',
 		'vatsummary'        => 'vat_summary',
+		'vatcountry'        => 'vat_country',
+		'vatnumber'         => 'vat_number',
+		'submit'            => 'submit',
+		'cancel'            => 'cancel',
 	);
 
 	/**
@@ -45,6 +56,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		//We only care about the province!
 		if ( empty( $this->_address['state'] ) ) 
 			$this->_address = it_exchange_get_cart_billing_address();
+		$this->_vat_number = it_exchange_easy_value_added_taxes_get_cart_vat_number();
 	}
 
 	/**
@@ -173,6 +185,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	}
 		
 	function vat_summary( $options=array() ) {
+    	$general_settings = it_exchange_get_option( 'settings_general' );
 		$settings  = it_exchange_get_option( 'addon_easy_value_added_taxes' );
 		$result = '';
 		
@@ -187,14 +200,15 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	    if ( !empty( $GLOBALS['it_exchange']['transaction'] ) ) {
 	        $transaction = $GLOBALS['it_exchange']['transaction'];
 	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );
-	        $customer_vat = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_customer_vat', true );
+	        $customer_country = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_customer_vat_country', true );
+	        $customer_vat = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_customer_vat_number', true );
 	    }
 											
 		$result .= $options['before'];
 		$result .= '<h3>' . $options['label'] . '</h3>';
-		$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s', 'LION' ), $settings['vat-number'] ) . '</p>';
+		$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s-%s', 'LION' ), $general_settings['company-base-country'], $settings['vat-number'] ) . '</p>';
 		if ( !empty( $customer_vat ) )
-			$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s', 'LION' ), $customer_vat ) . '</p>';
+			$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';
 		
 		$result .= '<div class="vat-summary-table">';
 		$result .= '<div class="vat-label-heading">' . __( 'VAT Type', 'LION' ) . '</div>';
@@ -218,5 +232,62 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		
 		return $result;
 
+	}
+	
+	function vat_country( $options=array() ) {
+		$defaults      = array(
+			'format' => 'html',
+			'label'  => __( 'VAT Country', 'LION' ),
+		);
+		$options = ITUtility::merge_defaults( $options, $defaults );
+
+		$options['field_id']   = 'it-exchange-eu-vat-country';
+		$options['field_name'] = 'it-exchange-eu-vat-country ';
+		$options['value']      = '';
+
+		$output  = empty( $options['label'] ) ? '' : '<label for="' . esc_attr( $options['field_id'] ) . '">' . $options['label'];
+		$output .= '<input type="text" id="' . esc_attr( $options['field_id'] ) . '" name="' . esc_attr( $options['field_name'] ) . '" value="'. esc_attr( $options['value'] ) .'" />';
+		return $output;
+
+	}
+	
+	function vat_number( $options=array() ) {
+		$defaults      = array(
+			'format' => 'html',
+			'label'  => __( 'VAT Number', 'LION' ),
+		);
+		$options = ITUtility::merge_defaults( $options, $defaults );
+
+		$options['field_id']   = 'it-exchange-eu-vat-number';
+		$options['field_name'] = 'it-exchange-eu-vat-number ';
+		$options['value']      = '';
+
+		$output  = empty( $options['label'] ) ? '' : '<label for="' . esc_attr( $options['field_id'] ) . '">' . $options['label'];
+		$output .= '<input type="text" id="' . esc_attr( $options['field_id'] ) . '" name="' . esc_attr( $options['field_name'] ) . '" value="'. esc_attr( $options['value'] ) .'" />';
+		return $output;
+
+	}
+			
+	function submit( $options=array() ) {
+		$defaults      = array(
+			'format' => 'html',
+			'label'  => __( 'Submit', 'LION' ),
+			'name'   => '',
+		);
+		$options = ITUtility::merge_defaults( $options, $defaults );
+
+		$options['field_id']   = 'it-exchange-eu-vat-number-submit';
+
+		return '<input type="submit" id="' . esc_attr( $options['field_id'] ) . '" name="' . esc_attr( $options['name'] ) . '" value="'. esc_attr( $options['label'] ) .'" />';
+	}
+	
+	function cancel( $options=array() ) {
+		$defaults      = array(
+			'format' => 'html',
+			'label'  => __( 'Cancel', 'LION' ),
+		);
+		$options = ITUtility::merge_defaults( $options, $defaults );
+
+		return '<a class="it-exchange-eu-vat-number-requirement-cancel" href="' . it_exchange_get_page_url( 'checkout' ) . '">' . $options['label'] . '</a>';
 	}
 }

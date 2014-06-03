@@ -224,6 +224,7 @@ function it_exchange_easy_value_added_taxes_addon_taxes_register_templates( $tem
 	$add_path = false;
 	$templates = array(
 		'content-checkout/elements/easy-value-added-taxes.php',
+		'content-checkout/elements/purchase-requirements/customer-eu-vat-number.php',
 		'content-confirmation/elements/easy-value-added-taxes.php',
 		'content-confirmation/elements/easy-value-added-taxes-vat-summary.php',
 		'super-widget-checkout/loops/easy-value-added-taxes.php',
@@ -239,6 +240,20 @@ function it_exchange_easy_value_added_taxes_addon_taxes_register_templates( $tem
 	return $template_paths;
 }
 add_filter( 'it_exchange_possible_template_paths', 'it_exchange_easy_value_added_taxes_addon_taxes_register_templates', 10, 2 );
+
+/**
+ * Adds Easy Value Added Taxes Template Path to iThemes Exchange Template paths
+ *
+ * @since 1.0.0
+ * @param array $possible_template_paths iThemes Exchange existing Template paths array
+ * @param array $template_names
+ * @return array
+*/
+function it_exchange_easy_value_added_taxes_addon_template_path( $possible_template_paths, $template_names ) {
+	$possible_template_paths[] = dirname( __FILE__ ) . '/templates/';
+	return $possible_template_paths;
+}
+add_filter( 'it_exchange_possible_template_paths', 'it_exchange_easy_value_added_taxes_addon_template_path', 10, 2 );
 
 /**
  * Adjcanadiants the cart total if on a checkout page
@@ -268,8 +283,11 @@ function it_exchange_easy_value_added_taxes_transaction_hook( $transaction_id ) 
 	if ( !empty( $tax_session['taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes', $tax_session['taxes'] );
 	}
+	if ( !empty( $tax_session['vat_country'] ) ) {
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_customer_vat_country', $tax_session['vat_country'] );
+	}
 	if ( !empty( $tax_session['vat_number'] ) ) {
-		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_customer_vat', $tax_session['vat_number'] );
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_customer_vat_number', $tax_session['vat_number'] );
 	}
 	if ( !empty( $tax_session['total_taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_total', $tax_session['total_taxes'] );
@@ -279,3 +297,33 @@ function it_exchange_easy_value_added_taxes_transaction_hook( $transaction_id ) 
 	return;
 }
 add_action( 'it_exchange_add_transaction_success', 'it_exchange_easy_value_added_taxes_transaction_hook' );
+
+
+/**
+ * Registers our purchase requirements
+ *
+ * @since 1.0.0
+*/
+function it_exchange_easy_value_added_taxes_register_purchase_requirements() {
+
+	// Link vars
+	$login      = __( 'Log in', 'LION' );
+	$register   = __( 'register', 'LION' );
+	$cart       = __( 'edit your cart', 'LION' );
+	$login_link = '<a href="' . it_exchange_get_page_url( 'login' ) . '" class="it-exchange-login-requirement-login">';
+	$reg_link   = '<a href="' . it_exchange_get_page_url( 'registration' ) . '" class="it-exchange-login-requirement-registration">';
+	$cart_link  = '<a href="' . it_exchange_get_page_url( 'cart' ) . '">';
+	$close_link = '</a>';
+
+	// Billing Address Purchase Requirement
+	$properties = array(
+		'requirement-met'        => 'it_exchange_easy_value_added_taxes_get_customer_vat_details', //callback
+		'sw-template-part'       => 'customer-eu-vat-number',
+		'checkout-template-part' => 'customer-eu-vat-number',
+		'notification'           => __( 'You must enter a valid EU VAT number before you can checkout', 'LION' ),
+		'priority'               => 5.13
+	);
+		
+	it_exchange_register_purchase_requirement( 'customer-eu-vat-number', $properties );
+}
+add_action( 'init', 'it_exchange_easy_value_added_taxes_register_purchase_requirements' );

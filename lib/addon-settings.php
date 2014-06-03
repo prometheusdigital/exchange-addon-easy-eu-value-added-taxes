@@ -27,6 +27,7 @@ function it_exchange_easy_value_added_taxes_settings_callback() {
 function it_exchange_easy_value_added_taxes_default_settings( $defaults ) {
 	$defaults = array(
 		'vat-number' => '',
+		'vat-number-verified' => false,
 		'tax-rates' => array(
 			array(
 				'label'    => __( 'Reduced Rate', 'LION' ),
@@ -136,6 +137,8 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 	}
 
 	function get_easy_value_added_taxes_form_table( $form, $settings = array() ) {
+    	$general_settings = it_exchange_get_option( 'settings_general' );
+    	
 		if ( !empty( $settings ) )
 			foreach ( $settings as $key => $var )
 				$form->set_option( $key, $var );
@@ -147,7 +150,17 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
             </h4>
             
             <p>
-                <label for="easy-value-added-taxes-vat-number"><?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
+                <label for="easy-value-added-taxes-vat-number"><?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> 
+                <?php 
+                if ( !empty( $settings['vat-number-verified'] ) )
+               		$hidden_class = '';
+               	else
+               		$hidden_class = 'hidden';
+               		
+               	echo '<img src="' . ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/images/check.png" class="check ' . $hidden_class . '" id="it-exchange-vat-number-verified" title="' . __( 'VAT Number Verified', 'LION' ) . '" height="15" >';
+                ?>
+                </label>
+                <strong><?php echo $general_settings['company-base-country']; ?></strong>
 				<?php $form->add_text_box( 'vat-number' ); ?>
 				<?php $form->add_hidden( 'tax-rates' ); ?>
             </p>
@@ -205,6 +218,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 	 * @return void
 	*/
     function save_settings() {
+    	global $new_values; //We set this as global here to modify it in the error check
         $defaults = it_exchange_get_option( 'addon_easy_value_added_taxes' );
         $new_values = wp_parse_args( ITForm::get_post_data(), $defaults );
                 
@@ -235,11 +249,20 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
      * @return void
     */
     public function get_form_errors( $values ) {
+    	global $new_values;
     	$errors = array();
     	$default_set = false;
+    	$general_settings = it_exchange_get_option( 'settings_general' );
     
     	if ( empty( $values['vat-number'] ) )
             $errors[] = __( 'Missing VAT Number.', 'LION' );
+            
+        if ( it_exchange_easy_value_added_taxes_addon_verify_vat( $general_settings['company-base-country'], $values['vat-number'] ) ) {
+	        $new_values['vat-number-verified'] = true;
+        } else {
+	        $new_values['vat-number-verified'] = false;
+            $errors[] = __( 'VAT Number did not Validate.', 'LION' );
+        }
     
         foreach( $values['tax-rates'] as $tax_rate ) {
         	if ( empty( $tax_rate['label'] ) ) {
