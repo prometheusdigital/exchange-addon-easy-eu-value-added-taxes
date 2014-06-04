@@ -359,7 +359,7 @@ function it_exchange_easy_value_added_taxes_addon_vat_number_manager_backbone_te
 				foreach( $memberstates as $abbr => $name ) {					
 					$output .= '<option value="' . $abbr . '" ' . selected( $abbr, $vat_country, false ) . '>' . $name . '</option>';
 				}
-				$output .= '</select>';
+				$output .= '</select><br />';
 				
 				$output .= '<input type="text" id="it-exchange-evat-eu-vat-number" name="eu-vat-number" value="' . $vat_number . '" />';
 				
