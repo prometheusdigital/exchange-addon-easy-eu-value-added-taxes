@@ -277,8 +277,11 @@ add_filter( 'it_exchange_possible_template_paths', 'it_exchange_easy_value_added
  * @return int New Total
 */
 function it_exchange_easy_value_added_taxes_addon_taxes_modify_total( $total ) {
-	if ( !it_exchange_is_page( 'cart' ) || it_exchange_in_superwidget() ) //we jcanadiant don't want to modify anything on the cart page
-		$total += it_exchange_easy_value_added_taxes_addon_get_total_taxes_for_cart( false );
+	$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
+	if( empty( $tax_session['summary_only'] ) ) {
+		if ( !it_exchange_is_page( 'cart' ) || it_exchange_in_superwidget() ) //we jcanadiant don't want to modify anything on the cart page
+			$total += it_exchange_easy_value_added_taxes_addon_get_total_taxes_for_cart( false );
+	}
 	return $total;
 }
 add_filter( 'it_exchange_get_cart_total', 'it_exchange_easy_value_added_taxes_addon_taxes_modify_total' );
@@ -304,6 +307,9 @@ function it_exchange_easy_value_added_taxes_transaction_hook( $transaction_id ) 
 	}
 	if ( !empty( $tax_session['total_taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_total', $tax_session['total_taxes'] );
+	}
+	if ( !empty( $tax_session['summary_only'] ) ) {
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_summary_only', $tax_session['summary_only'] );
 	}
 	
 	it_exchange_clear_session_data( 'addon_easy_value_added_taxes' );
@@ -363,6 +369,7 @@ function it_exchange_easy_value_added_taxes_addon_vat_number_manager_backbone_te
 				<div class="field it-exchange-add-vat-submit">
 					<input type="submit" value="<?php _e( 'Verify and Save VAT Number', 'LION' ); ?>" class="button button-large it-exchange-evat-save-vat-button" id="save" name="save">
 					<input type="submit" value="Cancel" class="button button-large it-exchange-evat-cancel-vat-button" id="cancel" name="cancel">
+					<input type="submit" value="Remove" class="button button-large it-exchange-evat-remove-vat-button" id="remove" name="remove">
 					<?php wp_nonce_field( 'it-exchange-easy-value-added-taxes-add-edit-vat-number', 'it-exchange-easy-value-added-taxes-add-edit-vat-number-nonce' ); ?>
 				</div>
 				</form>

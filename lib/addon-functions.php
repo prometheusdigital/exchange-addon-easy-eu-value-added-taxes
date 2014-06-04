@@ -65,7 +65,15 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 		if ( empty( $tax_session['vat_country'] ) && empty( $tax_session['vat_number'] ) )
 			$tax_session['vat_country'] = $address['country'];
 	}
-		
+	
+	if ( empty( $tax_session['vat_number'] ) || $settings['vat-country'] == $address['country'] ) {
+		//Charge Tax no VAT Number is supplied or if the customer is purchasing from the same member state
+		$tax_session['summary_only'] = false;
+	} else {
+		//Otherwise, don't charge tax, just summarize the VAT
+		$tax_session['summary_only'] = true;
+	}
+	
 	if ( ! $products = it_exchange_get_cart_products() )
 		return false;
 	

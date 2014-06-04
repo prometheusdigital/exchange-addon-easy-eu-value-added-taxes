@@ -28,7 +28,7 @@ function it_exchange_easy_value_added_taxes_addon_ajax_add_new_rate() {
 add_action( 'wp_ajax_it-exchange-easy-value-added-taxes-addon-add-new-rate', 'it_exchange_easy_value_added_taxes_addon_ajax_add_new_rate' );
 
 /**
- * Ajax called from Backbone modal to add new tax exempt certificates to TaxCloud.
+ * Ajax called from Backbone modal to add new EU VAT number to transaction.
  *
  * @since 1.0.0
 */
@@ -76,3 +76,35 @@ function it_exchange_easy_value_added_taxes_save_vat_number() {
 }
 add_action( 'wp_ajax_it-exchange-easy-value-added-taxes-save-vat-number', 'it_exchange_easy_value_added_taxes_save_vat_number' );
 add_action( 'wp_ajax_no_priv_it-exchange-easy-value-added-taxes-save-vat-number', 'it_exchange_easy_value_added_taxes_save_vat_number' );
+
+/**
+ * Ajax called from Backbone modal to remove EU VAT number from transaction.
+ *
+ * @since 1.0.0
+*/
+function it_exchange_easy_value_added_taxes_remove_vat_number() {	
+	
+	$errors = array();
+		
+	if ( ! empty( $_POST ) ) {
+		
+		if ( wp_verify_nonce( $_POST['it-exchange-easy-value-added-taxes-add-edit-vat-number-nonce'], 'it-exchange-easy-value-added-taxes-add-edit-vat-number' ) ) {
+						
+			$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
+			unset( $tax_session['vat_country'] );
+			unset( $tax_session['vat_number'] );
+			it_exchange_update_session_data( 'addon_easy_value_added_taxes', $tax_session );
+			wp_send_json_success();
+
+		} else {
+			
+			$errors[] = __( 'Unable to verify security token, please try again', 'LION' );
+			
+		}
+		
+	}
+	
+	wp_send_json_error( $errors );
+}
+add_action( 'wp_ajax_it-exchange-easy-value-added-taxes-remove-vat-number', 'it_exchange_easy_value_added_taxes_remove_vat_number' );
+add_action( 'wp_ajax_no_priv_it-exchange-easy-value-added-taxes-remove-vat-number', 'it_exchange_easy_value_added_taxes_remove_vat_number' );

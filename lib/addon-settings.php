@@ -25,7 +25,10 @@ function it_exchange_easy_value_added_taxes_settings_callback() {
  * @return array settings
 */
 function it_exchange_easy_value_added_taxes_default_settings( $defaults ) {
+	$general_settings = it_exchange_get_option( 'settings_general' );
+
 	$defaults = array(
+		'vat-country' => $general_settings['company-base-country'],
 		'vat-number' => '',
 		'vat-number-verified' => false,
 		'tax-rates' => array(
@@ -137,8 +140,6 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 	}
 
 	function get_easy_value_added_taxes_form_table( $form, $settings = array() ) {
-    	$general_settings = it_exchange_get_option( 'settings_general' );
-    	
 		if ( !empty( $settings ) )
 			foreach ( $settings as $key => $var )
 				$form->set_option( $key, $var );
@@ -159,8 +160,11 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
                		
                	echo '<img src="' . ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/images/check.png" class="check ' . $hidden_class . '" id="it-exchange-vat-number-verified" title="' . __( 'VAT Number Verified', 'LION' ) . '" height="15" >';
                 ?>
-                </label>
-                <strong><?php echo $general_settings['company-base-country']; ?></strong>
+                </label>                
+				<?php
+				$memberstates = it_exchange_get_data_set( 'eu-member-states' );
+				$form->add_drop_down( 'vat-country', $memberstates );
+				?>
 				<?php $form->add_text_box( 'vat-number' ); ?>
 				<?php $form->add_hidden( 'tax-rates' ); ?>
             </p>
@@ -252,16 +256,18 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
     	global $new_values;
     	$errors = array();
     	$default_set = false;
-    	$general_settings = it_exchange_get_option( 'settings_general' );
+    
+    	if ( empty( $values['vat-country'] ) )
+            $errors[] = __( 'Missing VAT Country.', 'LION' );
     
     	if ( empty( $values['vat-number'] ) )
             $errors[] = __( 'Missing VAT Number.', 'LION' );
             
-        if ( it_exchange_easy_value_added_taxes_addon_verify_vat( $general_settings['company-base-country'], $values['vat-number'] ) ) {
+        if ( true === $return = it_exchange_easy_value_added_taxes_addon_verify_vat( $values['vat-country'], $values['vat-number'] ) ) {
 	        $new_values['vat-number-verified'] = true;
         } else {
 	        $new_values['vat-number-verified'] = false;
-            $errors[] = __( 'VAT Number did not Validate.', 'LION' );
+            $errors[] = $return;
         }
     
         foreach( $values['tax-rates'] as $tax_rate ) {
