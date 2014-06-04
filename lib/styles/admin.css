@@ -1,4 +1,8 @@
-/** -----------------------------------------------------:[ Settings Table ]:---------- */
+/** -----------------------------------------------------:[ Settings ]:---------- */
+#value-added-tax-number label {font-weight: 600;}
+#value-added-tax-number input[type="text"] {width: 180px;margin: .5em 0;}
+#value-added-tax-number img {margin: 0 0 0 1em;}
+
 #value-added-tax-rate-table {overflow: hidden;background: #FFF;border: 1px solid #DEDEDE;width: 100%;max-width: 800px;}
 #value-added-tax-rate-table .block-row {border-bottom: 1px solid #DEDEDE;overflow:hidden;}
 #value-added-tax-rate-table .heading-column {font-weight: bold;}
@@ -20,6 +24,8 @@
 .it-exchange-remove-item:active{outline:none;opacity:.8;}
 .it-exchange-remove-item:hover{border-color:#E1797A !important;color:#E1797A;}
 
-.it-exchange-easy-value-added-taxes-addon-default-checkmark{display:block;width:15px;height:17px;background:url('../images/check-gray.png') center center no-repeat;cursor:pointer;}
+.it-exchange-easy-value-added-taxes-addon-default-checkmark{display:block;width:15px;height:15px;background:url('../images/check-gray.png') center center no-repeat;cursor:pointer;margin: 1.25em;}
 .it-exchange-easy-value-added-taxes-addon-default-checkmark:hover,
 .it-exchange-easy-value-added-taxes-addon-default-checkmark-checked{background:url('../images/check-green.png') center center no-repeat;border:none;cursor:pointer;}
+
+.it-exchange-easy-value-added-taxes-addon-settings .add-new {margin-bottom: 2em;}

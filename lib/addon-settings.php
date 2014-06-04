@@ -150,31 +150,35 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
             	<?php _e( 'Current Tax Rates and Settings', 'LION' ) ?> 
             </h4>
             
-            <p>
-                <label for="easy-value-added-taxes-vat-number"><?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> 
-                <?php 
-                if ( !empty( $settings['vat-number-verified'] ) )
-               		$hidden_class = '';
-               	else
-               		$hidden_class = 'hidden';
-               		
-               	echo '<img src="' . ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/images/check.png" class="check ' . $hidden_class . '" id="it-exchange-vat-number-verified" title="' . __( 'VAT Number Verified', 'LION' ) . '" height="15" >';
-                ?>
-                </label>                
+            <div id="value-added-tax-number">
+				<p>
+					<label for="vat-number">
+						<?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span>
+					</label>
+				</p>
+
 				<?php
 				$memberstates = it_exchange_get_data_set( 'eu-member-states' );
 				$form->add_drop_down( 'vat-country', $memberstates );
-				?>
-				<?php $form->add_text_box( 'vat-number' ); ?>
-				<?php $form->add_hidden( 'tax-rates' ); ?>
-            </p>
+				echo '<br />';
+				$form->add_text_box( 'vat-number' );
 
-            <p>
-                <label for="easy-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
-            </p>
-            
+				if ( !empty( $settings['vat-number-verified'] ) )
+					$hidden_class = '';
+				else
+					$hidden_class = 'hidden';
+
+				echo '<img src="' . ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/images/check.png" class="check ' . $hidden_class . '" id="it-exchange-vat-number-verified" title="' . __( 'VAT Number Verified', 'LION' ) . '" height="15" >';
+
+				$form->add_hidden( 'tax-rates' ); 
+				?>
+
+				<p>
+					<label for="easy-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
+				</p>
+			</div>
 			<div id="value-added-tax-rate-table">
-            
+
 			<?php
 			$headings = array(
 				__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' ), __( 'Default?', 'LION' )
