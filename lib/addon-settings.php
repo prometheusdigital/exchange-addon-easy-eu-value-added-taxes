@@ -45,6 +45,7 @@ function it_exchange_easy_value_added_taxes_default_settings( $defaults ) {
 				'default'  => 'checked',
 			),
 		),
+		'price-includes-vat' => true,
 	);
 	return $defaults;
 }
@@ -172,40 +173,39 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 
 				$form->add_hidden( 'tax-rates' ); 
 				?>
-
-				<p>
-					<label for="easy-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
-				</p>
 			</div>
+			
+			<p>
+				<label for="easy-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
+			</p>
 			<div id="value-added-tax-rate-table">
-
-			<?php
-			$headings = array(
-				__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' ), __( 'Default?', 'LION' )
-			);
-			?>
-			<div class="heading-row block-row">
-				<?php $column = 0; ?>
-				<?php foreach ( (array) $headings as $heading ) : ?>
-				<?php $column++ ?>
-				<div class="heading-column block-column block-column-<?php echo $column; ?>">
-				<p class="heading"><?php echo $heading; ?></p>
+				<?php
+				$headings = array(
+					__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' ), __( 'Default?', 'LION' )
+				);
+				?>
+				<div class="heading-row block-row">
+					<?php $column = 0; ?>
+					<?php foreach ( (array) $headings as $heading ) : ?>
+					<?php $column++ ?>
+					<div class="heading-column block-column block-column-<?php echo $column; ?>">
+					<p class="heading"><?php echo $heading; ?></p>
+					</div>
+					<?php endforeach; ?>
+					<div class="heading-column block-column block-column-delete"></div>
 				</div>
-				<?php endforeach; ?>
-				<div class="heading-column block-column block-column-delete"></div>
-			</div>
-			<?php
-			$last_key = 0;
-			//Alpha Sort
-			$tax_rates = $settings['tax-rates'];
-			if ( !empty( $tax_rates ) ) {
-				ksort( $tax_rates );
-				foreach( $tax_rates as $key => $rate ) {
-					echo it_exchange_easy_value_added_taxes_get_tax_row_settings( $key, $rate );
-					$last_key = $key;
+				<?php
+				$last_key = 0;
+				//Alpha Sort
+				$tax_rates = $settings['tax-rates'];
+				if ( !empty( $tax_rates ) ) {
+					ksort( $tax_rates );
+					foreach( $tax_rates as $key => $rate ) {
+						echo it_exchange_easy_value_added_taxes_get_tax_row_settings( $key, $rate );
+						$last_key = $key;
+					}
 				}
-			}
-			?>
+				?>
 			</div>
 			<script type="text/javascript" charset="utf-8">
 	            var it_exchange_easy_value_added_taxes_addon_iteration = <?php echo $last_key; ?>;
@@ -214,6 +214,13 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			<p class="add-new">
 				<?php $form->add_button( 'new-tax-rate', array( 'value' => __( 'Add New Tax Rate', 'LION' ), 'class' => 'button button-secondary button-large' ) ); ?>
 			</p>
+			
+			<div>
+				<p>
+					<label for="price-includes-vat"><?php _e( 'Price Includes Tax?', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
+					<?php $form->add_check_box( 'price-includes-vat' ); ?>
+				</p>
+			</div>
             
 		</div>
 		<?php
