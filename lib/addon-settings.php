@@ -217,7 +217,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			
 			<div>
 				<p>
-					<label for="price-includes-vat"><?php _e( 'Price Includes Tax?', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
+					<label for="price-includes-vat"><?php _e( 'Product Prices Include VAT?', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
 					<?php $form->add_check_box( 'price-includes-vat' ); ?>
 				</p>
 			</div>
