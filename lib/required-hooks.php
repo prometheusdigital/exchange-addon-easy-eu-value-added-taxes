@@ -83,7 +83,7 @@ function it_exchange_easy_value_added_taxes_addon_admin_wp_enqueue_scripts( $hoo
 		wp_enqueue_script( 'it-exchange-easy-value-added-taxes-addon-admin-js', $url_base . '/js/admin.js' );
 
 	} else if ( isset( $post_type ) && 'it_exchange_prod' === $post_type ) {
-		$deps = array( 'jquery' );
+		$deps = array( 'jquery', 'jquery-effects-highlight' );
 		wp_enqueue_script( 'it-exchange-easy-value-added-taxes-addon-add-edit-product', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-edit-product.js', $deps );
 	}
 }

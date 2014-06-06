@@ -33,6 +33,12 @@ function it_exchange_easy_value_added_taxes_default_settings( $defaults ) {
 		'vat-number-verified' => false,
 		'tax-rates' => array(
 			array(
+				'label'    => __( 'Zero Rate', 'LION' ),
+				'rate'     => 0,
+				'shipping' => false,
+				'default'  => 'unchecked',
+			),
+			array(
 				'label'    => __( 'Reduced Rate', 'LION' ),
 				'rate'     => 6,
 				'shipping' => false,
@@ -217,7 +223,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			
 			<div>
 				<p>
-					<label for="price-includes-vat"><?php _e( 'Product Prices Include VAT?', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
+					<label for="price-includes-vat"><?php _e( 'Add VAT on Product Page?', 'LION' ) ?> <span class="tip" title="<?php _e( 'Displays the product price with VAT included automatically.', 'LION' ); ?>">i</span> </label>
 					<?php $form->add_check_box( 'price-includes-vat' ); ?>
 				</p>
 			</div>
@@ -284,10 +290,12 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
         foreach( $values['tax-rates'] as $tax_rate ) {
         	if ( empty( $tax_rate['label'] ) ) {
                 $errors[] = __( 'Missing or Invalid VAT Label.', 'LION' );
-	        	break;
-        	} else if ( empty( $tax_rate['rate'] ) ) {
-                $errors[] = __( 'Missing or Invalid Tax Rate.', 'LION' );
-	        	break;
+	        	continue;
+        	}
+        	
+        	if ( !isset( $tax_rate['rate'] ) || !is_numeric( $tax_rate['rate'] ) ) {
+                $errors[] = sprintf( __( 'Missing or Invalid Tax Rate for %s.', 'LION' ), $tax_rate['label'] );
+	        	continue;
         	}
         	
         	if ( 'checked' === $tax_rate['default'] )

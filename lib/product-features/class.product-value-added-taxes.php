@@ -108,35 +108,36 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
 		$tax_exempt = it_exchange_get_product_feature( $product->ID, 'value-added-taxes', array( 'setting' => 'exempt' ) );
 		$tax_type = it_exchange_get_product_feature( $product->ID, 'value-added-taxes', array( 'setting' => 'type' ) );
-		$default_tax_rate = array( 'label' => '', 'rate' => '' );
-
+		$default_tax_rate = array( 'label' => '', 'rate' => 0 );
+		$calculation_rate = 0;
 		?>
 		
 		<p>
             <label for="easy-value-added-taxes-value-added-taxes"><?php _e( 'Tax Exempt?', 'LION' ) ?></label>
-			
-			<input type="checkbox" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-exempt" id="value-added-taxes" <?php checked( $tax_exempt ); ?> />
+			<input type="checkbox" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-exempt" id="evat-exempt" <?php checked( $tax_exempt ); ?> />
         </p>
 		
 		<?php
-		if ( $tax_exempt ) {
-			$display = 'hide-if-js ';
-		} else {
-			$display = '';
-		}
-		
 		//Determine the default...
 		foreach( $settings['tax-rates'] as $key => $tax_rate ) {
-			if ( 'checked' === $tax_rate['default'] )
+			if ( 'checked' === $tax_rate['default'] ) {
 				$default_tax_rate = $tax_rate;
+				$calculation_rate = $tax_rate['rate'];
+			}
+		}
+		
+		if ( $tax_exempt ) {
+			$display = 'hide-if-js ';
+			$calculation_rate = 0;
+		} else {
+			$display = '';
 		}
 		?>
 		<p class="vat-tax-types <?php echo $display; ?>">
             <label for="easy-value-added-taxes-value-added-taxes"><?php _e( 'Tax Type?', 'LION' ) ?></label>
 			
-			<select name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-type">
+			<select id="evat-type" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-type">
 				<option value="default" <?php selected( 'default', $tax_type ); ?>><?php printf( __( 'Default (%s - %s%%)', 'LION' ), $default_tax_rate['label'], $default_tax_rate['rate'] ); ?></option>
-				<option value="zero" <?php selected( 'zero', $tax_type ); ?>><?php _e( 'Zero Rate', 'LION' ); ?></option>
 			<?php 
 			foreach( $settings['tax-rates'] as $key => $tax_rate ) {
 				echo '<option value="' . $key . '" ' . selected( $key, $tax_type, false ) . '>' . sprintf( __( '%s (%s%%)', 'LION' ), $tax_rate['label'], $tax_rate['rate'] ) . '</option>';
@@ -144,6 +145,18 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 			?>
 			</select>
         </p>
+        <?php
+        $base_price = it_exchange_get_product_feature( $product->ID, 'base-price' );
+        ?>
+        <div class="vat-price-calculator">
+            <label for="vat-price-calculator-pre-vat-price"><?php _e( 'Pre-VAT Price', 'LION' ) ?></label>
+            <input id="vat-price-calculator-pre-vat-price" type="text" name="vat-price-calculator-pre-vat-price" value="<?php echo it_exchange_format_price( $base_price ); ?>" />
+            <label for="vat-price-calculator-price-w-vat"><?php _e( 'Price with VAT', 'LION' ) ?></label>
+            <input id="vat-price-calculator-price-w-vat" type="text" name="vat-price-calculator-price-w-vat" value="<?php echo it_exchange_format_price( $base_price * ( ( 100 + $calculation_rate ) / 100 ) ); ?>" />
+            <p id="set-product-price-from-easy-value-added-taxes-addon">
+            <input type="button" class="button" value="Set Product Price" />
+            </p>
+        </div>
 		<?php
 	}
 

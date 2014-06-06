@@ -28,6 +28,69 @@ function it_exchange_easy_value_added_taxes_addon_ajax_add_new_rate() {
 add_action( 'wp_ajax_it-exchange-easy-value-added-taxes-addon-add-new-rate', 'it_exchange_easy_value_added_taxes_addon_ajax_add_new_rate' );
 
 /**
+ * AJAX function called to add new content access rule rows
+ *
+ * @since 1.0.0
+ * @return string HTML output of content access rule row div
+*/
+function it_exchange_easy_value_added_taxes_add_edit_product_vat_calculator() {
+	
+	$results = array();
+	/*
+	'exempt':    $( 'input#evat-exempt' ).is( ':checked' ),
+	'type':      $( 'select#evat-type' ).val(),
+	'pre-vat':   $( 'input#vat-price-calculator-pre-vat-price' ).val(),
+	'post-vat':  $( 'input#vat-price-calculator-price-w-vat' ).val(),
+	*/
+	
+	if ( isset( $_POST['exempt'] ) && isset( $_POST['type'] ) ) {
+	
+		if ( 'true' === $_POST['exempt'] ) {
+			$results = array(
+				'pre-vat' => $_POST['pre-vat'],
+				'post-vat' => $_POST['pre-vat']
+			);
+		} else {
+			$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+		
+			$pre_vat = it_exchange_convert_from_database_number( it_exchange_convert_to_database_number( $_POST['pre-vat'] ) );
+			$post_vat = it_exchange_convert_from_database_number( it_exchange_convert_to_database_number( $_POST['post-vat'] ) );
+		
+			if ( 'default' === $_POST['type'] ) {
+				foreach( $settings['tax-rates'] as $tax_rate ) {
+					if ( 'checked' === $tax_rate['default'] ) {
+						$rate = $tax_rate['rate'];
+					}
+				}
+			} else {
+				if ( isset( $settings['tax-rates'][$_POST['type']]['rate'] ) )
+					$rate = $settings['tax-rates'][$_POST['type']]['rate'];
+			}
+						
+			if ( !empty( $_POST['reverse'] ) && 'true' === $_POST['reverse'] ) {
+				$results = array(
+					'pre-vat' => $post_vat / ( ( 100 + $rate ) / 100 ),
+					'post-vat' => $post_vat,
+				);
+			} else {
+				$results = array(
+					'pre-vat' => $pre_vat,
+					'post-vat' => $pre_vat * ( ( 100 + $rate ) / 100 ),
+				);
+			}
+		}
+	}
+	
+	$return = array(
+		'pre-vat' => it_exchange_format_price( $results['pre-vat'] ),
+		'post-vat' => it_exchange_format_price( $results['post-vat'] ),
+	);
+		
+	die( json_encode( $return ) );
+}
+add_action( 'wp_ajax_it-exchange-easy-value-added-taxes-add-edit-product-vat-calculator', 'it_exchange_easy_value_added_taxes_add_edit_product_vat_calculator' );
+
+/**
  * Ajax called from Backbone modal to add new EU VAT number to transaction.
  *
  * @since 1.0.0

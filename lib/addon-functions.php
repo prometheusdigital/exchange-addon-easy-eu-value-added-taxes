@@ -112,7 +112,7 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 	
 	if ( $clear_cache ) {
 	
-		$subtotals = array( 'zero' => 0 );
+		$subtotals = array();
 		$default_rate = 0;
 		foreach ( $settings['tax-rates'] as $key => $rate ) {
 			$subtotals[$key] = 0;
@@ -141,19 +141,13 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 		$total_taxes = 0;
 		foreach( $subtotals as $key => $subtotal ) {
 			$taxable_amount = 0;
-			if ( 'zero' === $key ) {
-				$tax = 0;
-				$taxable_amount = $subtotal;
-				$taxes[$key]['tax-rate'] = array( 'label' => __( 'Zero Rate', 'LION' ), 'rate' => '0' );
+			if ( !empty( $settings['tax-rates'][$key]['shipping'] ) ) {
+				$taxable_amount = $subtotal + $shipping_cost;
 			} else {
-				if ( !empty( $settings['tax-rates'][$key]['shipping'] ) ) {
-					$taxable_amount = $subtotal + $shipping_cost;
-				} else {
-					$taxable_amount = $subtotal;
-				}
-				$tax = $taxable_amount * ( $settings['tax-rates'][$key]['rate'] / 100 );
-				$taxes[$key]['tax-rate'] = $settings['tax-rates'][$key];
+				$taxable_amount = $subtotal;
 			}
+			$tax = $taxable_amount * ( $settings['tax-rates'][$key]['rate'] / 100 );
+			$taxes[$key]['tax-rate'] = $settings['tax-rates'][$key];
 			$taxes[$key]['total'] = $tax;
 			$taxes[$key]['taxable_amount'] = $taxable_amount;
 			$total_taxes += $tax;
