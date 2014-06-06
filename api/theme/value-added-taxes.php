@@ -174,37 +174,50 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 			
 		if ( !$summary_only && !empty( $tax_items ) ) {
 			$result .= $options['before'];	
+			$result .= '<div class="it-exchange-table-inner-row">';
 			$result .= '<div class="it-exchange-confirmation-totals-title it-exchange-table-column">';
 			do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_label' );
 			$result .= '    <div class="it-exchange-table-column-inner">';
 			$result .=      __( 'Tax', 'LION' );
 			$result .= '    </div>';
-			foreach ( $tax_items as $tax ) {
-				if ( !empty( $tax['total'] ) ) {
-					$result .= '<div class="it-exchange-table-column-inner">';
-					$result .=  sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
-					$result .= '</div>';
-				}
-			}
 			do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_label' );
 			$result .= '</div>';
 					
 			$result .= '<div class="it-exchange-confirmation-totals-amount it-exchange-table-column">';
 			do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_value' );
 			$result .= '    <div class="it-exchange-table-column-inner">&nbsp;</div>';
+			
+			do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_value' );
+			$result .= '</div>';
+			$result .= '</div>';
+			
+			
 			foreach ( $tax_items as $tax ) {
 				if ( !empty( $tax['total'] ) ) {
 					$tax_total = $tax['total'];
 					if ( $options['format_price'] )
 						$tax_total = it_exchange_format_price( $tax_total );
+
+					$result .= '<div class="it-exchange-table-inner-row">';
+					$result .= '<div class="it-exchange-confirmation-totals-title it-exchange-table-column">';
+					do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_label' );
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .=  sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+					$result .= '</div>';
+					do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_label' );
+					$result .= '</div>';
 					
+					$result .= '<div class="it-exchange-confirmation-totals-amount it-exchange-table-column">';
+					do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_value' );
 					$result .= '<div class="it-exchange-table-column-inner">';
 					$result .= $tax_total;
 					$result .= '</div>';
+					do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_value' );
+					$result .= '</div>';
+					$result .= '</div>';
 				}
 			}
-			do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_value' );
-			$result .= '</div>';
+
 			$result .= $options['after'];
 		}
 		
@@ -237,20 +250,37 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		if ( !empty( $customer_vat ) )
 			$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';
 		
-		$result .= '<div class="vat-summary-table">';
-		$result .= '<div class="vat-label-heading">' . __( 'VAT Type', 'LION' ) . '</div>';
-		$result .= '<div class="vat-net-taxable-amount-heading">' . __( 'Net Taxable Amount', 'LION' ) . '</div>';
+		$result .= '<div class="vat-summary-table it-exchange-table">';
+		$result .= '<div class="it-exchange-table-row vat-summary-table-row vat-summary-heading-row">';
+		
+		$result .= '<div class="vat-label-heading it-exchange-table-column">';
+		$result .= '<div class="it-exchange-table-column-inner">' . __( 'VAT Type', 'LION' ) . '</div>';
+		$result .= '</div>';
+		$result .= '<div class="vat-net-taxable-amount-heading it-exchange-table-column">';
+		$result .= '<div class="it-exchange-table-column-inner">' . __( 'Net Taxable Amount', 'LION' ) . '</div>';
+		$result .= '</div>';
+		
+		$result .= '</div>';
+		
 		if ( !empty( $settings['tax-rates'] ) && !empty( $tax_items ) ) {
 			foreach( $tax_items as $tax ) {
 				$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
-				$result .= '<div class="vat-label">';
+				$result .= '<div class="it-exchange-table-row">';
+				$result .= '<div class="vat-label it-exchange-table-column">';
+				$result .= '<div class="it-exchange-table-column-inner">';
 				$result .= sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+				$result .= '</div>';
 				$result .= '</div>';
 		
 				if ( $options['format_price'] )
 					$net = it_exchange_format_price( $net );
-				$result .= '<div class="vat-net-taxable-amount">';
+					
+				$result .= '<div class="vat-net-taxable-amount it-exchange-table-column">';
+				$result .= '<div class="it-exchange-table-column-inner">';
 				$result .= $net;
+				$result .= '</div>';
+				$result .= '</div>';
+				
 				$result .= '</div>';
 			}
 		}

@@ -137,7 +137,7 @@ add_action( 'admin_print_styles', 'it_exchange_easy_value_added_taxes_addon_admi
 */
 function it_exchange_easy_value_added_taxes_load_public_scripts( $current_view ) {
 	
-	if ( it_exchange_is_page( 'checkout' ) || it_exchange_in_superwidget() ) {
+	if ( it_exchange_is_page( 'checkout' ) || it_exchange_is_page( 'confirmation' ) || it_exchange_in_superwidget() ) {
 
 		$url_base = ITUtility::get_url_from_file( dirname( __FILE__ ) );
 		wp_enqueue_style( 'ite-easy-value-added-taxes-addon', $url_base . '/styles/taxes.css' );
