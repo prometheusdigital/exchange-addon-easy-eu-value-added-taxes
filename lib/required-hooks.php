@@ -9,17 +9,32 @@
 //incase a product doesn't have a shipping address and the shipping add-on is not enabled
 add_filter( 'it_exchange_billing_address_purchase_requirement_enabled', '__return_true' );
 
-function do_stuff() {
+/**
+ * Checkes if include VAT in prices is enabled, if so, apply new filters
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_easy_value_added_taxes_addon_include_vat_filters() {
 	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes', true );
 
 	if ( $settings['price-includes-vat'] ) {
 		add_filter( 'it_exchange_api_theme_product_base_price', 'it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
 		add_filter( 'it_exchange_api_theme_cart_items_sub_total', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_items_sub_total', 10, 2 );
 		add_filter( 'it_exchange_api_theme_cart_total', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_total' );
+		add_filter( 'it_exchange_api_theme_transaction_product_attribute', 'it_exchange_easy_value_added_taxes_api_theme_transaction_product_attribute', 10, 4 );
 	}
 }
-add_action( 'init', 'do_stuff' );
+add_action( 'init', 'it_exchange_easy_value_added_taxes_addon_include_vat_filters' );
 
+/**
+ * Adds VAT to product and store pages if enabled in settings.
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
 function it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price( $price, $product_id ) {
 	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
 	
@@ -52,6 +67,13 @@ function it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price( 
 	return $price;
 }
 
+/**
+ * Adds VAT to cart/checkout products if enabled in settings.
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
 function it_exchange_easy_value_added_taxes_addon_api_theme_cart_items_sub_total( $subtotal, $cart_item ) {
 	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
 	
@@ -84,8 +106,38 @@ function it_exchange_easy_value_added_taxes_addon_api_theme_cart_items_sub_total
 	return $subtotal;
 }
 
+/**
+ * Adds 'incl. VAT' string to cart total, if 'include VAT' is enabled.
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
 function it_exchange_easy_value_added_taxes_addon_api_theme_cart_total( $total ) {
 	return $total . ' <span class="ite-evat-incl-vat-class">' . __( 'incl. VAT', 'LION' ) . '</span>';
+}
+
+/**
+ * Adds VAT to confirmation products if enabled in settings.
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_easy_value_added_taxes_api_theme_transaction_product_attribute( $attribute, $options, $transaction, $product ) {
+	if ( 'product_base_price' == $options['attribute'] ) {
+        $tax_rates = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );   
+        $taxes = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_product_taxes', true );        
+        $attribute = $product['product_base_price'];
+        $tax_rate = $tax_rates[$taxes[$product['product_id']]]['tax-rate']['rate'];
+
+		$attribute *= ( ( 100 + $tax_rate ) / 100 );
+		
+		if ( (boolean) $options['format_price'] )
+			$attribute = it_exchange_format_price( $attribute );
+	}
+	
+	return $attribute;
 }
 
 /**
@@ -377,17 +429,20 @@ function it_exchange_easy_value_added_taxes_transaction_hook( $transaction_id ) 
 	if ( !empty( $tax_session['taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes', $tax_session['taxes'] );
 	}
+	if ( !empty( $tax_session['product_taxes'] ) ) {
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_product_taxes', $tax_session['product_taxes'] );
+	}
 	if ( !empty( $tax_session['vat_country'] ) ) {
-		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_customer_vat_country', $tax_session['vat_country'] );
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_customer_vat_country', $tax_session['vat_country'] );
 	}
 	if ( !empty( $tax_session['vat_number'] ) ) {
-		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_customer_vat_number', $tax_session['vat_number'] );
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_customer_vat_number', $tax_session['vat_number'] );
 	}
 	if ( !empty( $tax_session['total_taxes'] ) ) {
-		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_total', $tax_session['total_taxes'] );
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_taxes_total', $tax_session['total_taxes'] );
 	}
 	if ( !empty( $tax_session['summary_only'] ) ) {
-		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_summary_only', $tax_session['summary_only'] );
+		update_post_meta( $transaction_id, '_it_exchange_easy_value_added_taxes_summary_only', $tax_session['summary_only'] );
 	}
 	
 	it_exchange_clear_session_data( 'addon_easy_value_added_taxes' );

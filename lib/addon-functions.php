@@ -113,6 +113,7 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 	if ( $clear_cache ) {
 	
 		$subtotals = array();
+		$product_taxes = array();
 		$default_rate = 0;
 		foreach ( $settings['tax-rates'] as $key => $rate ) {
 			$subtotals[$key] = 0;
@@ -133,6 +134,7 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 						$subtotals[$tax_type] = 0;
 						
 					$subtotals[$tax_type] += it_exchange_get_cart_product_subtotal( $product, false );
+					$product_taxes[$product['product_id']] = $tax_type;
 				}
 			}
 		}
@@ -154,10 +156,12 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 		}
 		
 	} else {
+		$product_taxes = $tax_session['product_taxes'];
 		$taxes = $tax_session['taxes'];
 		$total_taxes = $tax_session['total_taxes'];
 	}
 	
+	$tax_session['product_taxes'] = $product_taxes;
 	$tax_session['taxes'] = $taxes;
 	$tax_session['total_taxes'] = $total_taxes;
 	it_exchange_update_session_data( 'addon_easy_value_added_taxes', $tax_session );

@@ -169,7 +169,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	    if ( !empty( $GLOBALS['it_exchange']['transaction'] ) ) {
 	        $transaction = $GLOBALS['it_exchange']['transaction'];
 	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );
-	        $summary_only = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_summary_only', true );
+	        $summary_only = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_summary_only', true );
 	    }
 			
 		if ( !$summary_only && !empty( $tax_items ) ) {
@@ -240,8 +240,8 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	    if ( !empty( $GLOBALS['it_exchange']['transaction'] ) ) {
 	        $transaction = $GLOBALS['it_exchange']['transaction'];
 	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );
-	        $customer_country = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_customer_vat_country', true );
-	        $customer_vat = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_customer_vat_number', true );
+	        $customer_country = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_customer_vat_country', true );
+	        $customer_vat = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_customer_vat_number', true );
 	    }
 											
 		$result .= $options['before'];
