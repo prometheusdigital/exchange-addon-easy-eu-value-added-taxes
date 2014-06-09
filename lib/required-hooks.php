@@ -12,8 +12,11 @@ add_filter( 'it_exchange_billing_address_purchase_requirement_enabled', '__retur
 function do_stuff() {
 	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes', true );
 
-	if ( $settings['price-includes-vat'] )
+	if ( $settings['price-includes-vat'] ) {
 		add_filter( 'it_exchange_api_theme_product_base_price', 'it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
+		add_filter( 'it_exchange_api_theme_cart_items_sub_total', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_items_sub_total', 10, 2 );
+		add_filter( 'it_exchange_api_theme_cart_total', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_total' );
+	}
 }
 add_action( 'init', 'do_stuff' );
 
@@ -47,6 +50,42 @@ function it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price( 
 	}
 	
 	return $price;
+}
+
+function it_exchange_easy_value_added_taxes_addon_api_theme_cart_items_sub_total( $subtotal, $cart_item ) {
+	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+	
+	if ( it_exchange_product_supports_feature( $cart_item['product_id'], 'value-added-taxes' ) ) {
+		if ( !it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
+			
+			$subtotal = it_exchange_convert_to_database_number( $subtotal );
+			$subtotal = it_exchange_convert_from_database_number( $subtotal );
+			
+			$default_rate = 0;
+			foreach ( $settings['tax-rates'] as $rate ) {
+				if ( $rate['default'] ) {
+					$default_rate = $rate['rate'];
+				}
+			}
+			
+			$tax_type = it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
+
+			if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type )
+				$tax_rate = $default_rate;
+			else
+				$tax_rate = $settings['tax-rates'][$tax_type]['rate'];
+
+			$subtotal *= ( ( 100 + $tax_rate ) / 100 );
+			$subtotal = it_exchange_format_price( $subtotal );
+
+		}
+	}
+	
+	return $subtotal;
+}
+
+function it_exchange_easy_value_added_taxes_addon_api_theme_cart_total( $total ) {
+	return $total . ' <span class="ite-evat-incl-vat-class">' . __( 'incl. VAT', 'LION' ) . '</span>';
 }
 
 /**
