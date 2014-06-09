@@ -41,7 +41,7 @@ function it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price( 
 				$tax_rate = $settings['tax-rates'][$tax_type]['rate'];
 
 			$price *= ( ( 100 + $tax_rate ) / 100 );
-			$price = it_exchange_format_price( $price ) . ' ' . __( 'incl. VAT', 'LION' );
+			$price = it_exchange_format_price( $price ) . ' <span class="ite-evat-incl-vat-class">' . __( 'incl. VAT', 'LION' ) . '</span>';
 
 		}
 	}
