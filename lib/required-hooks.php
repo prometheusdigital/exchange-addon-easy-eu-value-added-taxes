@@ -21,7 +21,8 @@ function it_exchange_easy_value_added_taxes_addon_include_vat_filters() {
 
 	if ( $settings['price-includes-vat'] ) {
 		add_filter( 'it_exchange_api_theme_product_base_price', 'it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
-		add_filter( 'it_exchange_api_theme_cart_items_sub_total', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_items_sub_total', 10, 2 );
+		add_filter( 'it_exchange_api_theme_cart_item_sub_total', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
+		add_filter( 'it_exchange_api_theme_cart_item_price', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
 		add_filter( 'it_exchange_api_theme_cart_total', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_total' );
 		add_filter( 'it_exchange_api_theme_transaction_product_attribute', 'it_exchange_easy_value_added_taxes_api_theme_transaction_product_attribute', 10, 4 );
 	}
@@ -74,7 +75,7 @@ function it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price( 
  *
  * @return void
 */
-function it_exchange_easy_value_added_taxes_addon_api_theme_cart_items_sub_total( $subtotal, $cart_item ) {
+function it_exchange_easy_value_added_taxes_addon_api_theme_cart_item_with_vat( $subtotal, $cart_item ) {
 	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
 	
 	if ( it_exchange_product_supports_feature( $cart_item['product_id'], 'value-added-taxes' ) ) {
