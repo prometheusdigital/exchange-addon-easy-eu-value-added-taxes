@@ -9,6 +9,45 @@
 //incase a product doesn't have a shipping address and the shipping add-on is not enabled
 add_filter( 'it_exchange_billing_address_purchase_requirement_enabled', '__return_true' );
 
+function do_stuff() {
+	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes', true );
+
+	if ( $settings['price-includes-vat'] )
+		add_filter( 'it_exchange_api_theme_product_base_price', 'it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
+}
+add_action( 'init', 'do_stuff' );
+
+function it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price( $price, $product_id ) {
+	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+	
+	if ( it_exchange_product_supports_feature( $product_id, 'value-added-taxes' ) ) {
+		if ( !it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
+			
+			$price = it_exchange_convert_to_database_number( $price );
+			$price = it_exchange_convert_from_database_number( $price );
+			
+			$default_rate = 0;
+			foreach ( $settings['tax-rates'] as $rate ) {
+				if ( $rate['default'] ) {
+					$default_rate = $rate['rate'];
+				}
+			}
+			
+			$tax_type = it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'type' ) );
+
+			if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type )
+				$tax_rate = $default_rate;
+			else
+				$tax_rate = $settings['tax-rates'][$tax_type]['rate'];
+
+			$price *= ( ( 100 + $tax_rate ) / 100 );
+			$price = it_exchange_format_price( $price ) . ' ' . __( 'incl. VAT', 'LION' );
+
+		}
+	}
+	
+	return $price;
+}
 
 /**
  * Shows the nag when needed.
@@ -79,7 +118,7 @@ function it_exchange_easy_value_added_taxes_addon_admin_wp_enqueue_scripts( $hoo
 		
 	if ( !empty( $_GET['add-on-settings'] ) && 'exchange_page_it-exchange-addons' === $hook_suffix && 'easy-value-added-taxes' === $_GET['add-on-settings'] ) {
 	
-		$deps = array( 'jquery' );
+		$deps = array( 'jquery', 'jquery-ui-sortable', 'jquery-ui-droppable', 'jquery-ui-tabs', 'jquery-ui-tooltip', 'jquery-ui-datepicker', 'autosave' );
 		wp_enqueue_script( 'it-exchange-easy-value-added-taxes-addon-admin-js', $url_base . '/js/admin.js' );
 
 	} else if ( isset( $post_type ) && 'it_exchange_prod' === $post_type ) {
