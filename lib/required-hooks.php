@@ -17,9 +17,10 @@ add_filter( 'it_exchange_billing_address_purchase_requirement_enabled', '__retur
  * @return void
 */
 function it_exchange_easy_value_added_taxes_addon_include_vat_filters() {
+	$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
 	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes', true );
 
-	if ( $settings['price-includes-vat'] ) {
+	if ( $settings['price-includes-vat'] && empty( $tax_session['summary_only'] ) ) {
 		add_filter( 'it_exchange_api_theme_product_base_price', 'it_exchange_easy_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
 		add_filter( 'it_exchange_api_theme_cart_item_sub_total', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
 		add_filter( 'it_exchange_api_theme_cart_item_price', 'it_exchange_easy_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
@@ -127,15 +128,19 @@ function it_exchange_easy_value_added_taxes_addon_api_theme_cart_total( $total )
 */
 function it_exchange_easy_value_added_taxes_api_theme_transaction_product_attribute( $attribute, $options, $transaction, $product ) {
 	if ( 'product_base_price' == $options['attribute'] ) {
-        $tax_rates = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );   
-        $taxes = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_product_taxes', true );        
-        $attribute = $product['product_base_price'];
-        $tax_rate = $tax_rates[$taxes[$product['product_id']]]['tax-rate']['rate'];
-
-		$attribute *= ( ( 100 + $tax_rate ) / 100 );
-		
-		if ( (boolean) $options['format_price'] )
-			$attribute = it_exchange_format_price( $attribute );
+        $summary_only = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_summary_only', true );
+        
+        if ( !$summary_only ) {
+	        $tax_rates = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );   
+	        $taxes = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_product_taxes', true );        
+	        $attribute = $product['product_base_price'];
+	        $tax_rate = $tax_rates[$taxes[$product['product_id']]]['tax-rate']['rate'];
+	
+			$attribute *= ( ( 100 + $tax_rate ) / 100 );
+			
+			if ( (boolean) $options['format_price'] )
+				$attribute = it_exchange_format_price( $attribute );
+		}
 	}
 	
 	return $attribute;
