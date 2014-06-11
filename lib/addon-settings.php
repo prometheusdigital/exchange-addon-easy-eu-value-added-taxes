@@ -160,7 +160,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
             <div id="value-added-tax-number">
 				<p>
 					<label for="vat-number">
-						<?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span>
+						<?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'Select your Member State and Enter your VAT Number', 'LION' ); ?>">i</span>
 					</label>
 				</p>
 
@@ -182,7 +182,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			</div>
 			
 			<p>
-				<label for="easy-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'BLAH BLAH BLAH', 'LION' ); ?>">i</span> </label>
+				<label for="easy-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'Add a Tax Label, Rate, and set a Default Tax Rate', 'LION' ); ?>">i</span> </label>
 			</p>
 			<div id="value-added-tax-rate-table">
 				<?php
