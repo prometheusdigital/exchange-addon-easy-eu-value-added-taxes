@@ -279,12 +279,14 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
     
     	if ( empty( $values['vat-number'] ) )
             $errors[] = __( 'Missing VAT Number.', 'LION' );
-            
-        if ( true === $return = it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $values['vat-country'], $values['vat-number'] ) ) {
-	        $new_values['vat-number-verified'] = true;
-        } else {
-	        $new_values['vat-number-verified'] = false;
-            $errors[] = $return;
+        
+        if ( empty( $errors ) ) {
+	        if ( true === $return = it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $values['vat-country'], $values['vat-number'] ) ) {
+		        $new_values['vat-number-verified'] = true;
+	        } else {
+		        $new_values['vat-number-verified'] = false;
+	            $errors[] = $return;
+	        }
         }
     
         foreach( $values['tax-rates'] as $tax_rate ) {
