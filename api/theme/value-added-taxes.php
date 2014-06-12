@@ -1,6 +1,6 @@
 <?php
 /**
- * iThemes Exchange Easy Value Added Taxes Add-on
+ * iThemes Exchange Easy EU Value Added Taxes Add-on
  * Value Added Taxes Theme Class
  * @package exchange-addon-value-added-sales-taxes
  * @since 1.0.0
@@ -56,7 +56,6 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		//We only care about the province!
 		if ( empty( $this->_address['state'] ) ) 
 			$this->_address = it_exchange_get_cart_billing_address();
-	//	$this->_vat_number = it_exchange_easy_value_added_taxes_get_cart_vat_number();
 	}
 
 	/**
@@ -76,7 +75,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	*/
 	function taxes( $options=array() ) {
 					
-		$settings  = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+		$settings  = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 		$result = '';
 		$taxes = 0;
 		
@@ -88,20 +87,20 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		$options      = ITUtility::merge_defaults( $options, $defaults );
 
 		$result .= $options['before'];	
-		if ( it_exchange_easy_value_added_taxes_setup_session() ) {
-			$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
+		if ( it_exchange_easy_eu_value_added_taxes_setup_session() ) {
+			$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 				
 			$result .= '<div class="it-exchange-table-inner-row">';
 			$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
-			do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_label' );
+			do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_label' );
 			$result .= '<div class="it-exchange-table-column-inner">';
 			$result .= __( 'Tax', 'LION' );
 			$result .= '</div>';
-			do_action( 'it_exchange_content_checkout_after_easy_valued_added_taxes_label' );
+			do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_label' );
 			$result .= '</div>';
 					
 			$result .= '<div class="it-exchange-cart-totals-amount it-exchange-table-column">';
-			do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_value' );
+			do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_value' );
 			$result .= '<div class="it-exchange-table-column-inner">';
 			$result .= '<div class="it-exchange-cart-vat-details">';
 			if ( !empty( $tax_session['vat_country'] ) && !empty( $tax_session['vat_number'] ) )
@@ -120,11 +119,11 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 					if ( !empty( $tax['total'] ) ) {
 						$result .= '<div class="it-exchange-table-inner-row">';
 						$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
-						do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_label' );
+						do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_label' );
 						$result .= '<div class="it-exchange-table-column-inner">';
 						$result .=  sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
 						$result .= '</div>';
-						do_action( 'it_exchange_content_checkout_after_easy_valued_added_taxes_label' );
+						do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_label' );
 						$result .= '</div>';
 						
 						$tax_total = $tax['total'];
@@ -132,11 +131,11 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 							$tax_total = it_exchange_format_price( $tax_total );
 							
 						$result .= '<div class="it-exchange-cart-totals-amount it-exchange-table-column">';
-						do_action( 'it_exchange_content_checkout_before_easy_valued_added_taxes_value' );
+						do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_value' );
 						$result .= '<div class="it-exchange-table-column-inner">';
 						$result .= $tax_total;
 						$result .= '</div>';
-						do_action( 'it_exchange_content_checkout_after_easy_valued_added_taxes_value' );
+						do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_value' );
 						$result .= '</div>';
 						$result .= '</div>';
 					}
@@ -168,26 +167,26 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 			
 	    if ( !empty( $GLOBALS['it_exchange']['transaction'] ) ) {
 	        $transaction = $GLOBALS['it_exchange']['transaction'];
-	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );
-	        $summary_only = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_summary_only', true );
+	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes', true );
+	        $summary_only = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_summary_only', true );
 	    }
 			
 		if ( !$summary_only && !empty( $tax_items ) ) {
 			$result .= $options['before'];	
 			$result .= '<div class="it-exchange-table-inner-row">';
 			$result .= '<div class="it-exchange-confirmation-totals-title it-exchange-table-column">';
-			do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_label' );
+			do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_taxes_label' );
 			$result .= '    <div class="it-exchange-table-column-inner">';
 			$result .=      __( 'Tax', 'LION' );
 			$result .= '    </div>';
-			do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_label' );
+			do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_taxes_label' );
 			$result .= '</div>';
 					
 			$result .= '<div class="it-exchange-confirmation-totals-amount it-exchange-table-column">';
-			do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_value' );
+			do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_taxes_value' );
 			$result .= '    <div class="it-exchange-table-column-inner">&nbsp;</div>';
 			
-			do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_value' );
+			do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_taxes_value' );
 			$result .= '</div>';
 			$result .= '</div>';
 			
@@ -200,19 +199,19 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 
 					$result .= '<div class="it-exchange-table-inner-row">';
 					$result .= '<div class="it-exchange-confirmation-totals-title it-exchange-table-column">';
-					do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_label' );
+					do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_taxes_label' );
 					$result .= '<div class="it-exchange-table-column-inner">';
 					$result .=  sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
 					$result .= '</div>';
-					do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_label' );
+					do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_taxes_label' );
 					$result .= '</div>';
 					
 					$result .= '<div class="it-exchange-confirmation-totals-amount it-exchange-table-column">';
-					do_action( 'it_exchange_content_comfirmation_before_easy_valued_added_taxes_value' );
+					do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_taxes_value' );
 					$result .= '<div class="it-exchange-table-column-inner">';
 					$result .= $tax_total;
 					$result .= '</div>';
-					do_action( 'it_exchange_content_comfirmation_after_easy_valued_added_taxes_value' );
+					do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_taxes_value' );
 					$result .= '</div>';
 					$result .= '</div>';
 				}
@@ -226,7 +225,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		
 	function vat_summary( $options=array() ) {
     	$general_settings = it_exchange_get_option( 'settings_general' );
-		$settings  = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+		$settings  = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 		$result = '';
 		
 		$defaults      = array(
@@ -239,9 +238,9 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 		
 	    if ( !empty( $GLOBALS['it_exchange']['transaction'] ) ) {
 	        $transaction = $GLOBALS['it_exchange']['transaction'];
-	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes', true );
-	        $customer_country = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_customer_vat_country', true );
-	        $customer_vat = get_post_meta( $transaction->ID, '_it_exchange_easy_value_added_taxes_customer_vat_number', true );
+	        $tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes', true );
+	        $customer_country = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_customer_vat_country', true );
+	        $customer_vat = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_customer_vat_number', true );
 	    }
 											
 		$result .= $options['before'];

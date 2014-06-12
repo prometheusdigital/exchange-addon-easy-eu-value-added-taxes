@@ -6,4 +6,4 @@
 */
 
 // Product Feature: Tax Classes
-require( 'class.product-value-added-taxes.php' );
+require( 'class.product-eu-value-added-taxes.php' );

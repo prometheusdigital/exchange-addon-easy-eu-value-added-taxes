@@ -1,11 +1,11 @@
 <?php
 /**
- * iThemes Exchange Easy Value Added Taxes Add-on
- * @package exchange-addon-easy-value-added-taxes
+ * iThemes Exchange Easy EU Value Added Taxes Add-on
+ * @package exchange-addon-easy-eu-value-added-taxes
  * @since 1.0.0
 */
 
-function it_exchange_easy_value_added_taxes_get_tax_row_settings( $key, $rate=array() ) {
+function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate=array() ) {
 	if ( empty( $rate ) ) { //just set some defaults
 		$rate = array( //Member State
 				'label'    => '',
@@ -44,9 +44,9 @@ function it_exchange_easy_value_added_taxes_get_tax_row_settings( $key, $rate=ar
 	return $output;
 }
 
-function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) {
-	$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
-	$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false ) {
+	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 	$taxes = array();
 	$total_taxes = 0;
 	
@@ -164,7 +164,7 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
 	$tax_session['product_taxes'] = $product_taxes;
 	$tax_session['taxes'] = $taxes;
 	$tax_session['total_taxes'] = $total_taxes;
-	it_exchange_update_session_data( 'addon_easy_value_added_taxes', $tax_session );
+	it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );
 									
 	return true;
 
@@ -179,11 +179,11 @@ function it_exchange_easy_value_added_taxes_setup_session( $clear_cache=false ) 
  * @param bool $clear_cache Whether or not to force clear any cached tax values
  * @return string The calculated tax from TaxCloud
 */
-function it_exchange_easy_value_added_taxes_addon_get_total_taxes_for_cart( $format_price=true, $clear_cache=false ) {
+function it_exchange_easy_eu_value_added_taxes_addon_get_total_taxes_for_cart( $format_price=true, $clear_cache=false ) {
 	$taxes = 0;
 
-	if ( it_exchange_easy_value_added_taxes_setup_session() ) {
-		$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
+	if ( it_exchange_easy_eu_value_added_taxes_setup_session() ) {
+		$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 		if ( !empty( $tax_session['total_taxes'] ) ) {
 			$taxes = $tax_session['total_taxes'];
 		}
@@ -194,7 +194,7 @@ function it_exchange_easy_value_added_taxes_addon_get_total_taxes_for_cart( $for
 	return $taxes;
 }
 
-function it_exchange_easy_value_added_taxes_addon_verify_vat( $country_code, $vat_number ) {
+function it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $country_code, $vat_number ) {
 	$soap_url = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 	$soap_client = new SOAPClient( $soap_url );
 	$query = array(
@@ -230,13 +230,13 @@ function it_exchange_easy_value_added_taxes_addon_verify_vat( $country_code, $va
  * @param integer $customer_id the customer id. leave blank to use the current customer.
  * @return array
 */
-function it_exchange_easy_value_added_taxes_get_customer_vat_details( $customer_id=false ) {
-	if ( it_exchange_easy_value_added_taxes_setup_session() ) {
-		$tax_session = it_exchange_get_session_data( 'addon_easy_value_added_taxes' );
+function it_exchange_easy_eu_value_added_taxes_get_customer_vat_details( $customer_id=false ) {
+	if ( it_exchange_easy_eu_value_added_taxes_setup_session() ) {
+		$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 		//We only want to require the VAT details if the user is in an EU Memberstate
 		if ( !empty( $tax_session['vat_country'] ) ) {
 			$vat_details = it_exchange_get_customer_data( 'eu_vat_details', $customer_id );
-			return apply_filters( 'it_exchange_easy_value_added_taxes_get_customer_vat_details', $vat_details, $customer_id );
+			return apply_filters( 'it_exchange_easy_eu_value_added_taxes_get_customer_vat_details', $vat_details, $customer_id );
 		}
 	}
 	return -1;

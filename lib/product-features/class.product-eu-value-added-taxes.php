@@ -4,7 +4,7 @@
  * By default, it registers a metabox on the product's add/edit screen and provides HTML / data for the frontend.
  *
  * @since 1.0.0 
- * @package exchange-addon-easy-value-added-taxes
+ * @package exchange-addon-easy-eu-value-added-taxes
 */
 
 
@@ -105,7 +105,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 	 * @return void
 	*/
 	function print_metabox( $product ) {
-		$settings = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+		$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 		$tax_exempt = it_exchange_get_product_feature( $product->ID, 'value-added-taxes', array( 'setting' => 'exempt' ) );
 		$tax_type = it_exchange_get_product_feature( $product->ID, 'value-added-taxes', array( 'setting' => 'type' ) );
 		$default_tax_rate = array( 'label' => '', 'rate' => 0 );
@@ -114,7 +114,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		
 		<p>
             <label for="easy-value-added-taxes-value-added-taxes"><?php _e( 'Tax Exempt?', 'LION' ) ?></label>
-			<input type="checkbox" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-exempt" id="evat-exempt" <?php checked( $tax_exempt ); ?> />
+			<input type="checkbox" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-exempt" id="euvat-exempt" <?php checked( $tax_exempt ); ?> />
         </p>
 		
 		<?php
@@ -136,7 +136,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		<p class="vat-tax-types <?php echo $display; ?>">
             <label for="easy-value-added-taxes-value-added-taxes"><?php _e( 'Tax Type?', 'LION' ) ?></label>
 			
-			<select id="evat-type" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-type">
+			<select id="euvat-type" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-type">
 				<option value="default" <?php selected( 'default', $tax_type ); ?>><?php printf( __( 'Default (%s - %s%%)', 'LION' ), $default_tax_rate['label'], $default_tax_rate['rate'] ); ?></option>
 			<?php 
 			foreach( $settings['tax-rates'] as $key => $tax_rate ) {

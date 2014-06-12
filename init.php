@@ -1,6 +1,6 @@
 <?php
 /**
- * iThemes Exchange Easy Canadian Sales Taxes Add-on
+ * iThemes Exchange Easy EU Canadian Sales Taxes Add-on
  * @package exchange-addon-easy-canadian-sales-taxes
  * @since 1.0.0
 */

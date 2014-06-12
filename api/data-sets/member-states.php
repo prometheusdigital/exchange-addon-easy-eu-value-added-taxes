@@ -1,7 +1,7 @@
 <?php
 /**
  * EU Member States data sets
- * @package exchange-addon-easy-value-added-taxes
+ * @package exchange-addon-easy-eu-value-added-taxes
  * @since 1.0.0
 */
 
@@ -12,7 +12,7 @@
  *
  * @return array
 */
-function it_exchange_easy_value_added_taxes_addon_get_eu_member_states( $options=array() ) {
+function it_exchange_easy_eu_value_added_taxes_addon_get_eu_member_states( $options=array() ) {
 
 	// Defaults
 	$defaults = array(
@@ -61,5 +61,5 @@ function it_exchange_easy_value_added_taxes_addon_get_eu_member_states( $options
 		array_multisort( $sorted, SORT_ASC, $countries );
 	}
 
-	return apply_filters( 'it_exchange_easy_value_added_taxes_addon_get_eu_member_states', $countries );
+	return apply_filters( 'it_exchange_easy_eu_value_added_taxes_addon_get_eu_member_states', $countries );
 }

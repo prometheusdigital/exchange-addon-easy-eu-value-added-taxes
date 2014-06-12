@@ -1,7 +1,7 @@
 <?php
 /**
- * iThemes Exchange Easy Value Added Taxes Add-on
- * @package exchange-addon-easy-value-added-taxes
+ * iThemes Exchange Easy EU Value Added Taxes Add-on
+ * @package exchange-addon-easy-eu-value-added-taxes
  * @since 1.0.0
 */
 
@@ -13,18 +13,18 @@
  * @since 1.0.0
  * @return void
 */
-function it_exchange_easy_value_added_taxes_settings_callback() {
+function it_exchange_easy_eu_value_added_taxes_settings_callback() {
 	$IT_Exchange_Easy_Value_Added_Taxes_Add_On = new IT_Exchange_Easy_Value_Added_Taxes_Add_On();
 	$IT_Exchange_Easy_Value_Added_Taxes_Add_On->print_settings_page();
 }
 
 /**
- * Sets the default options for Easy Value Added Taxes settings
+ * Sets the default options for Easy EU Value Added Taxes settings
  *
  * @since 1.0.0
  * @return array settings
 */
-function it_exchange_easy_value_added_taxes_default_settings( $defaults ) {
+function it_exchange_easy_eu_value_added_taxes_default_settings( $defaults ) {
 	$general_settings = it_exchange_get_option( 'settings_general' );
 
 	$defaults = array(
@@ -55,7 +55,7 @@ function it_exchange_easy_value_added_taxes_default_settings( $defaults ) {
 	);
 	return $defaults;
 }
-add_filter( 'it_storage_get_defaults_exchange_addon_easy_value_added_taxes', 'it_exchange_easy_value_added_taxes_default_settings' );
+add_filter( 'it_storage_get_defaults_exchange_addon_easy_eu_value_added_taxes', 'it_exchange_easy_eu_value_added_taxes_default_settings' );
 
 class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 
@@ -102,19 +102,19 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 		$this->_current_add_on = empty( $_GET['add-on-settings'] ) ? false : $_GET['add-on-settings'];
 
 		if ( ! empty( $_POST ) && $this->_is_admin && 'it-exchange-addons' == $this->_current_page && 'easy-value-added-taxes' == $this->_current_add_on ) {
-			add_action( 'it_exchange_save_add_on_settings_easy_value_added_taxes', array( $this, 'save_settings' ) );
-			do_action( 'it_exchange_save_add_on_settings_easy_value_added_taxes' );
+			add_action( 'it_exchange_save_add_on_settings_easy_eu_value_added_taxes', array( $this, 'save_settings' ) );
+			do_action( 'it_exchange_save_add_on_settings_easy_eu_value_added_taxes' );
 		}
 	}
 
 	function print_settings_page() {
 		global $new_values;
-		$settings = it_exchange_get_option( 'addon_easy_value_added_taxes', true );
+		$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes', true );
 	
 		$form_values  = empty( $this->error_message ) ? $settings : $new_values;
 		$form_options = array(
-			'id'      => apply_filters( 'it_exchange_add_on_easy_value_added_taxes', 'it-exchange-add-on-easy-value-added-taxes-settings' ),
-			'enctype' => apply_filters( 'it_exchange_add_on_easy_value_added_taxes_settings_form_enctype', false ),
+			'id'      => apply_filters( 'it_exchange_add_on_easy_eu_value_added_taxes', 'it-exchange-add-on-easy-value-added-taxes-settings' ),
+			'enctype' => apply_filters( 'it_exchange_add_on_easy_eu_value_added_taxes_settings_form_enctype', false ),
 			'action'  => 'admin.php?page=it-exchange-addons&add-on-settings=easy-value-added-taxes',
 		);
 		$form         = new ITForm( $form_values, array( 'prefix' => 'it-exchange-add-on-easy-value-added-taxes' ) );
@@ -127,26 +127,26 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 		?>
 		<div class="wrap">
 			<?php screen_icon( 'it-exchange' ); ?>
-			<h2><?php _e( 'Easy Value Added Taxes Settings', 'LION' ); ?></h2>
+			<h2><?php _e( 'Easy EU Value Added Taxes Settings', 'LION' ); ?></h2>
 
-			<?php do_action( 'it_exchange_easy_value_added_taxes_settings_page_top' ); ?>
+			<?php do_action( 'it_exchange_easy_eu_value_added_taxes_settings_page_top' ); ?>
 			<?php do_action( 'it_exchange_addon_settings_page_top' ); ?>
 
 			<?php $form->start_form( $form_options, 'it-exchange-easy-value-added-taxes-settings' ); ?>
-				<?php do_action( 'it_exchange_easy_value_added_taxes_settings_form_top' ); ?>
-				<?php $this->get_easy_value_added_taxes_form_table( $form, $form_values ); ?>
-				<?php do_action( 'it_exchange_easy_value_added_taxes_settings_form_bottom' ); ?>
+				<?php do_action( 'it_exchange_easy_eu_value_added_taxes_settings_form_top' ); ?>
+				<?php $this->get_easy_eu_value_added_taxes_form_table( $form, $form_values ); ?>
+				<?php do_action( 'it_exchange_easy_eu_value_added_taxes_settings_form_bottom' ); ?>
 				<p class="submit">
 					<?php $form->add_submit( 'submit', array( 'value' => __( 'Save Changes', 'LION' ), 'class' => 'button button-primary button-large' ) ); ?>
 				</p>
 			<?php $form->end_form(); ?>
-			<?php do_action( 'it_exchange_easy_value_added_taxes_settings_page_bottom' ); ?>
+			<?php do_action( 'it_exchange_easy_eu_value_added_taxes_settings_page_bottom' ); ?>
 			<?php do_action( 'it_exchange_addon_settings_page_bottom' ); ?>
 		</div>
 		<?php
 	}
 
-	function get_easy_value_added_taxes_form_table( $form, $settings = array() ) {
+	function get_easy_eu_value_added_taxes_form_table( $form, $settings = array() ) {
 		if ( !empty( $settings ) )
 			foreach ( $settings as $key => $var )
 				$form->set_option( $key, $var );
@@ -207,14 +207,14 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 				if ( !empty( $tax_rates ) ) {
 					ksort( $tax_rates );
 					foreach( $tax_rates as $key => $rate ) {
-						echo it_exchange_easy_value_added_taxes_get_tax_row_settings( $key, $rate );
+						echo it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate );
 						$last_key = $key;
 					}
 				}
 				?>
 			</div>
 			<script type="text/javascript" charset="utf-8">
-	            var it_exchange_easy_value_added_taxes_addon_iteration = <?php echo $last_key; ?>;
+	            var it_exchange_easy_eu_value_added_taxes_addon_iteration = <?php echo $last_key; ?>;
 	        </script>
 
 			<p class="add-new">
@@ -240,7 +240,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 	*/
     function save_settings() {
     	global $new_values; //We set this as global here to modify it in the error check
-        $defaults = it_exchange_get_option( 'addon_easy_value_added_taxes' );
+        $defaults = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
         $new_values = wp_parse_args( ITForm::get_post_data(), $defaults );
                 
         // Check nonce
@@ -249,9 +249,9 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
             return;
         }
 
-        $errors = apply_filters( 'it_exchange_add_on_easy_value_added_taxes_validate_settings', $this->get_form_errors( $new_values ), $new_values );
+        $errors = apply_filters( 'it_exchange_add_on_easy_eu_value_added_taxes_validate_settings', $this->get_form_errors( $new_values ), $new_values );
                                 
-        if ( ! $errors && it_exchange_save_option( 'addon_easy_value_added_taxes', $new_values ) ) {
+        if ( ! $errors && it_exchange_save_option( 'addon_easy_eu_value_added_taxes', $new_values ) ) {
             ITUtility::show_status_message( __( 'Settings saved.', 'LION' ) );
         } else if ( $errors ) {
             $errors = implode( '<br />', $errors );
@@ -280,7 +280,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
     	if ( empty( $values['vat-number'] ) )
             $errors[] = __( 'Missing VAT Number.', 'LION' );
             
-        if ( true === $return = it_exchange_easy_value_added_taxes_addon_verify_vat( $values['vat-country'], $values['vat-number'] ) ) {
+        if ( true === $return = it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $values['vat-country'], $values['vat-number'] ) ) {
 	        $new_values['vat-number-verified'] = true;
         } else {
 	        $new_values['vat-number-verified'] = false;
