@@ -1,6 +1,7 @@
 /** -----------------------------------------------------:[ Settings ]:---------- */
 #value-added-tax-number label {font-weight: 600;}
 #value-added-tax-number input[type="text"] {width: 180px;margin: .5em 0;}
+#value-added-tax-number input#vat-number-country-code {background: none repeat scroll 0 0 #D6D6D6; width: 45px;}
 #value-added-tax-number img {margin: 0 0 0 1em;}
 
 #value-added-tax-rate-table {overflow: hidden;background: #FFF;border: 1px solid #DEDEDE;width: 100%;max-width: 800px;}

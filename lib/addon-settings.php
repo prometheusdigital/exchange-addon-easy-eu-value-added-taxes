@@ -160,7 +160,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
             <div id="value-added-tax-number">
 				<p>
 					<label for="vat-number">
-						<?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'Select your Member State and enter your VAT Number', 'LION' ); ?>">i</span>
+						<?php _e( 'VAT Number', 'LION' ) ?> <span class="tip" title="<?php _e( 'Select your Country and enter your VAT Number', 'LION' ); ?>">i</span>
 					</label>
 				</p>
 
@@ -168,6 +168,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 				$memberstates = it_exchange_get_data_set( 'eu-member-states' );
 				$form->add_drop_down( 'vat-country', $memberstates );
 				echo '<br />';
+				echo '<input id="vat-number-country-code" type="text" size="2" value="' . $settings['vat-country'] . '" disabled="disabled" readonly="readonly" />';
 				$form->add_text_box( 'vat-number' );
 
 				if ( !empty( $settings['vat-number-verified'] ) )

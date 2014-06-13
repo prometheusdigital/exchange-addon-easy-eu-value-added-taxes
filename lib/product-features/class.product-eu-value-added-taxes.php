@@ -149,9 +149,9 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
         $base_price = it_exchange_get_product_feature( $product->ID, 'base-price' );
         ?>
         <div class="vat-price-calculator">
-            <label for="vat-price-calculator-pre-vat-price"><?php _e( 'Pre-VAT Price', 'LION' ) ?></label>
+            <label for="vat-price-calculator-pre-vat-price"><?php _e( 'Price excluding VAT', 'LION' ) ?></label>
             <input id="vat-price-calculator-pre-vat-price" type="text" name="vat-price-calculator-pre-vat-price" value="<?php echo it_exchange_format_price( $base_price ); ?>" />
-            <label for="vat-price-calculator-price-w-vat"><?php _e( 'Price with VAT', 'LION' ) ?></label>
+            <label for="vat-price-calculator-price-w-vat"><?php _e( 'Price including VAT', 'LION' ) ?></label>
             <input id="vat-price-calculator-price-w-vat" type="text" name="vat-price-calculator-price-w-vat" value="<?php echo it_exchange_format_price( $base_price * ( ( 100 + $calculation_rate ) / 100 ) ); ?>" />
             <p id="set-product-price-from-easy-value-added-taxes-addon">
             <input type="button" class="button" value="Set Product Price" />

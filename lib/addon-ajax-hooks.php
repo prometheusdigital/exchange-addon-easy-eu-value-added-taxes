@@ -98,7 +98,7 @@ function it_exchange_easy_eu_value_added_taxes_save_vat_number() {
 		if ( wp_verify_nonce( $_POST['it-exchange-easy-value-added-taxes-add-edit-vat-number-nonce'], 'it-exchange-easy-value-added-taxes-add-edit-vat-number' ) ) {
 						
 	        if ( empty( $_POST['eu-vat-country'] ) ) {
-	            $errors[] = __( 'You must select a valid EU Member State.', 'LION' );
+	            $errors[] = __( 'You must select a valid EU Country.', 'LION' );
 	        } else {
 	            $vat_country = $_POST['eu-vat-country'];
 	        }

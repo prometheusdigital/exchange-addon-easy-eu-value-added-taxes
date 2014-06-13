@@ -209,7 +209,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $country_code, 
 		} else if ( !empty( $result->valid ) && $result->valid ) {
 			return true;
 		} else {
-			throw new Exception( sprintf( __( 'Error trying to verify VAT number: %s-%s.', 'LION' ), $country_code, $vat_number ) );
+			throw new Exception( sprintf( __( 'Error trying to validate VAT number: %s-%s.', 'LION' ), $country_code, $vat_number ) );
 		}
 	}
     catch( Exception $e ) {
