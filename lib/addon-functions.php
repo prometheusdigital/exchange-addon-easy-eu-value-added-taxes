@@ -201,9 +201,12 @@ function it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $country_code, 
 		'countryCode' => strtoupper( trim( $country_code ) ),
 		'vatNumber'   => strtoupper( trim( $vat_number ) ),
 	);
-	$result = $soap_client->checkVat( $query );
+	
+	if ( 'UK' === $query['countryCode'] )
+		$query['countryCode'] = 'GB'; //VIES treats UK like Great Britain...
 	
 	try {
+		$result = $soap_client->checkVat( $query );
 		if ( is_soap_fault( $result ) ) {
 			throw new Exception( $result->faultstring() );
 		} else if ( !empty( $result->valid ) && $result->valid ) {
