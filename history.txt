@@ -7,3 +7,5 @@
 1.0.3 - 2014-06-21 - Lew Ayotte
 	Added SOAP check
 	Moved SOAP call inside try block and rename UK to GB because VIES expects GB for United Kingdom
+1.0.4 - 2014-06-21 - Lew Ayotte
+	Fixed typo causing VAT templates to not load on the store/product/confirmation pages
