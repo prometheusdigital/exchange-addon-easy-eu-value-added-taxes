@@ -16,5 +16,5 @@
 ?>
 
 <?php do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_element' ); ?>
-<?php it_exchange( 'value-added-taxes', 'taxes' ); ?>
+<?php it_exchange( 'eu-value-added-taxes', 'taxes' ); ?>
 <?php do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_element' ); ?>

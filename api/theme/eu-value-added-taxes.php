@@ -6,14 +6,14 @@
  * @since 1.0.0
 */
 
-class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
+class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 	
 	/**
 	 * API context
 	 * @var string $_context
 	 * @since 1.0.0
 	*/
-	private $_context = 'value-added-taxes';
+	private $_context = 'eu-value-added-taxes';
 
 	/**
 	 * Current customer Address
@@ -51,7 +51,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 	 *
 	 * @return void
 	*/
-	function IT_Theme_API_Value_Added_Taxes() {
+	function IT_Theme_API_EU_Value_Added_Taxes() {
 		$this->_address = it_exchange_get_cart_shipping_address();
 		//We only care about the province!
 		if ( empty( $this->_address['state'] ) ) 
@@ -112,8 +112,7 @@ class IT_Theme_API_Value_Added_Taxes implements IT_Theme_API {
 			
 			$result .= '</div>';
 			$result .= '</div>';
-			
-			
+						
 			if ( !$tax_session['summary_only'] ) {
 				foreach ( $tax_session['taxes'] as $tax ) {
 					if ( !empty( $tax['total'] ) ) {

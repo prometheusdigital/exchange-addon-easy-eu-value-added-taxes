@@ -101,7 +101,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 		$this->_current_page   = empty( $_GET['page'] ) ? false : $_GET['page'];
 		$this->_current_add_on = empty( $_GET['add-on-settings'] ) ? false : $_GET['add-on-settings'];
 
-		if ( ! empty( $_POST ) && $this->_is_admin && 'it-exchange-addons' == $this->_current_page && 'easy-value-added-taxes' == $this->_current_add_on ) {
+		if ( ! empty( $_POST ) && $this->_is_admin && 'it-exchange-addons' == $this->_current_page && 'easy-eu-value-added-taxes' == $this->_current_add_on ) {
 			add_action( 'it_exchange_save_add_on_settings_easy_eu_value_added_taxes', array( $this, 'save_settings' ) );
 			do_action( 'it_exchange_save_add_on_settings_easy_eu_value_added_taxes' );
 		}
@@ -113,11 +113,11 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 	
 		$form_values  = empty( $this->error_message ) ? $settings : $new_values;
 		$form_options = array(
-			'id'      => apply_filters( 'it_exchange_add_on_easy_eu_value_added_taxes', 'it-exchange-add-on-easy-value-added-taxes-settings' ),
+			'id'      => apply_filters( 'it_exchange_add_on_easy_eu_value_added_taxes', 'it-exchange-add-on-easy-eu-value-added-taxes-settings' ),
 			'enctype' => apply_filters( 'it_exchange_add_on_easy_eu_value_added_taxes_settings_form_enctype', false ),
-			'action'  => 'admin.php?page=it-exchange-addons&add-on-settings=easy-value-added-taxes',
+			'action'  => 'admin.php?page=it-exchange-addons&add-on-settings=easy-eu-value-added-taxes',
 		);
-		$form         = new ITForm( $form_values, array( 'prefix' => 'it-exchange-add-on-easy-value-added-taxes' ) );
+		$form         = new ITForm( $form_values, array( 'prefix' => 'it-exchange-add-on-easy-eu-value-added-taxes' ) );
 
 		if ( ! empty ( $this->status_message ) )
 			ITUtility::show_status_message( $this->status_message );
@@ -132,7 +132,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			<?php do_action( 'it_exchange_easy_eu_value_added_taxes_settings_page_top' ); ?>
 			<?php do_action( 'it_exchange_addon_settings_page_top' ); ?>
 
-			<?php $form->start_form( $form_options, 'it-exchange-easy-value-added-taxes-settings' ); ?>
+			<?php $form->start_form( $form_options, 'it-exchange-easy-eu-value-added-taxes-settings' ); ?>
 				<?php do_action( 'it_exchange_easy_eu_value_added_taxes_settings_form_top' ); ?>
 				<?php $this->get_easy_eu_value_added_taxes_form_table( $form, $form_values ); ?>
 				<?php do_action( 'it_exchange_easy_eu_value_added_taxes_settings_form_bottom' ); ?>
@@ -152,7 +152,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 				$form->set_option( $key, $var );
 		?>
 		
-        <div class="it-exchange-addon-settings it-exchange-easy-value-added-taxes-addon-settings">
+        <div class="it-exchange-addon-settings it-exchange-easy-eu-value-added-taxes-addon-settings">
             <h4>
             	<?php _e( 'Current Tax Rates and Settings', 'LION' ) ?> 
             </h4>
@@ -183,7 +183,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			</div>
 			
 			<p>
-				<label for="easy-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'Add a Tax Label and a Tax Rate, select whether or not to apply tax to shipping and select a default Tax Rate.', 'LION' ); ?>">i</span> </label>
+				<label for="easy-eu-value-added-taxes-tax-rates"><?php _e( 'Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'Add a Tax Label and a Tax Rate, select whether or not to apply tax to shipping and select a default Tax Rate.', 'LION' ); ?>">i</span> </label>
 			</p>
 			<div id="value-added-tax-rate-table">
 				<?php
@@ -245,7 +245,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
         $new_values = wp_parse_args( ITForm::get_post_data(), $defaults );
                 
         // Check nonce
-        if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'it-exchange-easy-value-added-taxes-settings' ) ) {
+        if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'it-exchange-easy-eu-value-added-taxes-settings' ) ) {
             $this->error_message = __( 'Error. Please try again', 'LION' );
             return;
         }

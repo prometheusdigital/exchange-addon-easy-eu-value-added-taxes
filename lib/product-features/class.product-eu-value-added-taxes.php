@@ -113,8 +113,8 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		?>
 		
 		<p>
-            <label for="easy-value-added-taxes-value-added-taxes"><?php _e( 'Tax Exempt?', 'LION' ) ?></label>
-			<input type="checkbox" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-exempt" id="euvat-exempt" <?php checked( $tax_exempt ); ?> />
+            <label for="easy-eu-value-added-taxes-value-added-taxes"><?php _e( 'Tax Exempt?', 'LION' ) ?></label>
+			<input type="checkbox" name="it-exchange-add-on-easy-eu-value-added-taxes-value-added-tax-exempt" id="euvat-exempt" <?php checked( $tax_exempt ); ?> />
         </p>
 		
 		<?php
@@ -134,9 +134,9 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		}
 		?>
 		<p class="vat-tax-types <?php echo $display; ?>">
-            <label for="easy-value-added-taxes-value-added-taxes"><?php _e( 'Tax Type?', 'LION' ) ?></label>
+            <label for="easy-eu-value-added-taxes-value-added-taxes"><?php _e( 'Tax Type?', 'LION' ) ?></label>
 			
-			<select id="euvat-type" name="it-exchange-add-on-easy-value-added-taxes-value-added-tax-type">
+			<select id="euvat-type" name="it-exchange-add-on-easy-eu-value-added-taxes-value-added-tax-type">
 				<option value="default" <?php selected( 'default', $tax_type ); ?>><?php printf( __( 'Default (%s - %s%%)', 'LION' ), $default_tax_rate['label'], $default_tax_rate['rate'] ); ?></option>
 			<?php 
 			foreach( $settings['tax-rates'] as $key => $tax_rate ) {
@@ -153,7 +153,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
             <input id="vat-price-calculator-pre-vat-price" type="text" name="vat-price-calculator-pre-vat-price" value="<?php echo it_exchange_format_price( $base_price ); ?>" />
             <label for="vat-price-calculator-price-w-vat"><?php _e( 'Price including VAT', 'LION' ) ?></label>
             <input id="vat-price-calculator-price-w-vat" type="text" name="vat-price-calculator-price-w-vat" value="<?php echo it_exchange_format_price( $base_price * ( ( 100 + $calculation_rate ) / 100 ) ); ?>" />
-            <p id="set-product-price-from-easy-value-added-taxes-addon">
+            <p id="set-product-price-from-easy-eu-value-added-taxes-addon">
             <input type="button" class="button" value="Set Product Price" />
             </p>
         </div>
@@ -182,13 +182,13 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 			return;
 
 		// Get new value from post
-		$tax_exempt = empty( $_POST['it-exchange-add-on-easy-value-added-taxes-value-added-tax-exempt'] ) ? false : true;
+		$tax_exempt = empty( $_POST['it-exchange-add-on-easy-eu-value-added-taxes-value-added-tax-exempt'] ) ? false : true;
 
 		// Save new value
 		it_exchange_update_product_feature( $product_id, 'value-added-taxes', $tax_exempt, array( 'setting' => 'exempt' ) );
 
 		// Get new value from post
-		$tax_type = !isset( $_POST['it-exchange-add-on-easy-value-added-taxes-value-added-tax-type'] ) ? 'default' : $_POST['it-exchange-add-on-easy-value-added-taxes-value-added-tax-type'];
+		$tax_type = !isset( $_POST['it-exchange-add-on-easy-eu-value-added-taxes-value-added-tax-type'] ) ? 'default' : $_POST['it-exchange-add-on-easy-eu-value-added-taxes-value-added-tax-type'];
 
 		// Save new value
 		it_exchange_update_product_feature( $product_id, 'value-added-taxes', $tax_type, array( 'setting' => 'type' ) );
@@ -210,10 +210,10 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		switch ( $options['setting'] ) {
 			
 			case 'exempt':
-				update_post_meta( $product_id, '_it-exchange-easy-value-added-taxes-exempt', $new_value );
+				update_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-exempt', $new_value );
 				break;
 			case 'type':
-				update_post_meta( $product_id, '_it-exchange-easy-value-added-taxes-type', $new_value );
+				update_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-type', $new_value );
 				break;
 			
 		}
@@ -235,9 +235,9 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		switch ( $options['setting'] ) {
 			
 			case 'exempt':
-				return get_post_meta( $product_id, '_it-exchange-easy-value-added-taxes-exempt', true );
+				return get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-exempt', true );
 			case 'type':
-				return get_post_meta( $product_id, '_it-exchange-easy-value-added-taxes-type', true );
+				return get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-type', true );
 
 		}
 		

@@ -17,6 +17,6 @@
 
 <?php do_action( 'it_exchange_confirmation_before_transaction_vat_summary' ); ?>
 <div class="it-exchange-vat-summary">
-	<?php it_exchange( 'value-added-taxes', 'vat-summary' ); ?>
+	<?php it_exchange( 'eu-value-added-taxes', 'vat-summary' ); ?>
 </div>
 <?php do_action( 'it_exchange_confirmation_after_transaction_vat_summary' ); ?>

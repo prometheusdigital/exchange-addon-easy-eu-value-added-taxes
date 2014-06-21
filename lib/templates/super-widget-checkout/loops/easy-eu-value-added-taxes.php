@@ -18,7 +18,7 @@
 <?php do_action( 'it_exchange_super_widget_checkout_before_easy_eu_valued_added_taxes_element' ); ?>
 <div class="cart-taxes cart-totals-row">
 	<?php do_action( 'it_exchange_super_widget_checkout_begin_easy_eu_valued_added_taxes_element' ); ?>
-	<?php it_exchange( 'value-added-taxes', 'taxes' ); ?>
+	<?php it_exchange( 'eu-value-added-taxes', 'taxes' ); ?>
 	<?php do_action( 'it_exchange_super_widget_checkout_end_easy_eu_valued_added_taxes_element' ); ?>
 </div>
 <?php do_action( 'it_exchange_super_widget_checkout_after_easy_eu_valued_added_taxes_element' ); ?>

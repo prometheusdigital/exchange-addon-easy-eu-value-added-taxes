@@ -18,25 +18,25 @@ function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate
 	$output  = '<div class="item-row block-row">'; //start block-row
 	
 	$output .= '<div class="item-column block-column block-column-1">';
-	$output .= '<input type="text" name="it-exchange-add-on-easy-value-added-taxes-tax-rates[' . $key . '][label]" value="' . $rate['label'] . '" />';
+	$output .= '<input type="text" name="it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . '][label]" value="' . $rate['label'] . '" />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-2">';
-	$output .= '<input type="text" name="it-exchange-add-on-easy-value-added-taxes-tax-rates[' . $key . '][rate]" value="' . $rate['rate'] . '" />';
+	$output .= '<input type="text" name="it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . '][rate]" value="' . $rate['rate'] . '" />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-3">';
 	$shipping = empty( $rate['shipping'] ) ? false : true;
-	$output .= '<input type="checkbox" name="it-exchange-add-on-easy-value-added-taxes-tax-rates[' . $key . '][shipping]" ' . checked( $shipping, true, false ) . ' />';
+	$output .= '<input type="checkbox" name="it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . '][shipping]" ' . checked( $shipping, true, false ) . ' />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-default">';
-	$output .= '<span class="it-exchange-easy-value-added-taxes-addon-default-checkmark it-exchange-easy-value-added-taxes-addon-default-checkmark-' . $rate['default'] . '"></span>';	
-	$output .= '<input type="hidden" class="it-exchange-easy-value-added-taxes-addon-default-checkmark" name="it-exchange-add-on-easy-value-added-taxes-tax-rates[' . $key . '][default]" value="' . $rate['default'] . '" />';
+	$output .= '<span class="it-exchange-easy-eu-value-added-taxes-addon-default-checkmark it-exchange-easy-eu-value-added-taxes-addon-default-checkmark-' . $rate['default'] . '"></span>';	
+	$output .= '<input type="hidden" class="it-exchange-easy-eu-value-added-taxes-addon-default-checkmark" name="it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . '][default]" value="' . $rate['default'] . '" />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-delete">';
-	$output .= '<a href class="it-exchange-easy-value-added-taxes-addon-delete-tax-rate it-exchange-remove-item">&times;</a>';
+	$output .= '<a href class="it-exchange-easy-eu-value-added-taxes-addon-delete-tax-rate it-exchange-remove-item">&times;</a>';
 	$output .= '</div>';
 	
 	$output .= '</div>'; //end block-row

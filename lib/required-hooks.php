@@ -180,16 +180,16 @@ function it_exchange_easy_eu_value_added_taxes_api_theme_transaction_product_att
 */
 function it_exchange_easy_eu_value_added_taxes_addon_show_conflict_nag() {
     if ( ! empty( $_REQUEST['it_exchange_easy_eu_value_added_taxes-dismiss-conflict-nag'] ) )
-        update_option( 'it-exchange-easy-value-added-taxes-conflict-nag', true );
+        update_option( 'it-exchange-easy-eu-value-added-taxes-conflict-nag', true );
 
-    if ( true == (boolean) get_option( 'it-exchange-easy-value-added-taxes-conflict-nag' ) )
+    if ( true == (boolean) get_option( 'it-exchange-easy-eu-value-added-taxes-conflict-nag' ) )
         return;
 
 	$taxes_addons = it_exchange_get_enabled_addons( array( 'category' => 'taxes' ) );
 	
 	if ( 1 < count( $taxes_addons ) ) {
 		?>
-		<div id="it-exchange-easy-value-added-taxes-conflict-nag" class="it-exchange-nag">
+		<div id="it-exchange-easy-eu-value-added-taxes-conflict-nag" class="it-exchange-nag">
 			<?php
 			$nag_dismiss = add_query_arg( array( 'it_exchange_easy_eu_value_added_taxes-dismiss-conflict-nag' => true ) );
 			echo __( 'Warning: You have multiple tax add-ons enabled. You may need to disable one to avoid conflicts.', 'LION' );
@@ -199,7 +199,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_show_conflict_nag() {
 		<script type="text/javascript">
 			jQuery( document ).ready( function() {
 				if ( jQuery( '.wrap > h2' ).length == '1' ) {
-					jQuery("#it-exchange-easy-value-added-taxes-conflict-nag").insertAfter( '.wrap > h2' ).addClass( 'after-h2' );
+					jQuery("#it-exchange-easy-eu-value-added-taxes-conflict-nag").insertAfter( '.wrap > h2' ).addClass( 'after-h2' );
 				}
 			});
 		</script>
@@ -238,14 +238,14 @@ function it_exchange_easy_eu_value_added_taxes_addon_admin_wp_enqueue_scripts( $
 	
 	$url_base = ITUtility::get_url_from_file( dirname( __FILE__ ) );
 		
-	if ( !empty( $_GET['add-on-settings'] ) && 'exchange_page_it-exchange-addons' === $hook_suffix && 'easy-value-added-taxes' === $_GET['add-on-settings'] ) {
+	if ( !empty( $_GET['add-on-settings'] ) && 'exchange_page_it-exchange-addons' === $hook_suffix && 'easy-eu-value-added-taxes' === $_GET['add-on-settings'] ) {
 	
 		$deps = array( 'jquery', 'jquery-ui-sortable', 'jquery-ui-droppable', 'jquery-ui-tabs', 'jquery-ui-tooltip', 'jquery-ui-datepicker', 'autosave' );
-		wp_enqueue_script( 'it-exchange-easy-value-added-taxes-addon-admin-js', $url_base . '/js/admin.js' );
+		wp_enqueue_script( 'it-exchange-easy-eu-value-added-taxes-addon-admin-js', $url_base . '/js/admin.js' );
 
 	} else if ( isset( $post_type ) && 'it_exchange_prod' === $post_type ) {
 		$deps = array( 'jquery', 'jquery-effects-highlight' );
-		wp_enqueue_script( 'it-exchange-easy-value-added-taxes-addon-add-edit-product', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-edit-product.js', $deps );
+		wp_enqueue_script( 'it-exchange-easy-eu-value-added-taxes-addon-add-edit-product', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-edit-product.js', $deps );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'it_exchange_easy_eu_value_added_taxes_addon_admin_wp_enqueue_scripts' );
@@ -280,9 +280,9 @@ function it_exchange_easy_eu_value_added_taxes_addon_admin_wp_enqueue_styles() {
 	
 	// Easy US Sales Taxes settings page
 	if ( ( isset( $post_type ) && 'it_exchange_prod' === $post_type )
-		|| ( !empty( $_GET['add-on-settings'] ) && 'exchange_page_it-exchange-addons' === $hook_suffix && 'easy-value-added-taxes' === $_GET['add-on-settings'] ) ) {
+		|| ( !empty( $_GET['add-on-settings'] ) && 'exchange_page_it-exchange-addons' === $hook_suffix && 'easy-eu-value-added-taxes' === $_GET['add-on-settings'] ) ) {
 		
-		wp_enqueue_style( 'it-exchange-easy-value-added-taxes-addon-admin-style', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/admin.css' );
+		wp_enqueue_style( 'it-exchange-easy-eu-value-added-taxes-addon-admin-style', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/admin.css' );
 		
 	}
 
@@ -301,7 +301,7 @@ function it_exchange_easy_eu_value_added_taxes_load_public_scripts( $current_vie
 	if ( it_exchange_is_page( 'checkout' ) || it_exchange_is_page( 'confirmation' ) || it_exchange_in_superwidget() ) {
 
 		$url_base = ITUtility::get_url_from_file( dirname( __FILE__ ) );
-		wp_enqueue_style( 'ite-easy-value-added-taxes-addon', $url_base . '/styles/taxes.css' );
+		wp_enqueue_style( 'ite-easy-eu-value-added-taxes-addon', $url_base . '/styles/taxes.css' );
 		
 		if ( it_exchange_is_page( 'checkout' ) )
 			wp_enqueue_script( 'ite-vat-addon-checkout-page-var',  $url_base . '/js/checkout-page.js' );
@@ -341,7 +341,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_total
 	if ( -1 != $index )
 		$index++;
 
-	array_splice( $elements, $index, 0, 'easy-value-added-taxes' );
+	array_splice( $elements, $index, 0, 'easy-eu-value-added-taxes' );
 	return $elements;
 }
 add_filter( 'it_exchange_get_content_checkout_totals_elements', 'it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_totals_elements' );
@@ -356,7 +356,7 @@ add_filter( 'it_exchange_get_content_confirmation_transaction_summary_elements',
  * @return array
 */
 function it_exchange_easy_eu_value_added_taxes_addon_get_content_confirmation_transaction_meta_elements( $elements ) {
-	$elements[] = 'easy-value-added-taxes-vat-summary'; //we always want it at the end
+	$elements[] = 'easy-eu-value-added-taxes-vat-summary'; //we always want it at the end
 	return $elements;
 }
 add_filter( 'it_exchange_get_content_confirmation_transaction_meta_elements', 'it_exchange_easy_eu_value_added_taxes_addon_get_content_confirmation_transaction_meta_elements' );
@@ -379,7 +379,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_sw_template_to
 	if ( -1 != $index )
 		$index++;
 
-	array_splice( $loops, $index, 0, 'easy-value-added-taxes' );
+	array_splice( $loops, $index, 0, 'easy-eu-value-added-taxes' );
 	return $loops;
 }
 add_filter( 'it_exchange_get_super-widget-checkout_after-cart-items_loops', 'it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_sw_template_totals_loops' );
@@ -492,19 +492,19 @@ add_action( 'it_exchange_add_transaction_success', 'it_exchange_easy_eu_value_ad
 function it_exchange_easy_eu_value_added_taxes_addon_vat_number_manager_backbone_template() {
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 	?>
-	<div id="it-exchange-easy-value-added-taxes-vat-manager-wrapper" class="it-exchange-hidden"></div>
-	<script type="text/template" id="tmpl-it-exchange-easy-value-added-taxes-vat-manager-container">
+	<div id="it-exchange-easy-eu-value-added-taxes-vat-manager-wrapper" class="it-exchange-hidden"></div>
+	<script type="text/template" id="tmpl-it-exchange-easy-eu-value-added-taxes-vat-manager-container">
 		<span class="it-exchange-euvat-close-vat-manager"><a href="">&times;</a></span>
-		<div id="it-exchange-easy-value-added-taxes-vat-manager">
-			<div id="it-exchange-easy-value-added-taxes-vat-manager-title-area">
+		<div id="it-exchange-easy-eu-value-added-taxes-vat-manager">
+			<div id="it-exchange-easy-eu-value-added-taxes-vat-manager-title-area">
 				<h3 class="it-exchange-euvat-tax-emeption-title">
 					<?php _e( 'VAT Manager', 'LION' ); ?>
 				</h3>
 			</div>
 		
-			<div id="it-exchange-easy-value-added-taxes-vat-manager-content-area">
-				<div id="it-exchange-easy-value-added-taxes-vat-manager-error-area"></div>
-				<form id="it-exchange-add-on-easy-value-added-taxes-add-edit-vat" name="it-exchange-add-on-easy-value-added-taxes-add-edit-vat" action="POST">
+			<div id="it-exchange-easy-eu-value-added-taxes-vat-manager-content-area">
+				<div id="it-exchange-easy-eu-value-added-taxes-vat-manager-error-area"></div>
+				<form id="it-exchange-add-on-easy-eu-value-added-taxes-add-edit-vat" name="it-exchange-add-on-easy-eu-value-added-taxes-add-edit-vat" action="POST">
 				<?php
 				if ( !empty( $tax_session['vat_country'] ) ) {
 					$vat_country = $tax_session['vat_country'];
@@ -534,7 +534,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_vat_number_manager_backbone
 					<input type="submit" value="<?php _e( 'Verify and Save VAT Number', 'LION' ); ?>" class="button button-large it-exchange-euvat-save-vat-button" id="save" name="save">
 					<input type="submit" value="Cancel" class="button button-large it-exchange-euvat-cancel-vat-button" id="cancel" name="cancel">
 					<input type="submit" value="Remove" class="button button-large it-exchange-euvat-remove-vat-button" id="remove" name="remove">
-					<?php wp_nonce_field( 'it-exchange-easy-value-added-taxes-add-edit-vat-number', 'it-exchange-easy-value-added-taxes-add-edit-vat-number-nonce' ); ?>
+					<?php wp_nonce_field( 'it-exchange-easy-eu-value-added-taxes-add-edit-vat-number', 'it-exchange-easy-eu-value-added-taxes-add-edit-vat-number-nonce' ); ?>
 				</div>
 				</form>
 			</div>

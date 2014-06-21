@@ -25,8 +25,8 @@
 .it-exchange-remove-item:active{outline:none;opacity:.8;}
 .it-exchange-remove-item:hover{border-color:#E1797A !important;color:#E1797A;}
 
-.it-exchange-easy-value-added-taxes-addon-default-checkmark{display:block;width:15px;height:15px;background:url('../images/check-gray.png') center center no-repeat;cursor:pointer;margin: 1.25em;}
-.it-exchange-easy-value-added-taxes-addon-default-checkmark:hover,
-.it-exchange-easy-value-added-taxes-addon-default-checkmark-checked{background:url('../images/check-green.png') center center no-repeat;border:none;cursor:pointer;}
+.it-exchange-easy-eu-value-added-taxes-addon-default-checkmark{display:block;width:15px;height:15px;background:url('../images/check-gray.png') center center no-repeat;cursor:pointer;margin: 1.25em;}
+.it-exchange-easy-eu-value-added-taxes-addon-default-checkmark:hover,
+.it-exchange-easy-eu-value-added-taxes-addon-default-checkmark-checked{background:url('../images/check-green.png') center center no-repeat;border:none;cursor:pointer;}
 
-.it-exchange-easy-value-added-taxes-addon-settings .add-new {margin-bottom: 2em;}
+.it-exchange-easy-eu-value-added-taxes-addon-settings .add-new {margin-bottom: 2em;}
