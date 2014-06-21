@@ -24,7 +24,7 @@
  * @return void
 */
 function it_exchange_register_easy_eu_value_added_taxes_addon() {
-	if ( !extension_loaded( 'soap' ) ) {
+	if ( extension_loaded( 'soap' ) ) {
 		$options = array(
 			'name'              => __( 'Easy EU Value Added Taxes', 'LION' ),
 			'description'       => __( 'Now store owners in the EU can now charge the proper Value Added Tax for each of their product types.', 'LION' ),

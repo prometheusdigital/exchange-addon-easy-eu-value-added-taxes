@@ -4,3 +4,6 @@
 	Added version 1.9.0 iThemes Exchange requirement nag
 1.0.2 - 2014-06-18 - Lew Ayotte
 	Fixing version number
+1.0.3 - 2014-06-21 - Lew Ayotte
+	Added SOAP check
+	Moved SOAP call inside try block and rename UK to GB because VIES expects GB for United Kingdom
