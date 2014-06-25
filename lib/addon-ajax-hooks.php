@@ -76,8 +76,8 @@ function it_exchange_easy_eu_value_added_taxes_add_edit_product_vat_calculator()
 	}
 	
 	$return = array(
-		'pre-vat' => esc_html( it_exchange_format_price( $results['pre-vat'] ) ),
-		'post-vat' => esc_html( it_exchange_format_price( $results['post-vat'] ) ),
+		'pre-vat' => html_entity_decode( it_exchange_format_price( $results['pre-vat'] ) ),
+		'post-vat' => html_entity_decode( it_exchange_format_price( $results['post-vat'] ) ),
 	);
 		
 	die( json_encode( $return ) );
