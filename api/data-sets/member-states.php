@@ -49,7 +49,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_get_eu_member_states( $opti
 		'SK' => __( 'Slovakia', 'LION' ),
 		'FI' => __( 'Finland', 'LION' ),
 		'SE' => __( 'Sweden', 'LION' ),
-		'UK' => __( 'United Kingdom', 'LION' ),
+		'GB' => __( 'United Kingdom', 'LION' ),
 	);
 
 	// Sort by values, not keys.
