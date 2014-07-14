@@ -9,3 +9,5 @@
 	Moved SOAP call inside try block and rename UK to GB because VIES expects GB for United Kingdom
 1.0.4 - 2014-06-21 - Lew Ayotte
 	Fixed typo causing VAT templates to not load on the store/product/confirmation pages
+1.0.5 - 2014-07-14 - Lew Ayotte
+	Fixed United Kingdom VAT bug
