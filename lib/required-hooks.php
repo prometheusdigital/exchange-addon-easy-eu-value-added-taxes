@@ -17,8 +17,8 @@ add_filter( 'it_exchange_billing_address_purchase_requirement_enabled', '__retur
  * @return void
 */
 function it_exchange_easy_eu_value_added_taxes_addon_show_version_nag() {
-	if ( $GLOBALS['it_exchange']['version'] < '1.9.0' ) {
-		?>
+	if ( version_compare( $GLOBALS['it_exchange']['version'], '1.9.0', '<' ) ) {
+	?>
 		<div id="it-exchange-add-on-min-version-nag" class="it-exchange-nag">
 			<?php printf( __( 'The Easy EU Value Added Taxes add-on requires iThemes Exchange version 1.9.0 or greater. %sPlease upgrade Exchange%s.', 'LION' ), '<a href="' . admin_url( 'update-core.php' ) . '">', '</a>' ); ?>
 		</div>
