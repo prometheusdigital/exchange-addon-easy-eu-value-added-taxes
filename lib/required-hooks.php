@@ -159,7 +159,13 @@ function it_exchange_easy_eu_value_added_taxes_api_theme_transaction_product_att
 	        $tax_rates = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes', true );   
 	        $taxes = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_product_taxes', true );        
 	        $attribute = $product['product_base_price'];
-	        $tax_rate = $tax_rates[$taxes[$product['product_id']]]['tax-rate']['rate'];
+	        if ( !empty( $taxes[$product['product_id']] ) 
+	        	&& !empty( $tax_rates[$taxes[$product['product_id']]]
+	        	&& !empty( $tax_rates[$taxes[$product['product_id']]]['tax-rate'] 
+	        	&& !empty( $tax_rates[$taxes[$product['product_id']]]['tax-rate']['rate'] ) ) )
+		        $tax_rate = $tax_rates[$taxes[$product['product_id']]]['tax-rate']['rate'];
+		    else
+		    	$tax_rate = 0;
 	
 			$attribute *= ( ( 100 + $tax_rate ) / 100 );
 			
