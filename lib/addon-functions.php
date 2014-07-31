@@ -106,6 +106,9 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		
 	} else {
 		$clear_cache = true; //not really any cache, but it's easier this way :)
+		$tax_session['country'] = $address['country'];
+		$tax_session['cart_subtotal'] = $cart_subtotal;
+		$tax_session['shipping_cost'] = $shipping_cost;
 	}
 	
 	$clear_cache = true;
