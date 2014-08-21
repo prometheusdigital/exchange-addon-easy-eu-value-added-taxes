@@ -23,6 +23,7 @@ include( 'lib/addon-settings.php' );
  * We decided to place all AJAX hooked functions into this file, just for ease of use
 */
 include( 'lib/addon-ajax-hooks.php' );
+
 /**
  * The following file contains utility functions specific to our customer pricing add-on
  * If you're building your own addon, it's likely that you will
