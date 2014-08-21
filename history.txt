@@ -13,3 +13,7 @@
 	Fixed United Kingdom VAT bug
 1.0.6 - 2014-07-21 - Lew Ayotte
 	Fixing version compare
+1.0.7 - 2014-08-21 - Lew Ayotte, Elise Alley
+	Changing nonce in VAT Session save
+	Fixing undefined index in tax session
+	Verify Tax Rates exist for Transaction Products before calculating
