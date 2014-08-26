@@ -124,7 +124,17 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 				$default_rate = $key;
 		}
 		
-		foreach( (array) $products as $product ) {		
+
+		$applied_coupons = it_exchange_get_applied_coupons();
+		if ( !empty( $applied_coupons['cart'] ) ) {
+			foreach( $applied_coupons['cart'] as $key => $coupon ) {
+					$product_id = get_post_meta( $coupon['id'], '_it-basic-product-id', true );
+					$applied_coupons['cart'][$key]['product_id'] = $product_id;
+			}
+		}
+		$product_count = it_exchange_get_cart_products_count( true );
+				
+		foreach( (array) $products as $product ) {	
 	
 			if ( it_exchange_product_supports_feature( $product['product_id'], 'value-added-taxes' ) ) {
 				if ( !it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
@@ -136,8 +146,32 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 					if ( empty( $subtotals[$tax_type] ) )
 						$subtotals[$tax_type] = 0;
 						
-					$subtotals[$tax_type] += it_exchange_get_cart_product_subtotal( $product, false );
-					$product_taxes[$product['product_id']] = $tax_type;
+					$product_subtotal = it_exchange_get_cart_product_subtotal( $product, false );
+						
+					if ( !empty( $applied_coupons['cart'] ) ) {
+						foreach( $applied_coupons['cart'] as $coupon ) {
+							if ( !empty( $coupon['product_id'] ) ) {
+								if ( $product['product_id'] == $coupon['product_id'] ) {
+									if ( '%' === $coupon['amount_type'] ) {
+										$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
+									} else {
+										$product_subtotal -= ( $product['count'] * $coupon['amount_number'] );
+									}
+								}
+							} else {
+								if ( '%' === $coupon['amount_type'] ) {
+									$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
+								} else {
+									$product_subtotal -= ( $coupon['amount_number'] / $product_count );
+								}
+							}
+						}
+					}
+					
+					if ( $product_subtotal > 0 ) {
+						$subtotals[$tax_type] += $product_subtotal;
+						$product_taxes[$product['product_id']] = $tax_type;
+					}
 				}
 			}
 		}
