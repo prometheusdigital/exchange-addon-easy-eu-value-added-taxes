@@ -83,25 +83,32 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	}
 	$cart_subtotal = apply_filters( 'it_exchange_get_cart_subtotal', $cart_subtotal );
 	$shipping_cost = it_exchange_get_cart_shipping_cost( false, false );
+	$applied_coupons = it_exchange_get_applied_coupons();
+	$serialized_coupons = maybe_serialize( $applied_coupons );
 	
 	if ( !empty( $tax_session ) ) {
 
 		//We want to store the cart subtotal, in case it changes so we know we need to recalculate tax
-		if ( empty( $tax_session['country'] ) || $address['country'] != $tax_session['country'] ) {
+		if ( isset( $tax_session['country'] ) && $address['country'] != $tax_session['country'] ) {
 			$tax_session['country'] = $address['country'];
 			$clear_cache = true; //re-calculate taxes
 		}
 
 		//We want to store the cart subtotal, in case it changes so we know we need to recalculate tax
-		if ( empty( $tax_session['cart_subtotal'] ) || $cart_subtotal != $tax_session['cart_subtotal'] ) {
+		if ( isset( $tax_session['cart_subtotal'] ) && $cart_subtotal != $tax_session['cart_subtotal'] ) {
 			$tax_session['cart_subtotal'] = $cart_subtotal;
 			$clear_cache = true; //re-calculate taxes
 		}
 		
 		//We want to store the cart subtotal with shipping, in case it changes so we know we need to recalculate tax
-		if ( empty( $tax_session['shipping_cost'] ) || $shipping_cost != $tax_session['shipping_cost'] ) {
+		if ( isset( $tax_session['shipping_cost'] ) && $shipping_cost != $tax_session['shipping_cost'] ) {
 			$tax_session['shipping_cost'] = $shipping_cost;
 			$clear_cache = true; //re-calculate taxes
+		}
+		
+		if ( isset( $tax_session['applied_coupons'] ) && $serialized_coupons != $tax_session['applied_coupons'] ) {
+			$tax_session['applied_coupons'] = $serialized_coupons;
+			$clear_cache = true;
 		}
 		
 	} else {
@@ -121,8 +128,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 			if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] )
 				$default_rate = $key;
 		}
-
-		$applied_coupons = it_exchange_get_applied_coupons();
+		
 		if ( !empty( $applied_coupons['cart'] ) ) {
 			foreach( $applied_coupons['cart'] as $key => $coupon ) {
 					$product_id = get_post_meta( $coupon['id'], '_it-basic-product-id', true );
@@ -198,6 +204,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	$tax_session['product_taxes'] = $product_taxes;
 	$tax_session['taxes'] = $taxes;
 	$tax_session['total_taxes'] = $total_taxes;
+	
 	it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );
 									
 	return true;
