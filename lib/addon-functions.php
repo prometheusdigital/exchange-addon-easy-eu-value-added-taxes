@@ -116,6 +116,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		$tax_session['country'] = $address['country'];
 		$tax_session['cart_subtotal'] = $cart_subtotal;
 		$tax_session['shipping_cost'] = $shipping_cost;
+		$tax_session['applied_coupons'] = $serialized_coupons;
 	}
 	
 	if ( $clear_cache ) {
