@@ -52,7 +52,7 @@ function it_exchange_easy_eu_value_added_taxes_add_edit_product_vat_calculator()
 		
 			if ( 'default' === $_POST['type'] ) {
 				foreach( $settings['tax-rates'] as $tax_rate ) {
-					if ( 'checked' === $tax_rate['default'] ) {
+					if ( !empty( $tax_rate['default'] ) && 'checked' === $tax_rate['default'] ) {
 						$rate = $tax_rate['rate'];
 					}
 				}

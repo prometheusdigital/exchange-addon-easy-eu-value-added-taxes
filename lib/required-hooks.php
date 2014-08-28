@@ -73,7 +73,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_pric
 			
 			$default_rate = 0;
 			foreach ( $settings['tax-rates'] as $rate ) {
-				if ( $rate['default'] ) {
+				if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
 					$default_rate = $rate['rate'];
 				}
 			}
@@ -112,7 +112,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_va
 			
 			$default_rate = 0;
 			foreach ( $settings['tax-rates'] as $rate ) {
-				if ( $rate['default'] ) {
+				if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
 					$default_rate = $rate['rate'];
 				}
 			}

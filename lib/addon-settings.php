@@ -301,7 +301,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 	        	continue;
         	}
         	
-        	if ( 'checked' === $tax_rate['default'] )
+        	if ( !empty( $tax_rate['default'] ) && 'checked' === $tax_rate['default'] )
         		$default_set = true;
         }
         

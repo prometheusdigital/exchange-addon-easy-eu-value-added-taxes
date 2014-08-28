@@ -111,8 +111,6 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		$tax_session['shipping_cost'] = $shipping_cost;
 	}
 	
-	$clear_cache = true;
-	
 	if ( $clear_cache ) {
 	
 		$subtotals = array();
@@ -120,10 +118,9 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		$default_rate = 0;
 		foreach ( $settings['tax-rates'] as $key => $rate ) {
 			$subtotals[$key] = 0;
-			if ( $rate['default'] )
+			if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] )
 				$default_rate = $key;
 		}
-		
 
 		$applied_coupons = it_exchange_get_applied_coupons();
 		if ( !empty( $applied_coupons['cart'] ) ) {
