@@ -17,3 +17,6 @@
 	Changing nonce in VAT Session save
 	Fixing undefined index in tax session
 	Verify Tax Rates exist for Transaction Products before calculating
+1.0.8 - 2014-09-04 - Lew Ayotte, Elise Alley
+	Fixed default tax-rate bug
+	Consider Basic Coupons when calculating VAT for EU
