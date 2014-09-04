@@ -21,3 +21,4 @@
 	Fixed default tax-rate bug
 	Consider Basic Coupons when calculating VAT for EU
 	Fixed tax session when viewing invoices
+	Fix tax summary check on checkout page

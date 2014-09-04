@@ -119,7 +119,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		$tax_session['applied_coupons'] = $serialized_coupons;
 	}
 	
-	if ( $clear_cache || empty( $tax_session['product_taxes'] ) ||  empty( $tax_session['taxes'] ) ||  empty( $tax_session['total_taxes'] ) ) ) {
+	if ( $clear_cache || empty( $tax_session['product_taxes'] ) ||  empty( $tax_session['taxes'] ) ||  empty( $tax_session['total_taxes'] ) ) {
 	
 		$subtotals = array();
 		$product_taxes = array();
