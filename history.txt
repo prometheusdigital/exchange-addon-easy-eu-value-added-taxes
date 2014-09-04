@@ -20,3 +20,4 @@
 1.0.8 - 2014-09-04 - Lew Ayotte, Elise Alley
 	Fixed default tax-rate bug
 	Consider Basic Coupons when calculating VAT for EU
+	Fixed tax session when viewing invoices

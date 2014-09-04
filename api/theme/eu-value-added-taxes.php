@@ -113,7 +113,7 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 			$result .= '</div>';
 			$result .= '</div>';
 						
-			if ( !$tax_session['summary_only'] ) {
+			if ( !empty( $tax_session['summary_only'] ) && !$tax_session['summary_only'] ) {
 				foreach ( $tax_session['taxes'] as $tax ) {
 					if ( !empty( $tax['total'] ) ) {
 						$result .= '<div class="it-exchange-table-inner-row">';
