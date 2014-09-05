@@ -89,24 +89,24 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	if ( !empty( $tax_session ) ) {
 
 		//We want to store the cart subtotal, in case it changes so we know we need to recalculate tax
-		if ( isset( $tax_session['country'] ) && $address['country'] != $tax_session['country'] ) {
+		if ( !isset( $tax_session['country'] ) || $address['country'] != $tax_session['country'] ) {
 			$tax_session['country'] = $address['country'];
 			$clear_cache = true; //re-calculate taxes
 		}
 
 		//We want to store the cart subtotal, in case it changes so we know we need to recalculate tax
-		if ( isset( $tax_session['cart_subtotal'] ) && $cart_subtotal != $tax_session['cart_subtotal'] ) {
+		if ( !isset( $tax_session['cart_subtotal'] ) || $cart_subtotal != $tax_session['cart_subtotal'] ) {
 			$tax_session['cart_subtotal'] = $cart_subtotal;
 			$clear_cache = true; //re-calculate taxes
 		}
 		
 		//We want to store the cart subtotal with shipping, in case it changes so we know we need to recalculate tax
-		if ( isset( $tax_session['shipping_cost'] ) && $shipping_cost != $tax_session['shipping_cost'] ) {
+		if ( !isset( $tax_session['shipping_cost'] ) || $shipping_cost != $tax_session['shipping_cost'] ) {
 			$tax_session['shipping_cost'] = $shipping_cost;
 			$clear_cache = true; //re-calculate taxes
 		}
 		
-		if ( isset( $tax_session['applied_coupons'] ) && $serialized_coupons != $tax_session['applied_coupons'] ) {
+		if ( !isset( $tax_session['applied_coupons'] ) || $serialized_coupons != $tax_session['applied_coupons'] ) {
 			$tax_session['applied_coupons'] = $serialized_coupons;
 			$clear_cache = true;
 		}
@@ -118,7 +118,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		$tax_session['shipping_cost'] = $shipping_cost;
 		$tax_session['applied_coupons'] = $serialized_coupons;
 	}
-	
+		
 	if ( $clear_cache || empty( $tax_session['product_taxes'] ) ||  empty( $tax_session['taxes'] ) ||  empty( $tax_session['total_taxes'] ) ) {
 	
 		$subtotals = array();
