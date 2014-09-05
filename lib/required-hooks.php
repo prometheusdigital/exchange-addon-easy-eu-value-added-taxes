@@ -45,7 +45,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters() {
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes', true );
 
-	if ( $settings['price-includes-vat'] && empty( $tax_session['summary_only'] ) ) {
+	if ( !empty( $tax_session ) && $settings['price-includes-vat'] && empty( $tax_session['summary_only'] ) ) {
 		add_filter( 'it_exchange_api_theme_product_base_price', 'it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
 		add_filter( 'it_exchange_api_theme_cart_item_sub_total', 'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
 		add_filter( 'it_exchange_api_theme_cart_item_price', 'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
