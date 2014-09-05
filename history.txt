@@ -25,4 +25,3 @@
 	Better session cache checking, to refresh tax sessions information on changes in cart
 	Don't show 'including vat' tax for non EU customers on final total
 	Don't show tax summary for non EU-state customers
-
