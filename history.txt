@@ -22,3 +22,7 @@
 	Consider Basic Coupons when calculating VAT for EU
 	Fixed tax session when viewing invoices
 	Fix tax summary check on checkout page
+	Better session cache checking, to refresh tax sessions information on changes in cart
+	Don't show 'including vat' tax for non EU customers on final total
+	Don't show tax summary for non EU-state customers
+
