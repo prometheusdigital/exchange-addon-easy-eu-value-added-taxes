@@ -241,49 +241,50 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 	        $customer_country = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_customer_vat_country', true );
 	        $customer_vat = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_customer_vat_number', true );
 	    }
-											
-		$result .= $options['before'];
-		$result .= '<h3>' . $options['label'] . '</h3>';
-		$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s-%s', 'LION' ), $general_settings['company-base-country'], $settings['vat-number'] ) . '</p>';
-		if ( !empty( $customer_vat ) )
-			$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';
-		
-		$result .= '<div class="vat-summary-table it-exchange-table">';
-		$result .= '<div class="it-exchange-table-row vat-summary-table-row vat-summary-heading-row">';
-		
-		$result .= '<div class="vat-label-heading it-exchange-table-column">';
-		$result .= '<div class="it-exchange-table-column-inner">' . __( 'VAT Type', 'LION' ) . '</div>';
-		$result .= '</div>';
-		$result .= '<div class="vat-net-taxable-amount-heading it-exchange-table-column">';
-		$result .= '<div class="it-exchange-table-column-inner">' . __( 'Net Taxable Amount', 'LION' ) . '</div>';
-		$result .= '</div>';
-		
-		$result .= '</div>';
-		
-		if ( !empty( $settings['tax-rates'] ) && !empty( $tax_items ) ) {
-			foreach( $tax_items as $tax ) {
-				$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
-				$result .= '<div class="it-exchange-table-row">';
-				$result .= '<div class="vat-label it-exchange-table-column">';
-				$result .= '<div class="it-exchange-table-column-inner">';
-				$result .= sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
-				$result .= '</div>';
-				$result .= '</div>';
-		
-				if ( $options['format_price'] )
-					$net = it_exchange_format_price( $net );
+		if ( !empty( $tax_items ) ) {							
+			$result .= $options['before'];
+			$result .= '<h3>' . $options['label'] . '</h3>';
+			$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s-%s', 'LION' ), $general_settings['company-base-country'], $settings['vat-number'] ) . '</p>';
+			if ( !empty( $customer_vat ) )
+				$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';
+			
+			$result .= '<div class="vat-summary-table it-exchange-table">';
+			$result .= '<div class="it-exchange-table-row vat-summary-table-row vat-summary-heading-row">';
+			
+			$result .= '<div class="vat-label-heading it-exchange-table-column">';
+			$result .= '<div class="it-exchange-table-column-inner">' . __( 'VAT Type', 'LION' ) . '</div>';
+			$result .= '</div>';
+			$result .= '<div class="vat-net-taxable-amount-heading it-exchange-table-column">';
+			$result .= '<div class="it-exchange-table-column-inner">' . __( 'Net Taxable Amount', 'LION' ) . '</div>';
+			$result .= '</div>';
+			
+			$result .= '</div>';
+			
+			if ( !empty( $settings['tax-rates'] ) && !empty( $tax_items ) ) {
+				foreach( $tax_items as $tax ) {
+					$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
+					$result .= '<div class="it-exchange-table-row">';
+					$result .= '<div class="vat-label it-exchange-table-column">';
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .= sprintf( __( '%s (%s%%)', 'LION' ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+					$result .= '</div>';
+					$result .= '</div>';
+			
+					if ( $options['format_price'] )
+						$net = it_exchange_format_price( $net );
+						
+					$result .= '<div class="vat-net-taxable-amount it-exchange-table-column">';
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .= $net;
+					$result .= '</div>';
+					$result .= '</div>';
 					
-				$result .= '<div class="vat-net-taxable-amount it-exchange-table-column">';
-				$result .= '<div class="it-exchange-table-column-inner">';
-				$result .= $net;
-				$result .= '</div>';
-				$result .= '</div>';
-				
-				$result .= '</div>';
+					$result .= '</div>';
+				}
 			}
+			$result .= '</div>';
+			$result .= $options['after'];
 		}
-		$result .= '</div>';
-		$result .= $options['after'];
 		
 		return $result;
 
