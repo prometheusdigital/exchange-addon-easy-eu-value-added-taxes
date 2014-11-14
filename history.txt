@@ -25,3 +25,6 @@
 	Better session cache checking, to refresh tax sessions information on changes in cart
 	Don't show 'including vat' tax for non EU customers on final total
 	Don't show tax summary for non EU-state customers
+1.0.9 - 2014-11-14 - Packaging Bot (lib/updater)
+	Enhancement: Reduced caching to allow updates to appear more quickly.
+	Enhancement: Authenticating users now uses the new authentication system.
