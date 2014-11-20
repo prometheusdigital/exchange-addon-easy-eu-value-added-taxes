@@ -107,7 +107,9 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 				$result .= $tax_session['vat_country'] .'-'. $tax_session['vat_number'];
 				
 			$result .= '</div>';
+			$result .= '<div class="it-exchange-add-edit-vat-number-div">';
 			$result .= '<a href="#" id="it-exchange-add-edit-vat-number">' . sprintf( __( '%s EU VAT Number', 'LION' ), ( !empty( $tax_session['vat_number'] ) ? __( 'Edit', 'LION' ) : __( 'Add', 'LION' ) ) ) . '</a>';
+			$result .= '</div>';
 			$result .= '</div>';
 			
 			$result .= '</div>';
@@ -140,12 +142,6 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 					}
 				}
 			}
-			
-			
-			
-			
-			
-			
 		}
 		$result .= $options['after'];	
 		
