@@ -18,8 +18,9 @@ function it_exchange_easy_eu_value_added_taxes_addon_ajax_add_new_rate() {
 	if ( isset( $_REQUEST['key'] ) ) { //use isset() in case count is 0
 		
 		$key = $_REQUEST['key'];
+		$member_state = $_REQUEST['memberstate'];
 
-		die( it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key ) );		
+		die( it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, array(), $member_state ) );		
 	
 	}
 	

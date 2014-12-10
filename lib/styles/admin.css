@@ -21,12 +21,30 @@
 #value-added-tax-rate-table .block-column-4 {width: 20%;}
 #value-added-tax-rate-table .block-column-delete {width: 5%; float:right;}
 
+#value-added-tax-vat-moss-rate-tables .hidden-vat-country { display: none; }
+.value-added-tax-vat-moss-rate-table {overflow: hidden;background: #FFF;border: 1px solid #DEDEDE;width: 100%;max-width: 800px;}
+.value-added-tax-vat-moss-rate-table .block-row {border-bottom: 1px solid #DEDEDE;overflow:hidden;}
+.value-added-tax-vat-moss-rate-table .heading-column {font-weight: bold;}
+.value-added-tax-vat-moss-rate-table .heading-column p.heading {margin: 0;}
+
+.value-added-tax-vat-moss-rate-table .block-column {float:left;padding: .5em;}
+.value-added-tax-vat-moss-rate-table .block-column input,
+.value-added-tax-vat-moss-rate-table .block-column select {max-width: 100%;}
+.value-added-tax-vat-moss-rate-table .block-column input {max-width: 75%;}
+.value-added-tax-vat-moss-rate-table .block-column select {margin: 10px 0;}
+.value-added-tax-vat-moss-rate-table .block-column input[type="checkbox"] {margin: 15px 0;}
+.value-added-tax-vat-moss-rate-table .block-column-1 {width: 30%;}
+.value-added-tax-vat-moss-rate-table .block-column-2 {width: 15%;}
+.value-added-tax-vat-moss-rate-table .block-column-3 {width: 20%;}
+.value-added-tax-vat-moss-rate-table .block-column-4 {width: 20%;}
+.value-added-tax-vat-moss-rate-table .block-column-delete {width: 5%; float:right;}
+
 .it-exchange-remove-item {-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;display:inline-block;width:20px;height:20px;margin-top:12px;margin-right:12px;border:2px solid transparent;border-radius:50%;font-size:14px;line-height:1.4em;text-decoration:none;text-align:center;color:#BBB;-webkit-transition:all .2s linear;-moz-transition:all .2s linear;transition:all .2s linear;}
 .it-exchange-remove-item:active{outline:none;opacity:.8;}
 .it-exchange-remove-item:hover{border-color:#E1797A !important;color:#E1797A;}
 
-.it-exchange-easy-eu-value-added-taxes-addon-default-checkmark{display:block;width:15px;height:15px;background:url('../images/check-gray.png') center center no-repeat;cursor:pointer;margin: 1.25em;}
-.it-exchange-easy-eu-value-added-taxes-addon-default-checkmark:hover,
-.it-exchange-easy-eu-value-added-taxes-addon-default-checkmark-checked{background:url('../images/check-green.png') center center no-repeat;border:none;cursor:pointer;}
+.block-column-default span{display:block;width:15px;height:15px;background:url('../images/check-gray.png') center center no-repeat;cursor:pointer;margin: 1.25em;}
+.block-column-default span:hover,
+.block-column-default span.it-exchange-easy-eu-value-added-taxes-addon-default-checkmark-checked{background:url('../images/check-green.png') center center no-repeat;border:none;cursor:pointer;}
 
 .it-exchange-easy-eu-value-added-taxes-addon-settings .add-new {margin-bottom: 2em;}

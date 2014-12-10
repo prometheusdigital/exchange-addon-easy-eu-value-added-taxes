@@ -52,6 +52,8 @@ function it_exchange_easy_eu_value_added_taxes_default_settings( $defaults ) {
 			),
 		),
 		'price-includes-vat' => true,
+		'default-vat-moss-products' => array( 'digital-downloads-product-type', 'membership-product-type' ),
+		'vat-moss-tax-rates' => array(),
 	);
 	return $defaults;
 }
@@ -177,8 +179,6 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 					$hidden_class = 'hidden';
 
 				echo '<img src="' . ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/images/check.png" class="check ' . $hidden_class . '" id="it-exchange-vat-number-verified" title="' . __( 'VAT Number Verified', 'LION' ) . '" height="15" >';
-
-				$form->add_hidden( 'tax-rates' ); 
 				?>
 			</div>
 			
@@ -187,6 +187,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			</p>
 			<div id="value-added-tax-rate-table">
 				<?php
+				$form->add_hidden( 'tax-rates' ); 
 				$headings = array(
 					__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' ), __( 'Default?', 'LION' )
 				);
@@ -203,7 +204,6 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 				</div>
 				<?php
 				$last_key = 0;
-				//Alpha Sort
 				$tax_rates = $settings['tax-rates'];
 				if ( !empty( $tax_rates ) ) {
 					ksort( $tax_rates );
@@ -227,6 +227,78 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 					<label for="price-includes-vat"><?php _e( 'Add VAT on Product Page?', 'LION' ) ?> <span class="tip" title="<?php _e( 'Displays the product price with VAT included automatically.', 'LION' ); ?>">i</span> </label>
 					<?php $form->add_check_box( 'price-includes-vat' ); ?>
 				</p>
+			</div>
+			
+			<div>
+				<p>
+					<label for="vat-moss-products"><?php _e( 'Default VAT MOSS Products:', 'LION' ) ?> <span class="tip" title="<?php _e( 'Which products have VAT MOSS turned on by default.', 'LION' ); ?>">i</span> </label>
+					<select id="vat-moss-products" name="vat-moss-products" multiple="multiple" size="5">
+					<?php
+					foreach( it_exchange_get_enabled_addons( array( 'category' => 'product-type' ) ) as $type ) {
+						echo '<option value="' . $type['slug'] . '" ' . selected( in_array( $type['slug'], $settings['default-vat-moss-products'] ), true, false ) . ' >' . $type['name'] . '</option>';
+					}
+					?>
+					</select>
+				</p>
+			</div>
+			
+			<p>
+				<label for="easy-eu-value-added-taxes-vat-moss-tax-rates"><?php _e( 'VAT MOSS Tax Rates', 'LION' ) ?> <span class="tip" title="<?php _e( 'Add a Tax Label and a Tax Rate, select whether or not to apply tax to shipping and select a default Tax Rate for each Member State.', 'LION' ); ?>">i</span> </label>
+			</p>
+			<div id="value-added-tax-vat-moss-rate-tables">
+			<?php
+			$form->add_hidden( 'vat-moss-tax-rates' ); 
+			$vat_moss_tax_rates = $settings['vat-moss-tax-rates'];
+			foreach ( $memberstates as $memberstate_abbrev => $memberstate ) {
+				?>
+				<?php
+				$headings = array(
+					__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' ), __( 'Default?', 'LION' )
+				);
+				if ( $settings['vat-country'] === $memberstate_abbrev ) {
+					$hidden = 'hidden-vat-country';
+				} else {
+					$hidden = '';
+				}
+				?>
+				<div id="value-added-tax-vat-moss-rate-for-<?php echo $memberstate_abbrev; ?>" class="<?php echo $hidden; ?>">
+					<p>
+						<label for="easy-eu-value-added-taxes-vat-moss-tax-rate"><strong><?php echo $memberstate; ?></strong></label>
+					</p>
+					<div class="value-added-tax-vat-moss-rate-table">
+						<div class="heading-row block-row">
+							<?php $column = 0; ?>
+							<?php foreach ( (array) $headings as $heading ) : ?>
+							<?php $column++ ?>
+							<div class="heading-column block-column block-column-<?php echo $column; ?>">
+							<p class="heading"><?php echo $heading; ?></p>
+							</div>
+							<?php endforeach; ?>
+							<div class="heading-column block-column block-column-delete"></div>
+						</div>
+						<?php
+						$last_key = 0;
+						if ( !empty( $vat_moss_tax_rates[$memberstate_abbrev] ) ) {
+							ksort( $vat_moss_tax_rates[$memberstate_abbrev] );
+							foreach( $vat_moss_tax_rates[$memberstate_abbrev] as $key => $rate ) {
+								echo it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate, $memberstate_abbrev );
+								$last_key = $key;
+							}
+						}
+						?>
+					</div>
+					
+					<script type="text/javascript" charset="utf-8">
+			            var it_exchange_easy_eu_value_added_taxes_addon_vat_moss_<?php echo $memberstate_abbrev; ?>_rate_iteration = <?php echo $last_key; ?>;
+			        </script>
+		
+					<p class="add-new">
+						<input value="<?php printf( __( 'Add New Tax Rate for %s', 'LION' ), $memberstate ); ?>" class="new-vat-moss-tax-rate button button-secondary button-large" data-memberstate="<?php echo $memberstate_abbrev; ?>" name="new-vat-moss-tax-rate" type="button">
+					</p>
+				</div>
+				<?php
+			}
+			?>
 			</div>
             
 		</div>
@@ -303,6 +375,23 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
         	
         	if ( !empty( $tax_rate['default'] ) && 'checked' === $tax_rate['default'] )
         		$default_set = true;
+        }
+        
+        foreach( $values['vat-moss-tax-rates'] as $key => $tax_rates ) {
+	        foreach( $tax_rates as $tax_rate ) {
+	        	if ( empty( $tax_rate['label'] ) ) {
+	                $errors[] = sprintf( __( 'Missing or Invalid VAT Label for %s.', 'LION' ), $key );
+		        	continue;
+	        	}
+	        	
+	        	if ( !isset( $tax_rate['rate'] ) || !is_numeric( $tax_rate['rate'] ) ) {
+	                $errors[] = sprintf( __( 'Missing or Invalid Tax Rate for %s in %s.', 'LION' ), $tax_rate['label'], $key );
+		        	continue;
+	        	}
+	        	
+	        	if ( !empty( $tax_rate['default'] ) && 'checked' === $tax_rate['default'] )
+	        		$default_set = true;
+        	}
         }
         
         if ( !$default_set )

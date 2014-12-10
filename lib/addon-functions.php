@@ -5,7 +5,7 @@
  * @since 1.0.0
 */
 
-function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate=array() ) {
+function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate=array(), $memberstate=false ) {
 	if ( empty( $rate ) ) { //just set some defaults
 		$rate = array( //Member State
 				'label'    => '',
@@ -14,25 +14,33 @@ function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate
 				'default'  => 'unchecked',
 			);
 	}
+	
+	if ( !empty( $memberstate ) ) {
+		$name = 'it-exchange-add-on-easy-eu-value-added-taxes-vat-moss-tax-rates[' . $memberstate . '][' . $key . ']';
+		$default_label = $memberstate . '-';
+	} else {
+		$name = 'it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . ']';
+		$default_label = '';
+	}
 		
 	$output  = '<div class="item-row block-row">'; //start block-row
 	
 	$output .= '<div class="item-column block-column block-column-1">';
-	$output .= '<input type="text" name="it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . '][label]" value="' . $rate['label'] . '" />';
+	$output .= '<input type="text" name="' . $name . '[label]" value="' . $rate['label'] . '" />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-2">';
-	$output .= '<input type="text" name="it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . '][rate]" value="' . $rate['rate'] . '" />';
+	$output .= '<input type="text" name="' . $name . '[rate]" value="' . $rate['rate'] . '" />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-3">';
 	$shipping = empty( $rate['shipping'] ) ? false : true;
-	$output .= '<input type="checkbox" name="it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . '][shipping]" ' . checked( $shipping, true, false ) . ' />';
+	$output .= '<input type="checkbox" name="' . $name . '[shipping]" ' . checked( $shipping, true, false ) . ' />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-default">';
 	$output .= '<span class="it-exchange-easy-eu-value-added-taxes-addon-default-checkmark it-exchange-easy-eu-value-added-taxes-addon-default-checkmark-' . $rate['default'] . '"></span>';	
-	$output .= '<input type="hidden" class="it-exchange-easy-eu-value-added-taxes-addon-default-checkmark" name="it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . '][default]" value="' . $rate['default'] . '" />';
+	$output .= '<input type="hidden" class="it-exchange-easy-eu-value-added-taxes-addon-default-checkmark" name="' . $name . '[default]" value="' . $rate['default'] . '" />';
 	$output .= '</div>';
 	
 	$output .= '<div class="item-column block-column block-column-delete">';
