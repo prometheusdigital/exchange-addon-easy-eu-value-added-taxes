@@ -74,8 +74,9 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 			$tax_session['vat_country'] = $address['country'];
 	}
 	
-	if ( empty( $tax_session['vat_number'] ) || $settings['vat-country'] == $address['country'] ) {
-		//Charge Tax no VAT Number is supplied or if the customer is purchasing from the same member state
+	$tax_session['intrastate'] = $settings['vat-country'] === $address['country']; //Is this an intrastate transaction, used for determining VAT MOSS
+	if ( empty( $tax_session['vat_number'] ) || $tax_session['intrastate'] ) {
+		//Charge Tax if no VAT Number is supplied or if the customer is purchasing from the same member state
 		$tax_session['summary_only'] = false;
 	} else {
 		//Otherwise, don't charge tax, just summarize the VAT
@@ -86,10 +87,15 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		return false;
 	
 	$cart_subtotal = 0;
+	$vat_moss_cart_subtotal = 0;
 	foreach( (array) $products as $product ) {
 		$cart_subtotal += it_exchange_get_cart_product_subtotal( $product, false );
+		if ( it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
+			$vat_moss_cart_subtotal += it_exchange_get_cart_product_subtotal( $product, false );
+		}
 	}
 	$cart_subtotal = apply_filters( 'it_exchange_get_cart_subtotal', $cart_subtotal );
+	$vat_moss_cart_subtotal = apply_filters( 'it_exchange_get_cart_subtotal', $vat_moss_cart_subtotal );
 	$shipping_cost = it_exchange_get_cart_shipping_cost( false, false );
 	$applied_coupons = it_exchange_get_applied_coupons();
 	$serialized_coupons = maybe_serialize( $applied_coupons );
@@ -105,6 +111,12 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		//We want to store the cart subtotal, in case it changes so we know we need to recalculate tax
 		if ( !isset( $tax_session['cart_subtotal'] ) || $cart_subtotal != $tax_session['cart_subtotal'] ) {
 			$tax_session['cart_subtotal'] = $cart_subtotal;
+			$clear_cache = true; //re-calculate taxes
+		}
+
+		//We want to store the cart subtotal, in case it changes so we know we need to recalculate tax
+		if ( !isset( $tax_session['vat_moss_cart_subtotal'] ) || $cart_subtotal != $tax_session['vat_moss_cart_subtotal'] ) {
+			$tax_session['vat_moss_cart_subtotal'] = $vat_moss_cart_subtotal;
 			$clear_cache = true; //re-calculate taxes
 		}
 		
@@ -123,25 +135,46 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		$clear_cache = true; //not really any cache, but it's easier this way :)
 		$tax_session['country'] = $address['country'];
 		$tax_session['cart_subtotal'] = $cart_subtotal;
+		$tax_session['vat_moss_cart_subtotal'] = $vat_moss_cart_subtotal;
 		$tax_session['shipping_cost'] = $shipping_cost;
 		$tax_session['applied_coupons'] = $serialized_coupons;
 	}
+	
+	$clear_cache = true;
 		
-	if ( $clear_cache || empty( $tax_session['product_taxes'] ) ||  empty( $tax_session['taxes'] ) ||  empty( $tax_session['total_taxes'] ) ) {
+	if ( $clear_cache || empty( $tax_session['product_taxes'] ) ||  empty( $tax_session['taxes'] ) ||  empty( $tax_session['vat_moss_taxes'] ) ||  empty( $tax_session['total_taxes'] ) ) {
 	
 		$subtotals = array();
+		$vat_moss_subtotals = array();
 		$product_taxes = array();
 		$default_rate = 0;
-		foreach ( $settings['tax-rates'] as $key => $rate ) {
+		$tax_rates = $settings['tax-rates'];
+		
+		foreach ( $tax_rates as $key => $rate ) {
 			$subtotals[$key] = 0;
-			if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] )
+			if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
 				$default_rate = $key;
+			}
 		}
+		
+		if ( !empty( $settings['vat-moss-tax-rates'][$tax_session['country']] ) ) {
+			$vat_moss_tax_rates = $settings['vat-moss-tax-rates'][$tax_session['country']];
+		} else {
+			$vat_moss_tax_rates = $settings['tax-rates']; //Just to have something to fall back on.
+		}
+		
+		foreach ( $vat_moss_tax_rates as $key => $rate ) {
+			$vat_moss_subtotals[$key] = 0;
+			if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
+				$default_rate = $key;
+			}
+		}
+
 		
 		if ( !empty( $applied_coupons['cart'] ) ) {
 			foreach( $applied_coupons['cart'] as $key => $coupon ) {
-					$product_id = get_post_meta( $coupon['id'], '_it-basic-product-id', true );
-					$applied_coupons['cart'][$key]['product_id'] = $product_id;
+				$product_id = get_post_meta( $coupon['id'], '_it-basic-product-id', true );
+				$applied_coupons['cart'][$key]['product_id'] = $product_id;
 			}
 		}
 		$product_count = it_exchange_get_cart_products_count( true );
@@ -150,13 +183,6 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	
 			if ( it_exchange_product_supports_feature( $product['product_id'], 'value-added-taxes' ) ) {
 				if ( !it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
-					$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
-					
-					if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type )
-						$tax_type = $default_rate;
-						
-					if ( empty( $subtotals[$tax_type] ) )
-						$subtotals[$tax_type] = 0;
 						
 					$product_subtotal = it_exchange_get_cart_product_subtotal( $product, false );
 						
@@ -180,9 +206,40 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 						}
 					}
 					
-					if ( $product_subtotal > 0 ) {
-						$subtotals[$tax_type] += $product_subtotal;
-						$product_taxes[$product['product_id']] = $tax_type;
+					if ( empty( $tax_session['intrastate'] ) && it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
+
+						$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss-tax-types', 'vat-moss-country' => $tax_session['country'] ) );
+
+						if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type ) {
+							$tax_type = $default_rate;
+						}
+							
+						if ( empty( $vat_moss_subtotals[$tax_type] ) ) {
+							$vat_moss_subtotals[$tax_type] = 0;
+						}
+						
+						if ( $product_subtotal > 0 ) {
+							$vat_moss_subtotals[$tax_type] += $product_subtotal;
+							$product_taxes[$product['product_id']] = $tax_type;
+						}
+						
+					} else {
+
+						$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
+
+						if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type ) {
+							$tax_type = $default_rate;
+						}
+							
+						if ( empty( $subtotals[$tax_type] ) ) {
+							$subtotals[$tax_type] = 0;
+						}
+						
+						if ( $product_subtotal > 0 ) {
+							$subtotals[$tax_type] += $product_subtotal;
+							$product_taxes[$product['product_id']] = $tax_type;
+						}
+						
 					}
 				}
 			}
@@ -192,26 +249,45 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		$total_taxes = 0;
 		foreach( $subtotals as $key => $subtotal ) {
 			$taxable_amount = 0;
-			if ( !empty( $settings['tax-rates'][$key]['shipping'] ) ) {
+			if ( !empty( $tax_rates[$key]['shipping'] ) ) {
 				$taxable_amount = $subtotal + $shipping_cost;
 			} else {
 				$taxable_amount = $subtotal;
 			}
-			$tax = $taxable_amount * ( $settings['tax-rates'][$key]['rate'] / 100 );
-			$taxes[$key]['tax-rate'] = $settings['tax-rates'][$key];
+			$tax = $taxable_amount * ( $tax_rates[$key]['rate'] / 100 );
+			$taxes[$key]['tax-rate'] = $tax_rates[$key];
 			$taxes[$key]['total'] = $tax;
 			$taxes[$key]['taxable_amount'] = $taxable_amount;
+			$taxes[$key]['country'] = $settings['vat-country'];
+			$total_taxes += $tax;
+		}
+		
+		$vat_moss_taxes = array();
+		foreach( $vat_moss_subtotals as $key => $subtotal ) {
+			$taxable_amount = 0;
+			if ( !empty( $vat_moss_tax_rates[$key]['shipping'] ) ) {
+				$taxable_amount = $subtotal + $shipping_cost;
+			} else {
+				$taxable_amount = $subtotal;
+			}
+			$tax = $taxable_amount * ( $vat_moss_tax_rates[$key]['rate'] / 100 );
+			$vat_moss_taxes[$key]['tax-rate'] = $vat_moss_tax_rates[$key];
+			$vat_moss_taxes[$key]['total'] = $tax;
+			$vat_moss_taxes[$key]['taxable_amount'] = $taxable_amount;
+			$vat_moss_taxes[$key]['country'] = $tax_session['country'];
 			$total_taxes += $tax;
 		}
 		
 	} else {
 		$product_taxes = $tax_session['product_taxes'];
 		$taxes = $tax_session['taxes'];
+		$vat_moss_taxes = $tax_session['vat_moss_taxes'];
 		$total_taxes = $tax_session['total_taxes'];
 	}
 	
 	$tax_session['product_taxes'] = $product_taxes;
 	$tax_session['taxes'] = $taxes;
+	$tax_session['vat_moss_taxes'] = $vat_moss_taxes;
 	$tax_session['total_taxes'] = $total_taxes;
 	
 	it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );

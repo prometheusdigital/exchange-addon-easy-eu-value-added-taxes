@@ -42,15 +42,16 @@ add_action( 'admin_notices', 'it_exchange_easy_eu_value_added_taxes_addon_show_v
  * @return void
 */
 function it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters() {
+	it_exchange_easy_eu_value_added_taxes_setup_session();
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes', true );
 
 	if ( !empty( $tax_session ) && $settings['price-includes-vat'] && empty( $tax_session['summary_only'] ) ) {
-		add_filter( 'it_exchange_api_theme_product_base_price', 'it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
-		add_filter( 'it_exchange_api_theme_cart_item_sub_total', 'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
-		add_filter( 'it_exchange_api_theme_cart_item_price', 'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
-		add_filter( 'it_exchange_api_theme_cart_total', 'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_total' );
-		add_filter( 'it_exchange_api_theme_transaction_product_attribute', 'it_exchange_easy_eu_value_added_taxes_api_theme_transaction_product_attribute', 10, 4 );
+		add_filter( 'it_exchange_api_theme_product_base_price',            'it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
+		add_filter( 'it_exchange_api_theme_cart_item_sub_total',           'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
+		add_filter( 'it_exchange_api_theme_cart_item_price',               'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
+		add_filter( 'it_exchange_api_theme_cart_total',                    'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_total' );
+		//add_filter( 'it_exchange_api_theme_transaction_product_attribute', 'it_exchange_easy_eu_value_added_taxes_api_theme_transaction_product_attribute', 10, 4 );
 	}
 }
 add_action( 'init', 'it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters' );
@@ -63,28 +64,48 @@ add_action( 'init', 'it_exchange_easy_eu_value_added_taxes_addon_include_vat_fil
  * @return void
 */
 function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_price( $price, $product_id ) {
-	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 	
 	if ( it_exchange_product_supports_feature( $product_id, 'value-added-taxes' ) ) {
 		if ( !it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
-			
+			$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+			$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+			$vat_moss_tax_type = it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'vat-moss-tax-types', 'vat-moss-country' => $tax_session['country'] ) );
+						
 			$price = it_exchange_convert_to_database_number( $price );
 			$price = it_exchange_convert_from_database_number( $price );
 			
 			$default_rate = 0;
-			foreach ( $settings['tax-rates'] as $rate ) {
-				if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
-					$default_rate = $rate['rate'];
+			
+			if ( it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) && empty( $tax_session['intrastate'] ) && !empty( $vat_moss_tax_type ) ) {
+				
+				foreach ( $tax_session['vat_moss_taxes'] as $rate ) {
+					if ( !empty( $rate['tax-rate']['default'] ) && 'checked' === $rate['tax-rate']['default'] ) {
+						$default_rate = $rate['tax-rate']['rate'];
+					}
 				}
+	
+				if ( 'default' === $vat_moss_tax_type || '' === $vat_moss_tax_type || false === $vat_moss_tax_type )
+					$tax_rate = $default_rate;
+				else
+					$tax_rate = $tax_session['vat_moss_taxes'][$vat_moss_tax_type]['rate'];
+					
+			} else {
+				
+				foreach ( $settings['tax-rates'] as $rate ) {
+					if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
+						$default_rate = $rate['rate'];
+					}
+				}
+				
+				$tax_type = it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'type' ) );
+	
+				if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type )
+					$tax_rate = $default_rate;
+				else
+					$tax_rate = $settings['tax-rates'][$tax_type]['rate'];
+			
 			}
 			
-			$tax_type = it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'type' ) );
-
-			if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type )
-				$tax_rate = $default_rate;
-			else
-				$tax_rate = $settings['tax-rates'][$tax_type]['rate'];
-
 			$price *= ( ( 100 + $tax_rate ) / 100 );
 			$price = it_exchange_format_price( $price ) . ' <span class="ite-euvat-incl-vat-class">' . __( 'incl. VAT', 'LION' ) . '</span>';
 
@@ -102,27 +123,49 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_pric
  * @return void
 */
 function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat( $subtotal, $cart_item ) {
-	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 	
 	if ( it_exchange_product_supports_feature( $cart_item['product_id'], 'value-added-taxes' ) ) {
 		if ( !it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
-			
+			$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+			$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+			$vat_moss_tax_type = it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss-tax-types', 'vat-moss-country' => $tax_session['country'] ) );
+
 			$subtotal = it_exchange_convert_to_database_number( $subtotal );
 			$subtotal = it_exchange_convert_from_database_number( $subtotal );
 			
 			$default_rate = 0;
-			foreach ( $settings['tax-rates'] as $rate ) {
-				if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
-					$default_rate = $rate['rate'];
-				}
-			}
 			
-			$tax_type = it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
+			if ( it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) && empty( $tax_session['intrastate'] ) && !empty( $vat_moss_tax_type ) ) {
 
-			if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type )
-				$tax_rate = $default_rate;
-			else
-				$tax_rate = $settings['tax-rates'][$tax_type]['rate'];
+				foreach ( $tax_session['vat_moss_taxes'] as $rate ) {
+					if ( !empty( $rate['tax-rate']['default'] ) && 'checked' === $rate['tax-rate']['default'] ) {
+						$default_rate = $rate['tax-rate']['rate'];
+					}
+				}
+				
+				if ( 'default' === $vat_moss_tax_type || '' === $vat_moss_tax_type || false === $vat_moss_tax_type )
+					$tax_rate = $default_rate;
+				else
+					$tax_rate = $tax_session['vat_moss_taxes'][$vat_moss_tax_type]['rate'];
+					
+			} else {
+				
+				$tax_rates = $settings['tax-rates'];
+				
+				foreach ( $settings['tax-rates'] as $rate ) {
+					if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
+						$default_rate = $rate['rate'];
+					}
+				}
+				
+				$tax_type = it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
+	
+				if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type )
+					$tax_rate = $default_rate;
+				else
+					$tax_rate = $tax_rates[$tax_type]['rate'];
+				
+			}
 
 			$subtotal *= ( ( 100 + $tax_rate ) / 100 );
 			$subtotal = it_exchange_format_price( $subtotal );
@@ -153,6 +196,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_total( $tota
 */
 function it_exchange_easy_eu_value_added_taxes_api_theme_transaction_product_attribute( $attribute, $options, $transaction, $product ) {
 	if ( 'product_base_price' == $options['attribute'] ) {
+		ITUtility::print_r( 'here' );
         $summary_only = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_summary_only', true );
         
         if ( !$summary_only ) {
@@ -466,6 +510,9 @@ function it_exchange_easy_eu_value_added_taxes_transaction_hook( $transaction_id
 	
 	if ( !empty( $tax_session['taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_eu_value_added_taxes', $tax_session['taxes'] );
+	}
+	if ( !empty( $tax_session['vat_moss_taxes'] ) ) {
+		update_post_meta( $transaction_id, '_it_exchange_easy_eu_value_added_vat_moss_taxes', $tax_session['vat_moss_taxes'] );
 	}
 	if ( !empty( $tax_session['product_taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_eu_value_added_taxes_product_taxes', $tax_session['product_taxes'] );

@@ -297,7 +297,16 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 					return in_array( $product_type, $settings['default-vat-moss-products'] );
 				}
 			case 'vat-moss-tax-types':
-				return get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-vat-moss-tax-types', true );
+				$vat_most_tax_types = get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-vat-moss-tax-types', true );
+				if ( !empty( $options['vat-moss-country'] ) ) {
+					if ( !empty( $vat_most_tax_types[$options['vat-moss-country']] ) ) {
+						return $vat_most_tax_types[$options['vat-moss-country']];
+					} else {
+						return false;
+					}
+				} else {
+					return $vat_most_tax_types;
+				}
 			case 'exempt':
 				return get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-exempt', true );
 			case 'type':
