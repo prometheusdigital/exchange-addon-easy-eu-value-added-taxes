@@ -42,7 +42,10 @@ add_action( 'admin_notices', 'it_exchange_easy_eu_value_added_taxes_addon_show_v
  * @return void
 */
 function it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters() {
-	it_exchange_easy_eu_value_added_taxes_setup_session();
+	if ( !is_admin() ) {
+		it_exchange_easy_eu_value_added_taxes_setup_session();
+	}
+	
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes', true );
 
