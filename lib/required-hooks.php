@@ -79,7 +79,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_pric
 			
 			$default_rate = 0;
 			
-			if ( it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) && empty( $tax_session['intrastate'] ) && !empty( $vat_moss_tax_type ) ) {
+			if ( 'on' === it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) && empty( $tax_session['intrastate'] ) && !empty( $vat_moss_tax_type ) ) {
 				
 				foreach ( $tax_session['vat_moss_taxes'] as $rate ) {
 					if ( !empty( $rate['tax-rate']['default'] ) && 'checked' === $rate['tax-rate']['default'] ) {
@@ -138,7 +138,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_va
 			
 			$default_rate = 0;
 			
-			if ( it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) && empty( $tax_session['intrastate'] ) && !empty( $vat_moss_tax_type ) ) {
+			if ( 'on' === it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) && empty( $tax_session['intrastate'] ) && !empty( $vat_moss_tax_type ) ) {
 
 				foreach ( $tax_session['vat_moss_taxes'] as $rate ) {
 					if ( !empty( $rate['tax-rate']['default'] ) && 'checked' === $rate['tax-rate']['default'] ) {

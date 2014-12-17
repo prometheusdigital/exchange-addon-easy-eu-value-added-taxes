@@ -164,12 +164,11 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		
 		<p>
             <label for="easy-eu-value-added-taxes-value-added-taxes-vat-moss"><?php _e( 'Enable VAT MOSS?', 'LION' ) ?></label>
-			<input type="checkbox" name="it-exchange-add-on-easy-eu-value-added-taxes-vat-moss" id="vat-moss" <?php checked( $vat_moss ); ?> />
+			<input type="checkbox" name="it-exchange-add-on-easy-eu-value-added-taxes-vat-moss" id="vat-moss" <?php checked( $vat_moss, 'on' ); ?> />
         </p>
         
 		<?php
-			
-		if ( !empty( $vat_moss ) ) {
+		if ( 'on' === $vat_moss ) {
 			$display = '';
 		} else {
 			$display = 'hide-if-js ';
@@ -233,7 +232,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		it_exchange_update_product_feature( $product_id, 'value-added-taxes', $tax_type, array( 'setting' => 'type' ) );
 
 		// Get new value from post
-		$vat_moss = empty( $_POST['it-exchange-add-on-easy-eu-value-added-taxes-value-added-taxes-vat-moss'] ) ? false : true;
+		$vat_moss = empty( $_POST['it-exchange-add-on-easy-eu-value-added-taxes-vat-moss'] ) ? 'off' : 'on';
 
 		// Save new value
 		it_exchange_update_product_feature( $product_id, 'value-added-taxes', $vat_moss, array( 'setting' => 'vat-moss' ) );
@@ -294,7 +293,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 				} else {
 					$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 					$product_type = it_exchange_get_product_type( $product_id );
-					return in_array( $product_type, $settings['default-vat-moss-products'] );
+					return in_array( $product_type, $settings['default-vat-moss-products'] ) ? 'on' : 'off';
 				}
 			case 'vat-moss-tax-types':
 				$vat_most_tax_types = get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-vat-moss-tax-types', true );

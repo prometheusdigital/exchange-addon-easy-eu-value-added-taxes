@@ -90,7 +90,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	$vat_moss_cart_subtotal = 0;
 	foreach( (array) $products as $product ) {
 		$cart_subtotal += it_exchange_get_cart_product_subtotal( $product, false );
-		if ( it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
+		if ( 'on' === it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
 			$vat_moss_cart_subtotal += it_exchange_get_cart_product_subtotal( $product, false );
 		}
 	}
@@ -206,7 +206,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 						}
 					}
 					
-					if ( empty( $tax_session['intrastate'] ) && it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
+					if ( empty( $tax_session['intrastate'] ) && 'on' === it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
 
 						$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss-tax-types', 'vat-moss-country' => $tax_session['country'] ) );
 
