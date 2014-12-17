@@ -378,8 +378,15 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
         		$default_set = true;
         }
         
+        if ( !$default_set )
+            $errors[] = __( 'You must set a default tax rate.', 'LION' );
+        
         if ( !empty( $values['vat-moss-tax-rates'] ) ) {
+			$memberstates = it_exchange_get_data_set( 'eu-member-states' );
+	        
 	        foreach( $values['vat-moss-tax-rates'] as $key => $tax_rates ) {
+		        
+		        $default_set = false;
 		        foreach( $tax_rates as $tax_rate ) {
 		        	if ( empty( $tax_rate['label'] ) ) {
 		                $errors[] = sprintf( __( 'Missing or Invalid VAT Label for %s.', 'LION' ), $key );
@@ -394,11 +401,12 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 		        	if ( !empty( $tax_rate['default'] ) && 'checked' === $tax_rate['default'] )
 		        		$default_set = true;
 	        	}
+	        	
+		        if ( !$default_set )
+		            $errors[] = sprintf( __( 'You must set a default VAT MOSS tax rate for %s.', 'LION' ), $memberstates[$key] );
 	        }
         }
         
-        if ( !$default_set )
-            $errors[] = __( 'You must set a default tax rate.', 'LION' );
 
         return $errors;
     }
