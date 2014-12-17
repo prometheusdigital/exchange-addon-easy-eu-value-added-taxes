@@ -187,7 +187,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			</p>
 			<div id="value-added-tax-rate-table">
 				<?php
-				$form->add_hidden( 'tax-rates' ); 
+				$form->add_hidden( 'tax-rates' ); //Placeholder 
 				$headings = array(
 					__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' ), __( 'Default?', 'LION' )
 				);
@@ -231,8 +231,9 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			
 			<div>
 				<p>
-					<label for="vat-moss-products"><?php _e( 'Default VAT MOSS Products:', 'LION' ) ?> <span class="tip" title="<?php _e( 'Which products have VAT MOSS turned on by default.', 'LION' ); ?>">i</span> </label>
-					<select id="vat-moss-products" name="vat-moss-products" multiple="multiple" size="5">
+					<label for="default-vat-moss-products[]"><?php _e( 'Default VAT MOSS Products:', 'LION' ) ?> <span class="tip" title="<?php _e( 'Which products have VAT MOSS turned on by default.', 'LION' ); ?>">i</span> </label>
+					<?php $form->add_hidden( 'default-vat-moss-products' ); //Placeholder ?>
+					<select id="default-vat-moss-products" name="it-exchange-add-on-easy-eu-value-added-taxes-default-vat-moss-products[]" multiple="multiple" size="5">
 					<?php
 					foreach( it_exchange_get_enabled_addons( array( 'category' => 'product-type' ) ) as $type ) {
 						echo '<option value="' . $type['slug'] . '" ' . selected( in_array( $type['slug'], $settings['default-vat-moss-products'] ), true, false ) . ' >' . $type['name'] . '</option>';
@@ -247,7 +248,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			</p>
 			<div id="value-added-tax-vat-moss-rate-tables">
 			<?php
-			$form->add_hidden( 'vat-moss-tax-rates' ); 
+			$form->add_hidden( 'vat-moss-tax-rates' ); //Placeholder 
 			$vat_moss_tax_rates = $settings['vat-moss-tax-rates'];
 			foreach ( $memberstates as $memberstate_abbrev => $memberstate ) {
 				?>
@@ -315,7 +316,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
     	global $new_values; //We set this as global here to modify it in the error check
         $defaults = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
         $new_values = wp_parse_args( ITForm::get_post_data(), $defaults );
-                
+        
         // Check nonce
         if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'it-exchange-easy-eu-value-added-taxes-settings' ) ) {
             $this->error_message = __( 'Error. Please try again', 'LION' );
@@ -377,21 +378,23 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
         		$default_set = true;
         }
         
-        foreach( $values['vat-moss-tax-rates'] as $key => $tax_rates ) {
-	        foreach( $tax_rates as $tax_rate ) {
-	        	if ( empty( $tax_rate['label'] ) ) {
-	                $errors[] = sprintf( __( 'Missing or Invalid VAT Label for %s.', 'LION' ), $key );
-		        	continue;
+        if ( !empty( $values['vat-moss-tax-rates'] ) ) {
+	        foreach( $values['vat-moss-tax-rates'] as $key => $tax_rates ) {
+		        foreach( $tax_rates as $tax_rate ) {
+		        	if ( empty( $tax_rate['label'] ) ) {
+		                $errors[] = sprintf( __( 'Missing or Invalid VAT Label for %s.', 'LION' ), $key );
+			        	continue;
+		        	}
+		        	
+		        	if ( !isset( $tax_rate['rate'] ) || !is_numeric( $tax_rate['rate'] ) ) {
+		                $errors[] = sprintf( __( 'Missing or Invalid Tax Rate for %s in %s.', 'LION' ), $tax_rate['label'], $key );
+			        	continue;
+		        	}
+		        	
+		        	if ( !empty( $tax_rate['default'] ) && 'checked' === $tax_rate['default'] )
+		        		$default_set = true;
 	        	}
-	        	
-	        	if ( !isset( $tax_rate['rate'] ) || !is_numeric( $tax_rate['rate'] ) ) {
-	                $errors[] = sprintf( __( 'Missing or Invalid Tax Rate for %s in %s.', 'LION' ), $tax_rate['label'], $key );
-		        	continue;
-	        	}
-	        	
-	        	if ( !empty( $tax_rate['default'] ) && 'checked' === $tax_rate['default'] )
-	        		$default_set = true;
-        	}
+	        }
         }
         
         if ( !$default_set )
