@@ -185,6 +185,11 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 			<p class="vat-moss-tax-types <?php echo $display; ?>">
 	            <label for="easy-eu-value-added-taxes-vat-moss-for-<?php echo $memberstate_abbrev; ?>"><?php printf( __( 'Tax Type for %s?', 'LION' ), $memberstates[$memberstate_abbrev] ) ?></label>
 				
+				<?php
+				if ( empty( $vat_moss_tax_types[$memberstate_abbrev] ) ) {
+					$vat_moss_tax_types[$memberstate_abbrev] = 'default';
+				}
+				?>
 				<select id="euvat-moss-type" name="it-exchange-add-on-easy-eu-value-added-taxes-vat-moss-tax-type[<?php echo $memberstate_abbrev; ?>]">
 					<option value="default" <?php selected( 'default', $vat_moss_tax_types[$memberstate_abbrev] ); ?>><?php printf( __( 'Default (%s - %s%%)', 'LION' ), $default_tax_rate['label'], $default_tax_rate['rate'] ); ?></option>
 				<?php 
@@ -296,15 +301,15 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 					return in_array( $product_type, $settings['default-vat-moss-products'] ) ? 'on' : 'off';
 				}
 			case 'vat-moss-tax-types':
-				$vat_most_tax_types = get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-vat-moss-tax-types', true );
+				$vat_moss_tax_types = get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-vat-moss-tax-types', true );
 				if ( !empty( $options['vat-moss-country'] ) ) {
-					if ( !empty( $vat_most_tax_types[$options['vat-moss-country']] ) ) {
-						return $vat_most_tax_types[$options['vat-moss-country']];
+					if ( !empty( $vat_moss_tax_types[$options['vat-moss-country']] ) ) {
+						return $vat_moss_tax_types[$options['vat-moss-country']];
 					} else {
 						return false;
 					}
 				} else {
-					return $vat_most_tax_types;
+					return $vat_moss_tax_types;
 				}
 			case 'exempt':
 				return get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-exempt', true );
