@@ -67,7 +67,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	
 	//If not a member state, not taxable
 	$memberstates = it_exchange_get_data_set( 'eu-member-states' );
-	if ( !empty( $address['country'] ) && empty( $memberstates[$address['country']] ) ) {
+	if ( empty( $address['country'] ) || empty( $memberstates[$address['country']] ) ) {
 		return false;
 	} else {
 		if ( empty( $tax_session['vat_country'] ) && empty( $tax_session['vat_number'] ) )
@@ -213,7 +213,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 						if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type ) {
 							$tax_type = $default_rate;
 						}
-							
+
 						if ( empty( $vat_moss_subtotals[$tax_type] ) ) {
 							$vat_moss_subtotals[$tax_type] = 0;
 						}
