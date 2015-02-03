@@ -341,7 +341,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_admin_wp_enqueue_styles() {
 	}
 	
 	// Easy US Sales Taxes settings page
-	if ( ( isset( $post_type ) && 'it_exchange_prod' === $post_type )
+	if ( ( isset( $post_type ) && ( 'it_exchange_prod' === $post_type || 'it_exchange_tran' === $post_type ) ) 
 		|| ( !empty( $_GET['add-on-settings'] ) && 'exchange_page_it-exchange-addons' === $hook_suffix && 'easy-eu-value-added-taxes' === $_GET['add-on-settings'] ) ) {
 		
 		wp_enqueue_style( 'it-exchange-easy-eu-value-added-taxes-addon-admin-style', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/admin.css' );
@@ -378,8 +378,6 @@ function it_exchange_easy_eu_value_added_taxes_load_public_scripts( $current_vie
 		add_action( 'wp_footer', 'it_exchange_easy_eu_value_added_taxes_addon_vat_number_manager_backbone_template' );
 		
 	}
-	
-	
 
 }
 add_action( 'wp_enqueue_scripts', 'it_exchange_easy_eu_value_added_taxes_load_public_scripts' );
@@ -623,3 +621,96 @@ function it_exchange_easy_eu_value_added_taxes_add_cart_taxes_to_txn_object() {
 }
 add_filter( 'it_exchange_set_transaction_objet_cart_taxes_formatted', 'it_exchange_easy_eu_value_added_taxes_add_cart_taxes_to_txn_object' );
 add_filter( 'it_exchange_set_transaction_objet_cart_taxes_raw', 'it_exchange_easy_eu_value_added_taxes_add_cart_taxes_to_txn_object' );
+
+/**
+ * Returns the transaction customer's VAT number
+ *
+ * @since CHANGEME
+ *
+ * @param WP_Post|int|IT_Exchange_Transaction $transaction ID or object
+ *
+ * @return string
+*/
+function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details( $transaction ) {
+    $tax_items          = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes', true );
+    $vat_moss_tax_items = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_vat_moss_taxes', true );
+    $customer_country   = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_customer_vat_country', true );
+    $customer_vat       = get_post_meta( $transaction->ID, '_it_exchange_easy_eu_value_added_taxes_customer_vat_number', true );
+	$memberstates = it_exchange_get_data_set( 'eu-member-states' );
+	$result = '';
+	
+	if ( !empty( $tax_items ) ) {							
+		$result .= '<h3>VAT Taxes</h3>';
+		if ( !empty( $customer_vat ) )
+			$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';
+		
+		$result .= '<div class="it-exchange-vat-summary-table">';
+		$result .= '<div class="it-exchange-vat-summary-table-row vat-summary-heading-row">';
+		
+		$result .= '<div class="vat-label-heading it-exchange-vat-summary-table-column">';
+		$result .= '<div class="it-exchange-vat-summary-table-column-inner">' . __( 'VAT Type', 'LION' ) . '</div>';
+		$result .= '</div>';
+		$result .= '<div class="vat-net-taxable-amount-heading it-exchange-table-column">';
+		$result .= '<div class="it-exchange-vat-summary-table-column-inner">' . __( 'Net Taxable Amount', 'LION' ) . '</div>';
+		$result .= '</div>';
+		
+		$result .= '</div>';
+		
+		if ( !empty( $tax_items ) ) {
+			foreach( $tax_items as $tax ) {
+				$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
+				$result .= '<div class="it-exchange-vat-summary-table-row">';
+				$result .= '<div class="vat-label it-exchange-vat-summary-table-column">';
+				$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
+				$result .= sprintf( __( '%s %s (%s%%)', 'LION' ), $memberstates[$tax['country']], $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+				$result .= '</div>';
+				$result .= '</div>';
+		
+				$net = it_exchange_format_price( $net );
+					
+				$result .= '<div class="vat-net-taxable-amount it-exchange-vat-summary-table-column">';
+				$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
+				$result .= $net;
+				$result .= '</div>';
+				$result .= '</div>';
+				
+				$result .= '</div>';
+			}
+		}
+		
+		if ( !empty( $vat_moss_tax_items ) ) {
+			foreach ( $vat_moss_tax_items as $tax ) {
+				if ( !empty( $tax['total'] ) ) {
+					$result .= '<div class="it-exchange-vat-summary-table-inner-row">';
+					$result .= '<div class="it-exchange-cart-totals-title it-exchange-vat-summary-table-column">';
+					do_action( 'it_exchange_payment_details_before_easy_eu_valued_added_vat_moss_taxes_label' );
+					$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
+					$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), $memberstates[$tax['country']], $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+					$result .= '</div>';
+					do_action( 'it_exchange_payment_details_after_easy_eu_valued_added_vat_moss_taxes_label' );
+					$result .= '</div>';
+					
+					$tax_total = it_exchange_format_price( $tax['total'] );
+						
+					$result .= '<div class="it-exchange-cart-totals-amount it-exchange-vat-summary-table-column">';
+					do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_vat_moss_taxes_value' );
+					$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
+					$result .= $tax_total;
+					$result .= '</div>';
+					do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_vat_moss_taxes_value' );
+					$result .= '</div>';
+					$result .= '</div>';
+				}
+			}
+		}
+		
+		?>
+		<div class="clearfix spacing-wrapper">
+			<div class="transaction-vat-taxes left">
+				<?php echo $result; ?>
+			</div>
+		</div>
+		<?php
+	}
+}
+add_action( 'it_exchange_after_payment_details', 'it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details' );
