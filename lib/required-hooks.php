@@ -640,7 +640,7 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 	$result = '';
 	
 	if ( !empty( $tax_items ) ) {							
-		$result .= '<h3>VAT Taxes</h3>';
+		$result .= '<h3>VAT Summary</h3>';
 		if ( !empty( $customer_vat ) )
 			$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';
 		
@@ -650,8 +650,13 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 		$result .= '<div class="vat-label-heading it-exchange-vat-summary-table-column">';
 		$result .= '<div class="it-exchange-vat-summary-table-column-inner">' . __( 'VAT Type', 'LION' ) . '</div>';
 		$result .= '</div>';
-		$result .= '<div class="vat-net-taxable-amount-heading it-exchange-table-column">';
+		
+		$result .= '<div class="vat-label-heading it-exchange-vat-summary-table-column">';
 		$result .= '<div class="it-exchange-vat-summary-table-column-inner">' . __( 'Net Taxable Amount', 'LION' ) . '</div>';
+		$result .= '</div>';
+		
+		$result .= '<div class="vat-label-heading it-exchange-vat-summary-table-column">';
+		$result .= '<div class="it-exchange-vat-summary-table-column-inner">' . __( 'VAT', 'LION' ) . '</div>';
 		$result .= '</div>';
 		
 		$result .= '</div>';
@@ -659,18 +664,25 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 		if ( !empty( $tax_items ) ) {
 			foreach( $tax_items as $tax ) {
 				$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
+				$taxed = empty( $tax['total'] ) ? 0 : $tax['total'];
+				
 				$result .= '<div class="it-exchange-vat-summary-table-row">';
+				
 				$result .= '<div class="vat-label it-exchange-vat-summary-table-column">';
 				$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
 				$result .= sprintf( __( '%s %s (%s%%)', 'LION' ), $memberstates[$tax['country']], $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
 				$result .= '</div>';
 				$result .= '</div>';
 		
-				$net = it_exchange_format_price( $net );
-					
 				$result .= '<div class="vat-net-taxable-amount it-exchange-vat-summary-table-column">';
 				$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
-				$result .= $net;
+				$result .= it_exchange_format_price( $net );;
+				$result .= '</div>';
+				$result .= '</div>';
+					
+				$result .= '<div class="vat-amount-taxed it-exchange-vat-summary-table-column">';
+				$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
+				$result .= it_exchange_format_price( $taxed );
 				$result .= '</div>';
 				$result .= '</div>';
 				
@@ -680,27 +692,30 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 		
 		if ( !empty( $vat_moss_tax_items ) ) {
 			foreach ( $vat_moss_tax_items as $tax ) {
-				if ( !empty( $tax['total'] ) ) {
-					$result .= '<div class="it-exchange-vat-summary-table-inner-row">';
-					$result .= '<div class="it-exchange-cart-totals-title it-exchange-vat-summary-table-column">';
-					do_action( 'it_exchange_payment_details_before_easy_eu_valued_added_vat_moss_taxes_label' );
-					$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
-					$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), $memberstates[$tax['country']], $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
-					$result .= '</div>';
-					do_action( 'it_exchange_payment_details_after_easy_eu_valued_added_vat_moss_taxes_label' );
-					$result .= '</div>';
+				$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
+				$taxed = empty( $tax['total'] ) ? 0 : $tax['total'];
+				
+				$result .= '<div class="it-exchange-vat-summary-table-row">';
+				
+				$result .= '<div class="vat-moss-label it-exchange-vat-summary-table-column">';
+				$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
+				$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), $memberstates[$tax['country']], $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+				$result .= '</div>';
+				$result .= '</div>';
+									
+				$result .= '<div class="vat-moss-net-taxable-amount it-exchange-vat-summary-table-column">';
+				$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
+				$result .= it_exchange_format_price( $net );
+				$result .= '</div>';
+				$result .= '</div>';
 					
-					$tax_total = it_exchange_format_price( $tax['total'] );
-						
-					$result .= '<div class="it-exchange-cart-totals-amount it-exchange-vat-summary-table-column">';
-					do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_vat_moss_taxes_value' );
-					$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
-					$result .= $tax_total;
-					$result .= '</div>';
-					do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_vat_moss_taxes_value' );
-					$result .= '</div>';
-					$result .= '</div>';
-				}
+				$result .= '<div class="vat-moss-amount-taxed it-exchange-vat-summary-table-column">';
+				$result .= '<div class="it-exchange-vat-summary-table-column-inner">';
+				$result .= it_exchange_format_price( $taxed );
+				$result .= '</div>';
+				$result .= '</div>';
+				
+				$result .= '</div>';
 			}
 		}
 		

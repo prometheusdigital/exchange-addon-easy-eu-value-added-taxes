@@ -339,29 +339,27 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 			
 			if ( !empty( $vat_moss_tax_items ) ) {
 				foreach ( $vat_moss_tax_items as $tax ) {
-					if ( !empty( $tax['total'] ) ) {
-						$result .= '<div class="it-exchange-table-inner-row">';
-						$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
-						do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_vat_moss_taxes_label' );
-						$result .= '<div class="it-exchange-table-column-inner">';
-						$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), $memberstates[$tax['country']], $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
-						$result .= '</div>';
-						do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_vat_moss_taxes_label' );
-						$result .= '</div>';
+					$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
+					$result .= '<div class="it-exchange-table-inner-row">';
+					$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
+					do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_vat_moss_taxes_label' );
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), $memberstates[$tax['country']], $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+					$result .= '</div>';
+					do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_vat_moss_taxes_label' );
+					$result .= '</div>';
+					
+					if ( $options['format_price'] )
+						$net = it_exchange_format_price( $net );
 						
-						$tax_total = $tax['total'];
-						if ( $options['format_price'] )
-							$tax_total = it_exchange_format_price( $tax_total );
-							
-						$result .= '<div class="it-exchange-cart-totals-amount it-exchange-table-column">';
-						do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_vat_moss_taxes_value' );
-						$result .= '<div class="it-exchange-table-column-inner">';
-						$result .= $tax_total;
-						$result .= '</div>';
-						do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_vat_moss_taxes_value' );
-						$result .= '</div>';
-						$result .= '</div>';
-					}
+					$result .= '<div class="it-exchange-cart-totals-amount it-exchange-table-column">';
+					do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_vat_moss_taxes_value' );
+					$result .= '<div class="it-exchange-table-column-inner">';
+					$result .= $net;
+					$result .= '</div>';
+					do_action( 'it_exchange_content_comfirmation_after_easy_eu_valued_added_vat_moss_taxes_value' );
+					$result .= '</div>';
+					$result .= '</div>';
 				}
 			}
 			
