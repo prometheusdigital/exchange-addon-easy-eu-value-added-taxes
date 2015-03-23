@@ -168,38 +168,40 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
         </p>
         
 		<?php
-		if ( 'on' === $vat_moss ) {
-			$display = '';
-		} else {
-			$display = 'hide-if-js ';
-		}
-		foreach( $settings['vat-moss-tax-rates'] as $memberstate_abbrev => $tax_rates ) {
-			foreach( $tax_rates as $tax_rate ) {
-				if ( 'checked' === $tax_rate['default'] ) {
-					$default_tax_rate = $tax_rate;
-					break;
-				}
+		if ( !empty( $settings['vat-moss-tax-rates'] ) ) {
+			if ( 'on' === $vat_moss ) {
+				$display = '';
+			} else {
+				$display = 'hide-if-js ';
 			}
-
-			?>
-			<p class="vat-moss-tax-types <?php echo $display; ?>">
-	            <label for="easy-eu-value-added-taxes-vat-moss-for-<?php echo $memberstate_abbrev; ?>"><?php printf( __( 'Tax Type for %s?', 'LION' ), $memberstates[$memberstate_abbrev] ) ?></label>
-				
+			foreach( $settings['vat-moss-tax-rates'] as $memberstate_abbrev => $tax_rates ) {
+				foreach( $tax_rates as $tax_rate ) {
+					if ( 'checked' === $tax_rate['default'] ) {
+						$default_tax_rate = $tax_rate;
+						break;
+					}
+				}
+	
+				?>
+				<p class="vat-moss-tax-types <?php echo $display; ?>">
+		            <label for="easy-eu-value-added-taxes-vat-moss-for-<?php echo $memberstate_abbrev; ?>"><?php printf( __( 'Tax Type for %s?', 'LION' ), $memberstates[$memberstate_abbrev] ) ?></label>
+					
+					<?php
+					if ( empty( $vat_moss_tax_types[$memberstate_abbrev] ) ) {
+						$vat_moss_tax_types[$memberstate_abbrev] = 'default';
+					}
+					?>
+					<select id="euvat-moss-type" name="it-exchange-add-on-easy-eu-value-added-taxes-vat-moss-tax-type[<?php echo $memberstate_abbrev; ?>]">
+						<option value="default" <?php selected( 'default', $vat_moss_tax_types[$memberstate_abbrev] ); ?>><?php printf( __( 'Default (%s - %s%%)', 'LION' ), $default_tax_rate['label'], $default_tax_rate['rate'] ); ?></option>
+					<?php 
+					foreach( $tax_rates as $key => $tax_rate ) {
+						echo '<option value="' . $key . '" ' . selected( $key, $vat_moss_tax_types[$memberstate_abbrev], false ) . '>' . sprintf( __( '%s (%s%%)', 'LION' ), $tax_rate['label'], $tax_rate['rate'] ) . '</option>';
+					}
+					?>
+					</select>
+		        </p>
 				<?php
-				if ( empty( $vat_moss_tax_types[$memberstate_abbrev] ) ) {
-					$vat_moss_tax_types[$memberstate_abbrev] = 'default';
-				}
-				?>
-				<select id="euvat-moss-type" name="it-exchange-add-on-easy-eu-value-added-taxes-vat-moss-tax-type[<?php echo $memberstate_abbrev; ?>]">
-					<option value="default" <?php selected( 'default', $vat_moss_tax_types[$memberstate_abbrev] ); ?>><?php printf( __( 'Default (%s - %s%%)', 'LION' ), $default_tax_rate['label'], $default_tax_rate['rate'] ); ?></option>
-				<?php 
-				foreach( $tax_rates as $key => $tax_rate ) {
-					echo '<option value="' . $key . '" ' . selected( $key, $vat_moss_tax_types[$memberstate_abbrev], false ) . '>' . sprintf( __( '%s (%s%%)', 'LION' ), $tax_rate['label'], $tax_rate['rate'] ) . '</option>';
-				}
-				?>
-				</select>
-	        </p>
-			<?php
+			}
 		}
 	}
 
