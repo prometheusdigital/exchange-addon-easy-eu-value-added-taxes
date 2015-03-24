@@ -37,3 +37,5 @@
 1.1.1 - 2014-02-04 - Lew Ayotte
 	Fixed bug in Net Taxable Amount confirmation display for VAT MOSS
 	Adding VAT info to transaction payments pages in wp-admin
+1.1.2 - 2014-03-24 - Lew Ayotte
+	Verify vat-moss-tax-rates are setup for product before cycling through them
