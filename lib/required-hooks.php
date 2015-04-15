@@ -256,7 +256,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_show_conflict_nag() {
 			$nag_dismiss = add_query_arg( array( 'it_exchange_easy_eu_value_added_taxes-dismiss-conflict-nag' => true ) );
 			echo __( 'Warning: You have multiple tax add-ons enabled. You may need to disable one to avoid conflicts.', 'LION' );
 			?>
-			<a class="dismiss btn" href="<?php esc_attr_e( $nag_dismiss ); ?>">&times;</a>
+			<a class="dismiss btn" href="<?php echo esc_url( $nag_dismiss ); ?>">&times;</a>
 		</div>
 		<script type="text/javascript">
 			jQuery( document ).ready( function() {
