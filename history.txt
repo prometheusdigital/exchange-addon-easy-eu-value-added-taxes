@@ -34,8 +34,10 @@
 	Enabling VAT MOSS functionality
 	Fix bug preventing taxes from showing up on checkout
 	Don't run tax setup session in is_admin()
-1.1.1 - 2014-02-04 - Lew Ayotte
+1.1.1 - 2015-02-04 - Lew Ayotte
 	Fixed bug in Net Taxable Amount confirmation display for VAT MOSS
 	Adding VAT info to transaction payments pages in wp-admin
-1.1.2 - 2014-03-24 - Lew Ayotte
+1.1.2 - 2015-03-24 - Lew Ayotte
 	Verify vat-moss-tax-rates are setup for product before cycling through them
+1.2.0 - 2015-04-20 - Lew Ayotte
+	Multiple updates involving add_query_arg and remove_query_arg to esc_url()
