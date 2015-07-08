@@ -300,7 +300,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 				} else {
 					$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 					$product_type = it_exchange_get_product_type( $product_id );
-					return in_array( $product_type, $settings['default-vat-moss-products'] ) ? 'on' : 'off';
+					return ( !empty( $settings['default-vat-moss-products'] ) && in_array( $product_type, $settings['default-vat-moss-products'] ) ) ? 'on' : 'off';
 				}
 			case 'vat-moss-tax-types':
 				$vat_moss_tax_types = get_post_meta( $product_id, '_it-exchange-easy-eu-value-added-taxes-vat-moss-tax-types', true );

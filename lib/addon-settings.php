@@ -51,7 +51,7 @@ function it_exchange_easy_eu_value_added_taxes_default_settings( $defaults ) {
 				'default'  => 'checked',
 			),
 		),
-		'price-includes-vat' => true,
+		'price-hide-vat'   => false,
 		'default-vat-moss-products' => array( 'digital-downloads-product-type', 'membership-product-type' ),
 		'vat-moss-tax-rates' => array(),
 	);
@@ -224,8 +224,8 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			
 			<div>
 				<p>
-					<label for="price-includes-vat"><?php _e( 'Add VAT on Product Page?', 'LION' ) ?> <span class="tip" title="<?php _e( 'Displays the product price with VAT included automatically.', 'LION' ); ?>">i</span> </label>
-					<?php $form->add_check_box( 'price-includes-vat' ); ?>
+					<label for="price-hide-vat"><?php _e( 'Hide VAT on Product Page?', 'LION' ) ?> <span class="tip" title="<?php _e( 'Do not include VAT on product pages automatically.', 'LION' ); ?>">i</span> </label>
+					<?php $form->add_check_box( 'price-hide-vat' ); ?>
 				</p>
 			</div>
 			

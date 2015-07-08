@@ -57,9 +57,12 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 	$taxes = array();
 	$total_taxes = 0;
+	$address = array();
 	
-	//We always want to get the Shipping Address if it's available...
-	$address = it_exchange_get_cart_shipping_address();
+	if ( it_exchange_get_available_shipping_methods_for_cart_products() ) {
+		//We always want to get the Shipping Address if it's available...
+		$address = it_exchange_get_cart_shipping_address();
+	}
 	
 	//We only care about the province!
 	if ( empty( $address['country'] ) ) 

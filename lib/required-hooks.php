@@ -49,12 +49,14 @@ function it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters() {
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes', true );
 
-	if ( !empty( $tax_session ) && $settings['price-includes-vat'] && empty( $tax_session['summary_only'] ) ) {
+	if ( empty( $settings['price-hide-vat'] ) ) {
 		add_filter( 'it_exchange_api_theme_product_base_price',            'it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_price', 10, 2 );
+	}
+
+
+	if ( !empty( $tax_session ) && empty( $tax_session['summary_only'] ) ) {
 		add_filter( 'it_exchange_api_theme_cart_item_sub_total',           'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
 		add_filter( 'it_exchange_api_theme_cart_item_price',               'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat', 10, 2 );
-		add_filter( 'it_exchange_api_theme_cart_total',                    'it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_total' );
-		//add_filter( 'it_exchange_api_theme_transaction_product_attribute', 'it_exchange_easy_eu_value_added_taxes_api_theme_transaction_product_attribute', 10, 4 );
 	}
 }
 add_action( 'init', 'it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters' );
@@ -114,7 +116,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_pric
 			}
 			
 			$price *= ( ( 100 + $tax_rate ) / 100 );
-			$price = it_exchange_format_price( $price ) . ' <span class="ite-euvat-incl-vat-class">' . __( 'incl. VAT', 'LION' ) . '</span>';
+			$price = it_exchange_format_price( $price );
 
 		}
 	}
@@ -186,17 +188,6 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_va
 	}
 	
 	return $subtotal;
-}
-
-/**
- * Adds 'incl. VAT' string to cart total, if 'include VAT' is enabled.
- *
- * @since 1.0.0
- *
- * @return void
-*/
-function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_total( $total ) {
-	return $total . ' <span class="ite-euvat-incl-vat-class">' . __( 'incl. VAT', 'LION' ) . '</span>';
 }
 
 /**
