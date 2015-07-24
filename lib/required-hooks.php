@@ -720,3 +720,42 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 	}
 }
 add_action( 'it_exchange_after_payment_details', 'it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details' );
+
+function it_exchange_easy_eu_value_added_taxes_replace_order_table_tag_before_total_row( $email_obj, $options ) {
+    $tax_items = get_post_meta( $email_obj->transaction_id, '_it_exchange_easy_eu_value_added_taxes', true );
+    $vat_moss_tax_items = get_post_meta( $email_obj->transaction_id, '_it_exchange_easy_eu_value_added_vat_moss_taxes', true );
+	$memberstates = it_exchange_get_data_set( 'eu-member-states' );
+
+	if ( !empty( $tax_items ) ) {
+		?>
+		<tr>
+			<td colspan="2" style="padding: 10px;border:1px solid #DDD;"><?php _e( 'Taxes', 'it-l10n-ithemes-exchange' ); ?></td>
+			<td style="padding: 10px;border:1px solid #DDD;">&nbsp;</td>
+		</tr>
+		<?php
+		foreach ( $tax_items as $tax ) {
+			echo '<tr>';
+			if ( !empty( $tax['total'] ) ) {
+				$tax_total = it_exchange_format_price( $tax['total'] );
+
+				$tax_type =  sprintf( __( '%s %s (%s%%)', 'LION' ), ( empty( $tax['country'] ) ? '' : $memberstates[$tax['country']] ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+				echo '<td colspan="2" style="padding: 10px;border:1px solid #DDD;">' . $tax_type . '</td>';
+				echo '<td style="padding: 10px;border:1px solid #DDD;">' . $tax_total . '</td>';
+			}
+			echo '</tr>';
+		}
+		if ( !empty( $vat_moss_tax_items ) ) {
+			foreach ( $vat_moss_tax_items as $tax ) {
+				echo '<tr>';
+				if ( !empty( $tax['total'] ) ) {
+					$tax_total = it_exchange_format_price( $tax['total'] );
+					$tax_type =  sprintf( __( '%s %s (%s%%)', 'LION' ), ( empty( $tax['country'] ) ? '' : $memberstates[$tax['country']] ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+					echo '<td colspan="2" style="padding: 10px;border:1px solid #DDD;">' . $tax_type . '</td>';
+					echo '<td style="padding: 10px;border:1px solid #DDD;">' . $tax_total . '</td>';
+				}
+				echo '</tr>';
+			}
+		}
+	}
+}
+add_action( 'it_exchange_replace_order_table_tag_before_total_row', 'it_exchange_easy_eu_value_added_taxes_replace_order_table_tag_before_total_row', 10, 2 );
