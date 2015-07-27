@@ -44,4 +44,8 @@
 1.2.1 - 2015-04-23 - Packaging Bot (lib/updater)
 	Compatibility Fix: Updated plugin and theme update data format to match changes in WordPress 4.2.
 1.2.2 - 2015-07-14 - Packaging Bot (lib/updater)
+	Fixing warning caused by vatmoss products being empty
+	Always show default vat price on product pages, remove 'incl. VAT' text
 	Enhancement: Updated link to iThemes support.
+1.3.0 - 2015-07-27 - Lew Ayotte
+	Added action to modify email notification order_table template
