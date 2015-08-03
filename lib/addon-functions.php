@@ -52,6 +52,94 @@ function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate
 	return $output;
 }
 
+function it_exchange_easy_eu_value_added_taxes_get_cart_taxes() {
+	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+	$taxes = array();
+	$address = array();
+		
+	if ( ! $products = it_exchange_get_cart_products() )
+		return false;
+	
+	$applied_coupons = it_exchange_get_applied_coupons();
+	$serialized_coupons = maybe_serialize( $applied_coupons );
+			
+	$subtotals = array();
+	$default_rate = 0;
+	$tax_rates = $settings['tax-rates'];
+	
+	foreach ( $tax_rates as $key => $rate ) {
+		$subtotals[$key] = 0;
+		if ( !empty( $rate['default'] ) && 'checked' === $rate['default'] ) {
+			$default_rate = $key;
+		}
+	}
+		
+	if ( !empty( $applied_coupons['cart'] ) ) {
+		foreach( $applied_coupons['cart'] as $key => $coupon ) {
+			$product_id = get_post_meta( $coupon['id'], '_it-basic-product-id', true );
+			$applied_coupons['cart'][$key]['product_id'] = $product_id;
+		}
+	}
+	$product_count = it_exchange_get_cart_products_count( true );
+			
+	foreach( (array) $products as $product ) {	
+
+		if ( it_exchange_product_supports_feature( $product['product_id'], 'value-added-taxes' ) ) {
+			if ( !it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
+					
+				$product_subtotal = it_exchange_get_cart_product_subtotal( $product, false );
+					
+				if ( !empty( $applied_coupons['cart'] ) ) {
+					foreach( $applied_coupons['cart'] as $coupon ) {
+						if ( !empty( $coupon['product_id'] ) ) {
+							if ( $product['product_id'] == $coupon['product_id'] ) {
+								if ( '%' === $coupon['amount_type'] ) {
+									$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
+								} else {
+									$product_subtotal -= ( $product['count'] * $coupon['amount_number'] );
+								}
+							}
+						} else {
+							if ( '%' === $coupon['amount_type'] ) {
+								$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
+							} else {
+								$product_subtotal -= ( $coupon['amount_number'] / $product_count );
+							}
+						}
+					}
+				}
+				
+				$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
+
+				if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type ) {
+					$tax_type = $default_rate;
+				}
+					
+				if ( empty( $subtotals[$tax_type] ) ) {
+					$subtotals[$tax_type] = 0;
+				}
+				
+				if ( $product_subtotal > 0 ) {
+					$subtotals[$tax_type] += $product_subtotal;
+				}
+			}
+		}
+	
+		$taxes = array();
+		foreach( $subtotals as $key => $subtotal ) {
+			$taxable_amount = $subtotal;
+			$tax = $taxable_amount * ( $tax_rates[$key]['rate'] / 100 );
+			$taxes[$key]['tax-rate'] = $tax_rates[$key];
+			$taxes[$key]['total'] = $tax;
+			$taxes[$key]['taxable_amount'] = $taxable_amount;
+			$taxes[$key]['country'] = $settings['vat-country'];
+		}
+		
+	}
+									
+	return $taxes;
+}
+
 function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false ) {
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
@@ -296,7 +384,6 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );
 									
 	return true;
-
 }
 
 /**

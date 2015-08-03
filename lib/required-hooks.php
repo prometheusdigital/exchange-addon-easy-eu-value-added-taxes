@@ -391,6 +391,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_total
 	array_splice( $elements, $index, 0, 'easy-eu-value-added-taxes' );
 	return $elements;
 }
+add_filter( 'it_exchange_get_content_cart_totals_elements', 'it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_totals_elements' );
 add_filter( 'it_exchange_get_content_checkout_totals_elements', 'it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_totals_elements' );
 add_filter( 'it_exchange_get_content_confirmation_transaction_summary_elements', 'it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_totals_elements' );
 
@@ -445,6 +446,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_taxes_register_templates( $
 	// Bail if not looking for one of our templates
 	$add_path = false;
 	$templates = array(
+		'content-cart/elements/easy-eu-value-added-taxes.php',
 		'content-checkout/elements/easy-eu-value-added-taxes.php',
 		'content-confirmation/elements/easy-eu-value-added-taxes.php',
 		'content-confirmation/elements/easy-eu-value-added-taxes-vat-summary.php',

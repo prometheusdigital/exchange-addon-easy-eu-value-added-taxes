@@ -74,7 +74,7 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 	 * @return string
 	*/
 	function taxes( $options=array() ) {
-					
+		
 		$settings  = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 		$memberstates = it_exchange_get_data_set( 'eu-member-states' );
 		$result = '';
@@ -170,6 +170,62 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 					}
 				}
 			}
+		} else {
+			if ( $taxes = it_exchange_easy_eu_value_added_taxes_get_cart_taxes() ) {
+				foreach ( $taxes as $tax ) {
+					if ( !empty( $tax['total'] ) ) {
+						$result .= '<div class="it-exchange-table-inner-row">';
+						$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
+						do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_label' );
+						$result .= '<div class="it-exchange-table-column-inner">';
+						$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), ( empty( $tax['country'] ) ? '' : $memberstates[$tax['country']] ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+						$result .= '</div>';
+						do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_label' );
+						$result .= '</div>';
+						
+						$tax_total = $tax['total'];
+						if ( $options['format_price'] )
+							$tax_total = it_exchange_format_price( $tax_total );
+							
+						$result .= '<div class="it-exchange-cart-totals-amount it-exchange-table-column">';
+						do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_value' );
+						$result .= '<div class="it-exchange-table-column-inner">';
+						$result .= $tax_total;
+						$result .= '</div>';
+						do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_value' );
+						$result .= '</div>';
+						$result .= '</div>';
+					}
+				}
+				if ( !empty( $tax_session['vat_moss_taxes'] ) ) {
+					foreach ( $tax_session['vat_moss_taxes'] as $tax ) {
+						if ( !empty( $tax['total'] ) ) {
+							$result .= '<div class="it-exchange-table-inner-row">';
+							$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
+							do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_vat_moss_taxes_label' );
+							$result .= '<div class="it-exchange-table-column-inner">';
+							$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), ( empty( $tax['country'] ) ? '' : $memberstates[$tax['country']] ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+							$result .= '</div>';
+							do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_vat_moss_taxes_label' );
+							$result .= '</div>';
+							
+							$tax_total = $tax['total'];
+							if ( $options['format_price'] )
+								$tax_total = it_exchange_format_price( $tax_total );
+								
+							$result .= '<div class="it-exchange-cart-totals-amount it-exchange-table-column">';
+							do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_vat_moss_taxes_value' );
+							$result .= '<div class="it-exchange-table-column-inner">';
+							$result .= $tax_total;
+							$result .= '</div>';
+							do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_vat_moss_taxes_value' );
+							$result .= '</div>';
+							$result .= '</div>';
+						}
+					}
+				}
+			}
+
 		}
 		$result .= $options['after'];	
 		
