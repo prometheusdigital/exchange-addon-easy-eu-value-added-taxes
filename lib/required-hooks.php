@@ -129,6 +129,23 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_pric
 */
 function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_vat( $subtotal, $cart_item ) {
 	
+	$address = array();
+	
+	if ( it_exchange_get_available_shipping_methods_for_cart_products() ) {
+		//We always want to get the Shipping Address if it's available...
+		$address = it_exchange_get_cart_shipping_address();
+	}
+	
+	//We only care about the province!
+	if ( empty( $address['country'] ) ) 
+		$address = it_exchange_get_cart_billing_address();
+	
+	//If not a member state, not taxable
+	$memberstates = it_exchange_get_data_set( 'eu-member-states' );
+	if ( !empty( $address['country'] ) && empty( $memberstates[$address['country']] ) ) {
+		return $subtotal;
+	}
+	
 	if ( it_exchange_product_supports_feature( $cart_item['product_id'], 'value-added-taxes' ) ) {
 		if ( !it_exchange_get_product_feature( $cart_item['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
 			$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
