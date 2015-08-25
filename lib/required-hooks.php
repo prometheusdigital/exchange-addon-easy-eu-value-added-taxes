@@ -506,8 +506,7 @@ add_filter( 'it_exchange_possible_template_paths', 'it_exchange_easy_eu_value_ad
 function it_exchange_easy_eu_value_added_taxes_addon_taxes_modify_total( $total ) {
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 	if( empty( $tax_session['summary_only'] ) ) {
-		if ( !it_exchange_is_page( 'cart' ) || it_exchange_in_superwidget() ) //we jcanadiant don't want to modify anything on the cart page
-			$total += it_exchange_easy_eu_value_added_taxes_addon_get_total_taxes_for_cart( false );
+		$total += it_exchange_easy_eu_value_added_taxes_addon_get_total_taxes_for_cart( false );
 	}
 	return $total;
 }
