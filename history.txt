@@ -53,3 +53,5 @@
 	Possible fix for tax showing in non-taxable countries
 	Add VAT calculations to cart page
 	Fix for issue where non-logged-in users don't see VAT in cart
+1.5.0 - 2015-08-31 - Lew Ayotte
+	Remove cart total restriction
