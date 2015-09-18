@@ -181,7 +181,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 	$vat_moss_cart_subtotal = 0;
 	foreach( (array) $products as $product ) {
 		$cart_subtotal += it_exchange_get_cart_product_subtotal( $product, false );
-		if ( 'on' === it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
+		if ( !empty( $product['product_id'] ) && 'on' === it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
 			$vat_moss_cart_subtotal += it_exchange_get_cart_product_subtotal( $product, false );
 		}
 	}
@@ -271,66 +271,67 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		$product_count = it_exchange_get_cart_products_count( true );
 				
 		foreach( (array) $products as $product ) {	
-	
-			if ( it_exchange_product_supports_feature( $product['product_id'], 'value-added-taxes' ) ) {
-				if ( !it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
-						
-					$product_subtotal = it_exchange_get_cart_product_subtotal( $product, false );
-						
-					if ( !empty( $applied_coupons['cart'] ) ) {
-						foreach( $applied_coupons['cart'] as $coupon ) {
-							if ( !empty( $coupon['product_id'] ) ) {
-								if ( $product['product_id'] == $coupon['product_id'] ) {
+			if ( !empty( $product['product_id'] ) ) {
+				if ( it_exchange_product_supports_feature( $product['product_id'], 'value-added-taxes' ) ) {
+					if ( !it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
+							
+						$product_subtotal = it_exchange_get_cart_product_subtotal( $product, false );
+							
+						if ( !empty( $applied_coupons['cart'] ) ) {
+							foreach( $applied_coupons['cart'] as $coupon ) {
+								if ( !empty( $coupon['product_id'] ) ) {
+									if ( $product['product_id'] == $coupon['product_id'] ) {
+										if ( '%' === $coupon['amount_type'] ) {
+											$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
+										} else {
+											$product_subtotal -= ( $product['count'] * $coupon['amount_number'] );
+										}
+									}
+								} else {
 									if ( '%' === $coupon['amount_type'] ) {
 										$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
 									} else {
-										$product_subtotal -= ( $product['count'] * $coupon['amount_number'] );
+										$product_subtotal -= ( $coupon['amount_number'] / $product_count );
 									}
-								}
-							} else {
-								if ( '%' === $coupon['amount_type'] ) {
-									$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
-								} else {
-									$product_subtotal -= ( $coupon['amount_number'] / $product_count );
 								}
 							}
 						}
-					}
-					
-					if ( empty( $tax_session['intrastate'] ) && 'on' === it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
-
-						$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss-tax-types', 'vat-moss-country' => $tax_session['country'] ) );
-
-						if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type ) {
-							$tax_type = $default_rate;
-						}
-
-						if ( empty( $vat_moss_subtotals[$tax_type] ) ) {
-							$vat_moss_subtotals[$tax_type] = 0;
-						}
 						
-						if ( $product_subtotal > 0 ) {
-							$vat_moss_subtotals[$tax_type] += $product_subtotal;
-							$product_taxes[$product['product_id']] = $tax_type;
-						}
-						
-					} else {
-
-						$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
-
-						if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type ) {
-							$tax_type = $default_rate;
-						}
+						if ( empty( $tax_session['intrastate'] ) && 'on' === it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) ) {
+	
+							$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'vat-moss-tax-types', 'vat-moss-country' => $tax_session['country'] ) );
+	
+							if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type ) {
+								$tax_type = $default_rate;
+							}
+	
+							if ( empty( $vat_moss_subtotals[$tax_type] ) ) {
+								$vat_moss_subtotals[$tax_type] = 0;
+							}
 							
-						if ( empty( $subtotals[$tax_type] ) ) {
-							$subtotals[$tax_type] = 0;
+							if ( $product_subtotal > 0 ) {
+								$vat_moss_subtotals[$tax_type] += $product_subtotal;
+								$product_taxes[$product['product_id']] = $tax_type;
+							}
+							
+						} else {
+	
+							$tax_type = it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'type' ) );
+	
+							if ( 'default' === $tax_type || '' === $tax_type || false === $tax_type ) {
+								$tax_type = $default_rate;
+							}
+								
+							if ( empty( $subtotals[$tax_type] ) ) {
+								$subtotals[$tax_type] = 0;
+							}
+							
+							if ( $product_subtotal > 0 ) {
+								$subtotals[$tax_type] += $product_subtotal;
+								$product_taxes[$product['product_id']] = $tax_type;
+							}
+							
 						}
-						
-						if ( $product_subtotal > 0 ) {
-							$subtotals[$tax_type] += $product_subtotal;
-							$product_taxes[$product['product_id']] = $tax_type;
-						}
-						
 					}
 				}
 			}
