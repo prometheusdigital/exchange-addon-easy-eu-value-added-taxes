@@ -61,6 +61,9 @@ function it_exchange_easy_eu_value_added_taxes_get_cart_taxes() {
 		return false;
 	
 	$applied_coupons = it_exchange_get_applied_coupons();
+
+	error_log(print_r($applied_coupons, true));
+
 	$serialized_coupons = maybe_serialize( $applied_coupons );
 			
 	$subtotals = array();

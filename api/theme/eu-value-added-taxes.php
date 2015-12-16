@@ -178,7 +178,7 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 						$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
 						do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_label' );
 						$result .= '<div class="it-exchange-table-column-inner">';
-						$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), ( empty( $tax['country'] ) ? '' : $memberstates[$tax['country']] ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
+						$result .=  sprintf( __( '%s %s (%s%%)', 'LION' ), ( empty( $tax['country'] ) || ! isset( $memberstates[ $tax['country'] ] ) ? '' : $memberstates[$tax['country']] ), $tax['tax-rate']['label'], $tax['tax-rate']['rate'] );
 						$result .= '</div>';
 						do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_label' );
 						$result .= '</div>';
