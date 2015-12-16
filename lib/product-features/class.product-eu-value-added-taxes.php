@@ -16,7 +16,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 	 * @since 1.0.0
 	 * @return void
 	*/
-	function IT_Exchange_Product_Feature_Product_Value_Added_Taxes() {
+	function __construct() {
 		if ( is_admin() ) {
 			add_action( 'load-post-new.php', array( $this, 'init_feature_metaboxes' ) );
 			add_action( 'load-post.php', array( $this, 'init_feature_metaboxes' ) );
@@ -27,6 +27,16 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		add_filter( 'it_exchange_get_product_feature_value-added-taxes', array( $this, 'get_feature' ), 9, 3 );
 		add_filter( 'it_exchange_product_has_feature_value-added-taxes', array( $this, 'product_has_feature') , 9, 3 );
 		add_filter( 'it_exchange_product_supports_feature_value-added-taxes', array( $this, 'product_supports_feature') , 9, 2 );
+	}
+
+	/**
+	 * Deprecated Constructor. Registers hooks
+	 *
+	 * @since 1.0.0
+	 * @return void
+	*/
+	function IT_Exchange_Product_Feature_Product_Value_Added_Taxes() {
+		self::__construct();
 	}
 
 	/**
