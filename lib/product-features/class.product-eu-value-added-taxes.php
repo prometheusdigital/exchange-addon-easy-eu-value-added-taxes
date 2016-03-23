@@ -146,6 +146,10 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 		} else {
 			$display = '';
 		}
+
+		if ( $tax_type !== '' ) {
+			$calculation_rate = $settings['tax-rates'][$tax_type]['rate'];
+		}
 		?>
 		<p class="vat-tax-types <?php echo $display; ?>">
             <label for="easy-eu-value-added-taxes-value-added-taxes"><?php _e( 'Tax Type?', 'LION' ) ?></label>

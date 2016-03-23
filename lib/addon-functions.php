@@ -62,8 +62,6 @@ function it_exchange_easy_eu_value_added_taxes_get_cart_taxes() {
 	
 	$applied_coupons = it_exchange_get_applied_coupons();
 
-	error_log(print_r($applied_coupons, true));
-
 	$serialized_coupons = maybe_serialize( $applied_coupons );
 			
 	$subtotals = array();
@@ -397,7 +395,8 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
  *
  * @param bool $format_price Whether or not to format the price or leave as a float
  * @param bool $clear_cache Whether or not to force clear any cached tax values
- * @return string The calculated tax from TaxCloud
+ *
+ * @return string|float The calculated tax from TaxCloud
 */
 function it_exchange_easy_eu_value_added_taxes_addon_get_total_taxes_for_cart( $format_price=true, $clear_cache=false ) {
 	$taxes = 0;
@@ -424,7 +423,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $country_code, 
 	
 	if ( 'UK' === $query['countryCode'] )
 		$query['countryCode'] = 'GB'; //VIES treats UK like Great Britain...
-	
+
 	try {
 		$result = $soap_client->checkVat( $query );
 		if ( is_soap_fault( $result ) ) {
