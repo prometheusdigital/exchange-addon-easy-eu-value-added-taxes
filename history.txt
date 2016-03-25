@@ -59,3 +59,5 @@
 	Adding extra checks for product_id and count in product array... in case the cart is corrupted and causes isues
 1.7.0 - 2015-11-04 - Lew Ayotte
 	PHP7 Updates
+1.7.1 - 2016-03-25 - Timothy Jacobs
+	Fix: Use correct VAT rate in product feature metabox
