@@ -147,7 +147,7 @@ class IT_Exchange_Product_Feature_Product_Value_Added_Taxes {
 			$display = '';
 		}
 
-		if ( $tax_type !== '' ) {
+		if ( $tax_type !== '' && isset( $settings['tax-rates'][$tax_type] ) ) {
 			$calculation_rate = $settings['tax-rates'][$tax_type]['rate'];
 		}
 		?>
