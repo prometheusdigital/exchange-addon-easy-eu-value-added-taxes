@@ -262,13 +262,6 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 			}
 		}
 
-		
-		if ( !empty( $applied_coupons['cart'] ) ) {
-			foreach( $applied_coupons['cart'] as $key => $coupon ) {
-				$product_id = get_post_meta( $coupon['id'], '_it-basic-product-id', true );
-				$applied_coupons['cart'][$key]['product_id'] = $product_id;
-			}
-		}
 		$product_count = it_exchange_get_cart_products_count( true );
 				
 		foreach( (array) $products as $product ) {	
@@ -277,23 +270,22 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 					if ( !it_exchange_get_product_feature( $product['product_id'], 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
 							
 						$product_subtotal = it_exchange_get_cart_product_subtotal( $product, false );
-							
-						if ( !empty( $applied_coupons['cart'] ) ) {
-							foreach( $applied_coupons['cart'] as $coupon ) {
-								if ( !empty( $coupon['product_id'] ) ) {
-									if ( $product['product_id'] == $coupon['product_id'] ) {
-										if ( '%' === $coupon['amount_type'] ) {
-											$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
-										} else {
-											$product_subtotal -= ( $product['count'] * $coupon['amount_number'] );
-										}
-									}
+
+						foreach ( (array) it_exchange_get_applied_coupons( 'cart' ) as $coupon ) {
+
+							if ( empty( $coupon ) || ! $coupon instanceof IT_Exchange_Cart_Coupon ) {
+								continue;
+							}
+
+							$method = $coupon->get_application_method();
+							$type   = $coupon->get_amount_type();
+
+							if ( it_exchange_basic_coupons_valid_product_for_coupon( $product, $coupon ) || $method == IT_Exchange_Cart_Coupon::APPLY_CART ) {
+
+								if ( $type === IT_Exchange_Cart_Coupon::TYPE_FLAT ) {
+									$product_subtotal -= $coupon->get_amount_number();
 								} else {
-									if ( '%' === $coupon['amount_type'] ) {
-										$product_subtotal *= ( 100 - $coupon['amount_number'] ) / 100;
-									} else {
-										$product_subtotal -= ( $coupon['amount_number'] / $product_count );
-									}
+									$product_subtotal -= ( 100 - $coupon->get_amount_number() ) / 100;
 								}
 							}
 						}
