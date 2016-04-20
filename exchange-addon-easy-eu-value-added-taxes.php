@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: iThemes Exchange - Easy EU Value Added Taxes
- * Version: 1.7.1
+ * Version: 1.7.2
  * Description: Adds Easy EU Value Added Taxes to iThemes Exchange.
  * Plugin URI: http://ithemes.com/exchange/easy-eu-value-added-taxes/
  * Author: iThemes

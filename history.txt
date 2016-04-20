@@ -61,3 +61,7 @@
 	PHP7 Updates
 1.7.1 - 2016-03-25 - Timothy Jacobs
 	Fix: Use correct VAT rate in product feature metabox
+1.7.2 - 2016-04-20 - Timothy Jacobs, Elise Alley
+	Fix: VAT calculation is incorrect with coupons enabled
+	Fix: Not-defined error with variants
+	Tweak: Prep for 1.36 release of Exchange
