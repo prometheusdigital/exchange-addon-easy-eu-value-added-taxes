@@ -65,3 +65,5 @@
 	Fix: VAT calculation is incorrect with coupons enabled
 	Fix: Not-defined error with variants
 	Tweak: Prep for 1.36 release of Exchange
+1.7.3 - 201604-28 = Timothy Jcaobs, Elise Alley
+	Fix: VAT calculation with percentage based coupons
