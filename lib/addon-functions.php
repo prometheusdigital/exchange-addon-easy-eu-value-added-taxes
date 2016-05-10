@@ -172,7 +172,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache=false
 		//Otherwise, don't charge tax, just summarize the VAT
 		$tax_session['summary_only'] = true;
 	}
-	
+
 	if ( ! $products = it_exchange_get_cart_products() )
 		return false;
 	

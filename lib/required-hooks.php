@@ -58,6 +58,42 @@ function it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters() {
 add_action( 'init', 'it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters' );
 
 /**
+ * Set VAT manager to checkout mode on the invoice page.
+ * 
+ * @since 1.7.4
+ */
+function it_exchange_easy_eu_vat_set_checkout_mode_on_invoice_page() {
+
+	$product_id = it_exchange_get_the_product_id();
+
+	if ( it_exchange_get_product_type( $product_id ) !== 'invoices-product-type' ) {
+		return;
+	}
+
+	echo '<script> var ITExchangeEasyValueAddedTaxesCheckoutPage = true;</script>';
+}
+
+add_action( 'wp_head', 'it_exchange_easy_eu_vat_set_checkout_mode_on_invoice_page' );
+
+/**
+ * Whitelist the VAT manager nonce with invoices.
+ * 
+ * @since 1.7.4
+ * 
+ * @param array $actions
+ *
+ * @return array
+ */
+function it_exchange_easy_eu_vat_invoices_whitelist_manager_nonce( $actions ) {
+	
+	$actions[] = 'it-exchange-easy-eu-value-added-taxes-add-edit-vat-number';
+	
+	return $actions;
+}
+
+add_filter( 'it_exchange_invoices_user_id_nonce_verification_whitelist', 'it_exchange_easy_eu_vat_invoices_whitelist_manager_nonce' );
+
+/**
  * Adds VAT to product and store pages if enabled in settings.
  *
  * @since 1.0.0
@@ -512,6 +548,9 @@ add_filter( 'it_exchange_possible_template_paths', 'it_exchange_easy_eu_value_ad
 */
 function it_exchange_easy_eu_value_added_taxes_addon_taxes_modify_total( $total ) {
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+
+	//error_log(print_r($tax_session,true));
+
 	if( empty( $tax_session['summary_only'] ) ) {
 		$total += it_exchange_easy_eu_value_added_taxes_addon_get_total_taxes_for_cart( false );
 	}
@@ -766,17 +805,27 @@ function it_exchange_easy_eu_value_added_taxes_display_vat_summary_on_invoice() 
 	$txn_id = it_exchange_invoice_addon_get_invoice_transaction_id( $GLOBALS['it_exchange']['product']->ID );
 
 	if ( ! $txn_id ) {
-		return;
+
+		echo '<div class="it-exchange-vat-invoice-summary">';
+		echo '<style type="text/css">#it-exchange-add-edit-vat-number {vertical-align: top;margin-top: 0;margin-left: 0;display: block;}'
+		     . '.it-exchange-vat-invoice-summary .it-exchange-cart-totals-amount .it-exchange-table-column-inner { padding: 0;}</style>';
+
+		it_exchange( 'eu-value-added-taxes', 'taxes', array(
+			'before_label' => '<span class="label">',
+			'after_label'  => '</span>'
+		) );
+		echo '</div>';
+	} else {
+
+		$GLOBALS['it_exchange']['transaction'] = it_exchange_get_transaction( $txn_id );
+
+		echo '<div class="it-exchange-vat-invoice-summary">';
+		it_exchange( 'eu-value-added-taxes', 'vat-summary', array(
+			'label_tag_open'  => '<span class="label">',
+			'label_tag_close' => '</span>'
+		) );
+		echo '</div>';
 	}
-
-	$GLOBALS['it_exchange']['transaction'] = it_exchange_get_transaction( $txn_id );
-
-	echo '<div class="it-exchange-vat-invoice-summary">';
-	it_exchange( 'eu-value-added-taxes', 'vat-summary', array(
-		'label_tag_open'  => '<span class="label">',
-		'label_tag_close' => '</span>'
-	) );
-	echo '</div>';
 }
 
 add_action('it_exchange_content_invoice_product_after_payment_amount', 'it_exchange_easy_eu_value_added_taxes_display_vat_summary_on_invoice' );

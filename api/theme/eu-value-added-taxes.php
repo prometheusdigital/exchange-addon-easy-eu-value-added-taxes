@@ -94,6 +94,8 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 		$defaults      = array(
 			'before'       => '',
 			'after'        => '',
+			'before_label' => '',
+			'after_label'  => '',
 			'format_price' => true,
 		);
 		$options      = ITUtility::merge_defaults( $options, $defaults );
@@ -106,7 +108,11 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 			$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
 			do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_label' );
 			$result .= '<div class="it-exchange-table-column-inner">';
+
+			$result .= $options['before_label'];
 			$result .= __( 'Tax', 'LION' );
+			$result .= $options['after_label'];
+			
 			$result .= '</div>';
 			do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_label' );
 			$result .= '</div>';

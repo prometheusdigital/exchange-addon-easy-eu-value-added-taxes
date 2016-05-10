@@ -93,7 +93,7 @@ add_action( 'wp_ajax_it-exchange-easy-eu-value-added-taxes-add-edit-product-vat-
 function it_exchange_easy_eu_value_added_taxes_save_vat_number() {	
 	
 	$errors = array();
-		
+
 	if ( ! empty( $_POST ) ) {
 					
         if ( empty( $_POST['eu-vat-country'] ) ) {
@@ -127,14 +127,14 @@ function it_exchange_easy_eu_value_added_taxes_save_vat_number() {
 	wp_send_json_error( $errors );
 }
 add_action( 'wp_ajax_it-exchange-easy-eu-value-added-taxes-save-vat-number', 'it_exchange_easy_eu_value_added_taxes_save_vat_number' );
-add_action( 'wp_ajax_no_priv_it-exchange-easy-eu-value-added-taxes-save-vat-number', 'it_exchange_easy_eu_value_added_taxes_save_vat_number' );
+add_action( 'wp_ajax_nopriv_it-exchange-easy-eu-value-added-taxes-save-vat-number', 'it_exchange_easy_eu_value_added_taxes_save_vat_number' );
 
 /**
  * Ajax called from Backbone modal to remove EU VAT number from transaction.
  *
  * @since 1.0.0
 */
-function it_exchange_easy_eu_value_added_taxes_remove_vat_number() {	
+function it_exchange_easy_eu_value_added_taxes_remove_vat_number() {
 	
 	$errors = array();
 		
@@ -159,4 +159,4 @@ function it_exchange_easy_eu_value_added_taxes_remove_vat_number() {
 	wp_send_json_error( $errors );
 }
 add_action( 'wp_ajax_it-exchange-easy-eu-value-added-taxes-remove-vat-number', 'it_exchange_easy_eu_value_added_taxes_remove_vat_number' );
-add_action( 'wp_ajax_no_priv_it-exchange-easy-eu-value-added-taxes-remove-vat-number', 'it_exchange_easy_eu_value_added_taxes_remove_vat_number' );
+add_action( 'wp_ajax_nopriv_it-exchange-easy-eu-value-added-taxes-remove-vat-number', 'it_exchange_easy_eu_value_added_taxes_remove_vat_number' );
