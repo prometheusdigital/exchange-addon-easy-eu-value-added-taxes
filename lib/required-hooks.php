@@ -69,6 +69,10 @@ add_action( 'init', 'it_exchange_easy_eu_value_added_taxes_addon_include_vat_fil
 */
 function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_price( $price, $product_id ) {
 
+	if ( it_exchange_get_product_type( $product_id ) === 'invoices-product-type' && get_post_status( $product_id ) === 'publish' ) {
+		return $price;
+	}
+
 	if ( it_exchange_product_supports_feature( $product_id, 'value-added-taxes' ) ) {
 		if ( !it_exchange_get_product_feature( $product_id, 'value-added-taxes', array( 'setting' => 'exempt' ) ) ) {
 			$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
