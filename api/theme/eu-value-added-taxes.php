@@ -347,13 +347,16 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 		$memberstates = it_exchange_get_data_set( 'eu-member-states' );
 		$result = '';
 		
-		$defaults      = array(
-			'before'       => '',
-			'after'        => '',
-			'label'        => __( 'VAT Summary', 'LION' ),
-			'format_price' => true,
+		$defaults = array(
+			'before'            => '',
+			'after'             => '',
+			'label'             => __( 'VAT Summary', 'LION' ),
+			'label_tag_open'    => '<h3>',
+			'label_tag_close'   => '</h3>',
+			'format_price'      => true,
 		);
-		$options      = ITUtility::merge_defaults( $options, $defaults );
+		
+		$options = ITUtility::merge_defaults( $options, $defaults );
 		
 	    if ( !empty( $GLOBALS['it_exchange']['transaction'] ) ) {
 	        $transaction = $GLOBALS['it_exchange']['transaction'];
@@ -364,7 +367,9 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 	    }
 		if ( !empty( $tax_items ) ) {							
 			$result .= $options['before'];
-			$result .= '<h3>' . $options['label'] . '</h3>';
+			
+			$result .= $options['label_tag_open'] . $options['label'] . $options['label_tag_close'];
+			
 			$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s-%s', 'LION' ), $general_settings['company-base-country'], $settings['vat-number'] ) . '</p>';
 			if ( !empty( $customer_vat ) )
 				$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';

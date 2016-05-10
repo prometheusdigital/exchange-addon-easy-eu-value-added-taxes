@@ -752,6 +752,35 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 }
 add_action( 'it_exchange_after_payment_details', 'it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details' );
 
+/**
+ * Display a VAT summary on the invoice page.
+ *
+ * @since 1.7.4
+ */
+function it_exchange_easy_eu_value_added_taxes_display_vat_summary_on_invoice() {
+
+	if ( ! function_exists( 'it_exchange_invoice_addon_get_invoice_transaction_id' ) ) {
+		return;
+	}
+
+	$txn_id = it_exchange_invoice_addon_get_invoice_transaction_id( $GLOBALS['it_exchange']['product']->ID );
+
+	if ( ! $txn_id ) {
+		return;
+	}
+
+	$GLOBALS['it_exchange']['transaction'] = it_exchange_get_transaction( $txn_id );
+
+	echo '<div class="it-exchange-vat-invoice-summary">';
+	it_exchange( 'eu-value-added-taxes', 'vat-summary', array(
+		'label_tag_open'  => '<span class="label">',
+		'label_tag_close' => '</span>'
+	) );
+	echo '</div>';
+}
+
+add_action('it_exchange_content_invoice_product_after_payment_amount', 'it_exchange_easy_eu_value_added_taxes_display_vat_summary_on_invoice' );
+
 function it_exchange_easy_eu_value_added_taxes_replace_order_table_tag_before_total_row( $email_obj, $options ) {
     $tax_items = get_post_meta( $email_obj->transaction_id, '_it_exchange_easy_eu_value_added_taxes', true );
     $vat_moss_tax_items = get_post_meta( $email_obj->transaction_id, '_it_exchange_easy_eu_value_added_vat_moss_taxes', true );
