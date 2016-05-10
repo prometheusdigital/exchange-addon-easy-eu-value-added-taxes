@@ -678,6 +678,10 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 				$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
 				$taxed = empty( $tax['total'] ) ? 0 : $tax['total'];
 
+				if ( empty( $taxed ) ) {
+					continue;
+				}
+
 				$result .= '<div class="it-exchange-vat-summary-table-row">';
 
 				$result .= '<div class="vat-label it-exchange-vat-summary-table-column">';
@@ -706,6 +710,10 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 			foreach ( $vat_moss_tax_items as $tax ) {
 				$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
 				$taxed = empty( $tax['total'] ) ? 0 : $tax['total'];
+
+				if ( empty( $taxed ) ) {
+					continue;
+				}
 
 				$result .= '<div class="it-exchange-vat-summary-table-row">';
 
