@@ -384,6 +384,11 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 			if ( !empty( $settings['tax-rates'] ) && !empty( $tax_items ) ) {
 				foreach( $tax_items as $tax ) {
 					$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
+
+					if ( empty( $net ) ) {
+						continue;
+					}
+
 					$result .= '<div class="it-exchange-table-row">';
 					$result .= '<div class="vat-label it-exchange-table-column">';
 					$result .= '<div class="it-exchange-table-column-inner">';
@@ -407,6 +412,11 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 			if ( !empty( $vat_moss_tax_items ) ) {
 				foreach ( $vat_moss_tax_items as $tax ) {
 					$net = empty( $tax['taxable_amount'] ) ? 0 : $tax['taxable_amount'];
+
+					if ( empty( $net ) ) {
+						continue;
+					}
+
 					$result .= '<div class="it-exchange-table-inner-row">';
 					$result .= '<div class="it-exchange-cart-totals-title it-exchange-table-column">';
 					do_action( 'it_exchange_content_comfirmation_before_easy_eu_valued_added_vat_moss_taxes_label' );
