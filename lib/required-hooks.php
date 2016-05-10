@@ -672,7 +672,6 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 		$result .= '</div>';
 
 		$result .= '</div>';
-		$result .= '</div>';
 
 		if ( !empty( $tax_items ) ) {
 			foreach( $tax_items as $tax ) {
@@ -739,6 +738,8 @@ function it_exchange_easy_eu_value_added_taxes_after_payment_details_vat_details
 				$result .= '</div>';
 			}
 		}
+
+		$result .= '</div>';
 
 		?>
 		<div class="clearfix spacing-wrapper">
