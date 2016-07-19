@@ -22,5 +22,3 @@
 	<?php do_action( 'it_exchange_super_widget_checkout_end_easy_eu_valued_added_taxes_element' ); ?>
 </div>
 <?php do_action( 'it_exchange_super_widget_checkout_after_easy_eu_valued_added_taxes_element' ); ?>
-
-

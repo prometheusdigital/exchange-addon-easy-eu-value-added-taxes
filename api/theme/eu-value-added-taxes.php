@@ -86,10 +86,8 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 	*/
 	function taxes( $options=array() ) {
 		
-		$settings  = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 		$memberstates = it_exchange_get_data_set( 'eu-member-states' );
 		$result = '';
-		$taxes = 0;
 		
 		$defaults      = array(
 			'before'       => '',

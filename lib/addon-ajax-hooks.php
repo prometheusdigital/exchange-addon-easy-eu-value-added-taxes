@@ -116,6 +116,10 @@ function it_exchange_easy_eu_value_added_taxes_save_vat_number() {
 				$tax_session['vat_country'] = $vat_country;
 				$tax_session['vat_number'] = $vat_number;
 				it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );
+
+				$cart = it_exchange_get_current_cart();
+				$cart->get_items( 'tax', true )->with_only_instances_of( 'ITE_EU_VAT_Line_Item' )->delete();
+
 				wp_send_json_success();
 			} else {
 				$errors[] = __( 'Unable to verify VAT Number, please try again', 'LION' );
@@ -143,11 +147,16 @@ function it_exchange_easy_eu_value_added_taxes_remove_vat_number() {
 		if ( wp_verify_nonce( $_POST['it-exchange-easy-eu-value-added-taxes-add-edit-vat-number-nonce'], 'it-exchange-easy-eu-value-added-taxes-add-edit-vat-number' ) ) {
 						
 			$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
-			unset( $tax_session['vat_country'] );
-			unset( $tax_session['vat_number'] );
+			unset( $tax_session['vat_country'], $tax_session['vat_number'] );
 			it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );
-			wp_send_json_success();
 
+			$cart = it_exchange_get_current_cart();
+
+			foreach ( $cart->get_items( 'product' ) as $product ) {
+				it_exchange_easy_eu_value_added_taxes_add_tax_line_item( $product, $cart );
+			}
+
+			wp_send_json_success();
 		} else {
 			
 			$errors[] = __( 'Unable to verify security token, please try again', 'LION' );
