@@ -10,6 +10,19 @@
 add_filter( 'it_exchange_billing_address_purchase_requirement_enabled', '__return_true' );
 
 /**
+ * Register the EU VAT taxes provider.
+ *
+ * @since 1.8.0
+ *
+ * @param \ITE_Tax_Managers $manager
+ */
+function it_exchange_register_eu_vat_taxes_provider( ITE_Tax_Managers $manager ) {
+	$manager::register_provider( new ITE_EU_VAT_Tax_Provider() );
+}
+
+add_action( 'it_exchange_register_tax_providers', 'it_exchange_register_eu_vat_taxes_provider' );
+
+/**
  * Checkes if include VAT in prices is enabled, if so, apply new filters
  *
  * @since 1.0.0
@@ -105,7 +118,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_pric
 
 	$product = ITE_Cart_Product::create( $product );
 
-	$provider->set_current_state( $country );
+	$provider->set_current_country( $country );
 	$code = $provider->get_tax_code_for_product( $product->get_product() );
 
 	if ( ! $code ) {
@@ -151,7 +164,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_va
 		return $subtotal;
 	}
 
-	$provider->set_current_state( $country );
+	$provider->set_current_country( $country );
 	$code = $provider->get_tax_code_for_product( $product->get_product() );
 
 	if ( ! $code ) {
@@ -315,56 +328,6 @@ function it_exchange_easy_eu_value_added_taxes_addon_template_path( $possible_te
 	return $possible_template_paths;
 }
 add_filter( 'it_exchange_possible_template_paths', 'it_exchange_easy_eu_value_added_taxes_addon_template_path', 10, 2 );
-
-/**
- * Add a tax line item whenever a product is added to the cart.
- *
- * @since 1.8.0
- *
- * @param \ITE_Cart_Product $product
- * @param \ITE_Cart         $cart
- */
-function it_exchange_easy_eu_value_added_taxes_add_tax_line_item( ITE_Cart_Product $product, ITE_Cart $cart ) {
-
-	$provider = new ITE_EU_VAT_Tax_Provider();
-	$country = it_exchange_easy_eu_vat_get_country( $cart );
-
-	if ( ! $country || ! it_exchange_easy_eu_vat_valid_country_for_tax( $country ) ) {
-		return;
-	}
-
-	$provider->set_current_state( $country );
-	$code = $provider->get_tax_code_for_product( $product->get_product() );
-
-	if ( ! $code ) {
-		return;
-	}
-
-	$rate = ITE_EU_VAT_Rate::from_code( $code );
-	$tax  = ITE_EU_VAT_Line_Item::create( $rate );
-
-	$cart->add_item( $tax );
-}
-
-add_action( 'it_exchange_add_product_to_cart', 'it_exchange_easy_eu_value_added_taxes_add_tax_line_item', 10, 2 );
-
-/**
- * Recalculate taxes when the customer's billing or shipping address is updated.
- *
- * @since 1.8.0
- */
-function it_exchange_easy_eu_vat_recalculate_taxes_on_address_update() {
-
-	$cart = it_exchange_get_current_cart();
-	$cart->get_items( 'tax', true )->with_only_instances_of( 'ITE_EU_VAT_Line_Item' )->delete();
-
-	foreach ( $cart->get_items( 'product' ) as $product ) {
-		it_exchange_easy_eu_value_added_taxes_add_tax_line_item( $product, $cart );
-	}
-}
-
-add_action( 'it_exchange_customer_billing_address_updated', 'it_exchange_easy_eu_vat_recalculate_taxes_on_address_update' );
-add_action( 'it_exchange_shipping_address_updated', 'it_exchange_easy_eu_vat_recalculate_taxes_on_address_update' );
 
 /**
  * Adjusts the cart total if on a checkout page

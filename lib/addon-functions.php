@@ -189,7 +189,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = fal
 				'label' => $vat_rate->get_label()
 			);
 			$taxes[ $key ]['total']          = $tax_item->get_total();
-			$taxes[ $key ]['taxable_amount'] = $tax_item->get_aggregate()->get_taxable_amount();
+			$taxes[ $key ]['taxable_amount'] = $tax_item->get_aggregate()->get_taxable_amount() * $tax_item->get_aggregate()->get_quantity();
 			$taxes[ $key ]['country']        = $address['country'];
 			$total_taxes += $tax_item->get_total();
 		} elseif ( $vat_rate->get_type() === ITE_EU_VAT_Rate::MOSS ) {
@@ -198,7 +198,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = fal
 				'label' => $vat_rate->get_label()
 			);
 			$moss_taxes[ $key ]['total']          = $tax_item->get_total();
-			$moss_taxes[ $key ]['taxable_amount'] = $tax_item->get_aggregate()->get_taxable_amount();
+			$moss_taxes[ $key ]['taxable_amount'] = $tax_item->get_aggregate()->get_taxable_amount() * $tax_item->get_aggregate()->get_quantity();
 			$moss_taxes[ $key ]['country']        = $address['country'];
 			$total_taxes += $tax_item->get_total();
 		}

@@ -9,19 +9,10 @@
 /**
  * Class ITE_EU_VAT_Line_Item
  */
-class ITE_EU_VAT_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
-
-	/** @var ITE_Parameter_Bag */
-	private $bag;
+class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
 
 	/** @var ITE_Taxable_Line_Item */
 	private $taxable;
-
-	/** @var string */
-	private $id;
-
-	/** @var ITE_Parameter_bag */
-	private $frozen;
 
 	/** @var ITE_Cart */
 	private $cart;
@@ -32,10 +23,9 @@ class ITE_EU_VAT_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
 	/**
 	 * @inheritDoc
 	 */
-	public function __construct( $id, \ITE_Parameter_Bag $bag, \ITE_Parameter_Bag $frozen ) {
-		$this->id       = $id;
-		$this->bag      = $bag;
-		$this->frozen   = $frozen;
+	public function __construct( $id, ITE_Parameter_Bag $bag, ITE_Parameter_Bag $frozen ) {
+		parent::__construct( $id, $bag, $frozen );
+
 		$this->cart     = it_exchange_get_current_cart(); // easier than a null-check later.
 		$this->vat_rate = ITE_EU_VAT_Rate::from_code( $this->get_param( 'code' ) );
 	}
@@ -60,6 +50,19 @@ class ITE_EU_VAT_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
 
 		if ( $item ) {
 			$self->set_aggregate( $item );
+		}
+
+		return $self;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function create_scoped_for_taxable( ITE_Taxable_Line_Item $item ) {
+		$self = self::create( $this->vat_rate, $item );
+
+		if ( $this->cart ) {
+			$self->set_cart( $this->cart );
 		}
 
 		return $self;
@@ -106,13 +109,6 @@ class ITE_EU_VAT_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function create_scoped_for_taxable( ITE_Taxable_Line_Item $item ) {
-		return self::create( $this->vat_rate, $item );
-	}
-
-	/**
 	 * @inheritdoc
 	 */
 	public function get_provider() {
@@ -120,7 +116,7 @@ class ITE_EU_VAT_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
 
 		$address = $this->cart->get_shipping_address() ?: $this->cart->get_billing_address();
 
-		$provider->set_current_state( $address['country'] );
+		$provider->set_current_country( $address['country'] );
 
 		return $provider;
 	}
@@ -133,26 +129,6 @@ class ITE_EU_VAT_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
 	 * @return \ITE_EU_VAT_Rate|null
 	 */
 	public function get_vat_rate() { return $this->vat_rate; }
-
-	/**
-	 * @inheritDoc
-	 */
-	public function set_aggregate( ITE_Aggregate_Line_Item $aggregate ) { $this->taxable = $aggregate; }
-
-	/**
-	 * @inheritDoc
-	 */
-	public function get_aggregate() { return $this->taxable; }
-
-	/**
-	 * @inheritDoc
-	 */
-	public function set_cart( ITE_Cart $cart ) { $this->cart = $cart; }
-
-	/**
-	 * @inheritDoc
-	 */
-	public function get_id() { return $this->id; }
 
 	/**
 	 * @inheritDoc
@@ -192,7 +168,7 @@ class ITE_EU_VAT_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
 		}
 
 		if ( $this->get_aggregate() ) {
-			return $this->get_aggregate()->get_taxable_amount() * ( $this->get_rate() / 100 );
+			return $this->get_aggregate()->get_taxable_amount() * $this->get_aggregate()->get_quantity() * ( $this->get_rate() / 100 );
 		} else {
 			return 0;
 		}
@@ -225,37 +201,22 @@ class ITE_EU_VAT_Line_Item implements ITE_Tax_Line_Item, ITE_Cart_Aware {
 	/**
 	 * @inheritDoc
 	 */
-	public function persist( ITE_Line_Item_Repository $repository ) {
-
-		if ( $repository instanceof ITE_Line_Item_Transaction_Repository ) {
-			$this->set_param( 'rate', $this->get_rate() );
-		}
-
-		return $repository->save( $this );
+	public function freeze() {
+		$this->set_param( 'rate', $this->get_rate() );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function get_params() { return $this->bag->get_params(); }
+	public function set_aggregate( ITE_Aggregate_Line_Item $aggregate ) { $this->taxable = $aggregate; }
 
 	/**
 	 * @inheritDoc
 	 */
-	public function has_param( $param ) { return $this->bag->has_param( $param ); }
+	public function get_aggregate() { return $this->taxable; }
 
 	/**
 	 * @inheritDoc
 	 */
-	public function get_param( $param ) { return $this->bag->get_param( $param ); }
-
-	/**
-	 * @inheritDoc
-	 */
-	public function set_param( $param, $value ) { return $this->bag->set_param( $param, $value ); }
-
-	/**
-	 * @inheritDoc
-	 */
-	public function remove_param( $param ) { return $this->bag->remove_param( $param ); }
+	public function set_cart( ITE_Cart $cart ) { $this->cart = $cart; }
 }
