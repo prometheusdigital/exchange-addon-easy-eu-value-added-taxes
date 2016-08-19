@@ -128,6 +128,16 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 			return;
 		}
 
+		if ( $cart->is_current() ) {
+
+			$session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+			$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+
+			if ( ! empty( $session['vat_number'] ) && $settings['vat-country'] !== $country ) {
+				return;
+			}
+		}
+
 		$provider->set_current_country( $country );
 		$code = $item->get_tax_code( $provider );
 

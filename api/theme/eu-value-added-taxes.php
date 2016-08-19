@@ -81,6 +81,30 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 	}
 
 	/**
+	 * Print the VAT number.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return string
+	 */
+	public function vat_number() {
+
+		$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+
+		$result = '';
+
+		if ( ! empty( $tax_session['vat_country'] ) && ! empty( $tax_session['vat_number'] ) ) {
+			$result .= $tax_session['vat_country'] . '-' . $tax_session['vat_number'];
+		}
+
+		$result .= '<div class="it-exchange-add-edit-vat-number-div">';
+		$result .= '<a href="#" id="it-exchange-add-edit-vat-number">' . sprintf( __( '%s EU VAT Number', 'LION' ), ( !empty( $tax_session['vat_number'] ) ? __( 'Edit', 'LION' ) : __( 'Add', 'LION' ) ) ) . '</a>';
+		$result .= '</div>';
+
+		return $result;
+	}
+
+	/**
 	 * @since 1.0.0
 	 * @return string
 	*/

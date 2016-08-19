@@ -118,7 +118,13 @@ function it_exchange_easy_eu_value_added_taxes_save_vat_number() {
 				it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );
 
 				$cart = it_exchange_get_current_cart();
-				$cart->get_items( 'tax', true )->with_only_instances_of( 'ITE_EU_VAT_Line_Item' )->delete();
+
+				$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+
+				// A VAT # only exempts tax for customers in a different state to the shop's base for VAT.
+				if ( $settings['vat-country'] !== it_exchange_easy_eu_vat_get_country( $cart ) ) {
+					$cart->get_items( 'tax', true )->with_only_instances_of( 'ITE_EU_VAT_Line_Item' )->delete();
+				}
 
 				wp_send_json_success();
 			} else {
@@ -152,8 +158,14 @@ function it_exchange_easy_eu_value_added_taxes_remove_vat_number() {
 
 			$cart = it_exchange_get_current_cart();
 
-			foreach ( $cart->get_items( 'product' ) as $product ) {
-				it_exchange_easy_eu_value_added_taxes_add_tax_line_item( $product, $cart );
+			$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+
+			$provider = new ITE_EU_VAT_Tax_Provider();
+
+			if ( $settings['vat-country'] !== it_exchange_easy_eu_vat_get_country( $cart ) ) {
+				foreach ( $cart->get_items( 'product' ) as $product ) {
+					$provider->add_taxes_to( $product, $cart );
+				}
 			}
 
 			wp_send_json_success();

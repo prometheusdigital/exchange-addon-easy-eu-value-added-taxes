@@ -244,6 +244,9 @@ function it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_total
 	return $elements;
 }
 
+add_filter( 'it_exchange_get_content_cart_totals_elements', 'it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_totals_elements' );
+add_filter( 'it_exchange_get_content_checkout_totals_elements', 'it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_template_totals_elements' );
+
 /**
  * Add Easy EU Value Added Taxes to the confirmation loop
  *
@@ -280,6 +283,8 @@ function it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_sw_template_to
 	array_splice( $loops, $index, 0, 'easy-eu-value-added-taxes' );
 	return $loops;
 }
+
+add_filter( 'it_exchange_get_super-widget-checkout_after-cart-items_loops', 'it_exchange_easy_eu_value_added_taxes_addon_add_taxes_to_sw_template_totals_loops' );
 
 /**
  * Adds our templates directory to the list of directories

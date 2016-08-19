@@ -16,5 +16,14 @@
 ?>
 
 <?php do_action( 'it_exchange_content_checkout_before_easy_eu_valued_added_taxes_element' ); ?>
-<?php it_exchange( 'eu-value-added-taxes', 'taxes' ); ?>
+<div class="it-exchange-table-column it-exchange-cart-totals-title">
+	<div class="it-exchange-table-column-inner">
+		<?php _e( 'Tax', 'LION' ); ?>
+	</div>
+</div>
+<div class="it-exchange-table-column it-exchange-cart-totals-amount">
+	<div class="it-exchange-table-column-inner">
+		<?php it_exchange( 'eu-value-added-taxes', 'vat-number' ); ?>
+	</div>
+</div>
 <?php do_action( 'it_exchange_content_checkout_after_easy_eu_valued_added_taxes_element' ); ?>

@@ -38,12 +38,6 @@ function it_exchange_easy_eu_vat_get_country( ITE_Cart $cart ) {
 		return empty( $address['country'] ) ? '' : $address['country'];
 	}
 
-	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
-
-	if ( ! empty( $tax_session['vat_country'] ) ) {
-		return $tax_session['vat_country'];
-	}
-
 	$address = $cart->get_shipping_address() ? $cart->get_shipping_address() : $cart->get_billing_address();
 
 	return empty( $address['country'] ) ? '' : $address['country'];
