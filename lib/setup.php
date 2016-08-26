@@ -32,43 +32,6 @@ function it_exchange_easy_eu_value_added_taxes_addon_show_version_nag() {
 add_action( 'admin_notices', 'it_exchange_easy_eu_value_added_taxes_addon_show_version_nag' );
 
 /**
- * Shows the nag when needed.
- *
- * @since 1.0.0
- *
- * @return void
- */
-function it_exchange_easy_eu_value_added_taxes_addon_show_conflict_nag() {
-	if ( ! empty( $_REQUEST['it_exchange_easy_eu_value_added_taxes-dismiss-conflict-nag'] ) )
-		update_option( 'it-exchange-easy-eu-value-added-taxes-conflict-nag', true );
-
-	if ( true == (boolean) get_option( 'it-exchange-easy-eu-value-added-taxes-conflict-nag' ) )
-		return;
-
-	$taxes_addons = it_exchange_get_enabled_addons( array( 'category' => 'taxes' ) );
-
-	if ( 1 < count( $taxes_addons ) ) {
-		?>
-		<div id="it-exchange-easy-eu-value-added-taxes-conflict-nag" class="it-exchange-nag">
-			<?php
-			$nag_dismiss = add_query_arg( array( 'it_exchange_easy_eu_value_added_taxes-dismiss-conflict-nag' => true ) );
-			echo __( 'Warning: You have multiple tax add-ons enabled. You may need to disable one to avoid conflicts.', 'LION' );
-			?>
-			<a class="dismiss btn" href="<?php echo esc_url( $nag_dismiss ); ?>">&times;</a>
-		</div>
-		<script type="text/javascript">
-			jQuery( document ).ready( function() {
-				if ( jQuery( '.wrap > h2' ).length == '1' ) {
-					jQuery("#it-exchange-easy-eu-value-added-taxes-conflict-nag").insertAfter( '.wrap > h2' ).addClass( 'after-h2' );
-				}
-			});
-		</script>
-		<?php
-	}
-}
-add_action( 'admin_notices', 'it_exchange_easy_eu_value_added_taxes_addon_show_conflict_nag' );
-
-/**
  * Enqueues Easy EU Value Added Taxes scripts to WordPress Dashboard
  *
  * @since 1.0.0

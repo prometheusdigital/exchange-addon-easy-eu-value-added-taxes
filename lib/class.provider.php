@@ -156,7 +156,7 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 	 */
 	public function is_restricted_to_location() {
 		return new ITE_Simple_Zone( array(
-			'country' => array_keys( it_exchange_easy_eu_value_added_taxes_addon_get_eu_member_states() )
+			'country' => array_keys( it_exchange_get_data_set( 'eu-member-states' ) )
 		) );
 	}
 }

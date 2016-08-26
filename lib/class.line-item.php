@@ -14,7 +14,7 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	/** @var ITE_Taxable_Line_Item */
 	private $taxable;
 
-	/** @var ITE_Cart */
+	/** @var ITE_Cart|null */
 	private $cart;
 
 	/** @var ITE_EU_VAT_Rate */
@@ -26,7 +26,7 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	public function __construct( $id, ITE_Parameter_Bag $bag, ITE_Parameter_Bag $frozen ) {
 		parent::__construct( $id, $bag, $frozen );
 
-		$this->cart     = it_exchange_get_current_cart(); // easier than a null-check later.
+		$this->cart     = it_exchange_get_current_cart( false );
 		$this->vat_rate = ITE_EU_VAT_Rate::from_code( $this->get_param( 'code' ) );
 	}
 
@@ -91,7 +91,7 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 			return false;
 		}
 
-		if ( $item instanceof ITE_Shipping_Line_Item && ! $rate->applies_to_shipping() ) {
+		if ( $item instanceof ITE_Shipping_Line_Item && ! $this->applies_to_shipping() ) {
 			return false;
 		}
 
@@ -109,10 +109,30 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	}
 
 	/**
+	 * Check if this line item would apply taxes to shipping items.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return bool
+	 */
+	protected function applies_to_shipping() {
+
+		if ( $this->has_param( 'applies_to_shipping' ) ) {
+			return (bool) $this->get_param( 'applies_to_shipping' );
+		}
+
+		return $this->get_vat_rate()->applies_to_shipping();
+	}
+
+	/**
 	 * @inheritdoc
 	 */
 	public function get_provider() {
 		$provider = new ITE_EU_VAT_Tax_Provider();
+
+		if ( ! $this->cart ) {
+			$this->cart = it_exchange_get_current_cart();
+		}
 
 		$address = $this->cart->get_shipping_address() ?: $this->cart->get_billing_address();
 
@@ -177,18 +197,6 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	/**
 	 * @inheritDoc
 	 */
-	public function get_total() {
-
-		if ( $this->frozen->has_param( 'total' ) ) {
-			return $this->frozen->get_param( 'total' );
-		}
-
-		return $this->get_amount() * $this->get_quantity();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
 	public function get_type( $label = false ) { return $label ? __( 'Tax', 'LION' ) : 'tax'; }
 
 	/**
@@ -203,6 +211,9 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	 */
 	public function freeze() {
 		$this->set_param( 'rate', $this->get_rate() );
+		$this->set_param( 'applies_to_shipping', $this->get_vat_rate()->applies_to_shipping() );
+
+		parent::freeze();
 	}
 
 	/**

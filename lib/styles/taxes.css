@@ -2,7 +2,7 @@
 .it-exchange-cart-easy-eu-value-added-taxes .it-exchange-cart-totals-title .it-exchange-table-column-inner,
 .it-exchange-cart-easy-eu-value-added-taxes .it-exchange-confirmation-totals-title .it-exchange-table-column-inner {line-height: 1.2em;}
 #it-exchange-add-edit-vat-number, .it-exchange-cart-vat-details {display:inline-block;line-height: 1.2em;}
-.it-exchange-cart-easy-eu-value-added-taxes .it-exchange-table-column-inner { font-size: .8em; }
+.it-exchange-cart-easy-eu-value-added-taxes .it-exchange-cart-totals-amount .it-exchange-table-column-inner { font-size: .8em; }
 
 /** -----------------------------------------------------:[ VAT Summary ]:---------- */
 .it-exchange-vat-summary {margin:1em 0;}

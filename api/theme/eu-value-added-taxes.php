@@ -398,7 +398,7 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 			
 			$result .= $options['label_tag_open'] . $options['label'] . $options['label_tag_close'];
 			
-			$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s-%s', 'LION' ), $general_settings['company-base-country'], $settings['vat-number'] ) . '</p>';
+			$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s-%s', 'LION' ), $settings['vat-country'], $settings['vat-number'] ) . '</p>';
 			if ( !empty( $customer_vat ) )
 				$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';
 			

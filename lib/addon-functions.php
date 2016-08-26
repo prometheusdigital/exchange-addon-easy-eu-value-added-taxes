@@ -43,6 +43,30 @@ function it_exchange_easy_eu_vat_get_country( ITE_Cart $cart ) {
 	return empty( $address['country'] ) ? '' : $address['country'];
 }
 
+/**
+ * Whether to show the VAT # Manager or not.
+ *
+ * @since 1.8.0
+ *
+ * @param \ITE_Cart|null $cart
+ *
+ * @return bool
+ */
+function it_exchange_easy_eu_vat_show_vat_manager( ITE_Cart $cart = null ) {
+
+	$cart = $cart ? $cart : it_exchange_get_current_cart( false );
+
+	if ( ! $cart ) {
+		return false;
+	}
+
+	$provider = new ITE_EU_VAT_Tax_Provider();
+
+	$address = $cart->get_shipping_address() ? $cart->get_shipping_address() : $cart->get_billing_address();
+
+	return $provider->is_restricted_to_location()->contains( $address );
+}
+
 function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate = array(), $memberstate = false ) {
 	if ( empty( $rate ) ) { //just set some defaults
 		$rate = array( //Member State
@@ -116,18 +140,20 @@ function it_exchange_easy_eu_value_added_taxes_get_cart_taxes() {
  */
 function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = false ) {
 
-	$cart        = it_exchange_get_current_cart();
-	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
-	$settings    = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
-	$address     = $cart->get_shipping_address() ? $cart->get_shipping_address() : $cart->get_billing_address();
+	$cart = it_exchange_get_current_cart( false );
 
-	if ( empty( $address['country'] ) || ! it_exchange_easy_eu_vat_valid_country_for_tax( $address['country'] ) ) {
+	if ( ! $cart ) {
 		return false;
-	} elseif ( empty( $tax_session['vat_country'] ) && empty( $tax_session['vat_number'] ) ) {
-		$tax_session['vat_country'] = $address['country'];
 	}
 
-	$tax_session['intrastate'] = $settings['vat-country'] === $address['country']; //Is this an intrastate transaction, used for determining VAT MOSS
+	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+	$info        = it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( $cart );
+
+	if ( count( $info ) === 0 ) {
+		return false;
+	}
+
+	$tax_session = array_merge( $tax_session, $info );
 
 	if ( empty( $tax_session['vat_number'] ) || $tax_session['intrastate'] ) {
 		//Charge Tax if no VAT Number is supplied or if the customer is purchasing from the same member state
@@ -137,8 +163,45 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = fal
 		$tax_session['summary_only'] = true;
 	}
 
+	it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );
+
+	return true;
+}
+
+/**
+ * Get summarized info about taxes for given cart.
+ *
+ * @since 1.8.0
+ *
+ * @param \ITE_Cart $cart
+ *
+ * @return array
+ */
+function it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( ITE_Cart $cart ) {
+
+	$info     = array();
+	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+	$address  = $cart->get_shipping_address() ? $cart->get_shipping_address() : $cart->get_billing_address();
+
+	if ( empty( $address['country'] ) || ! it_exchange_easy_eu_vat_valid_country_for_tax( $address['country'] ) ) {
+		return array();
+	} else {
+		$info['vat_country'] = $address['country'];
+	}
+
+	//Is this an intrastate transaction, used for determining VAT MOSS
+	$info['intrastate'] = $settings['vat-country'] === $address['country'];
+
+	if ( empty( $info['vat_number'] ) || $info['intrastate'] ) {
+		//Charge Tax if no VAT Number is supplied or if the customer is purchasing from the same member state
+		$info['summary_only'] = false;
+	} else {
+		//Otherwise, don't charge tax, just summarize the VAT
+		$info['summary_only'] = true;
+	}
+
 	if ( ! $cart->get_items( 'product' )->count() ) {
-		return false;
+		return array();
 	}
 
 	$vat_moss_cart_subtotal = 0;
@@ -178,19 +241,13 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = fal
 		$key      = $vat_rate->get_index();
 
 		if ( $vat_rate->get_type() === ITE_EU_VAT_Rate::VAT ) {
-			$taxes[ $key ]['tax-rate']       = array(
-				'rate'  => $tax_item->get_rate(),
-				'label' => $vat_rate->get_label()
-			);
+			$taxes[ $key ]['tax-rate']       = $vat_rate->to_array();
 			$taxes[ $key ]['total']          = $tax_item->get_total();
 			$taxes[ $key ]['taxable_amount'] = $tax_item->get_aggregate()->get_taxable_amount() * $tax_item->get_aggregate()->get_quantity();
 			$taxes[ $key ]['country']        = $address['country'];
 			$total_taxes += $tax_item->get_total();
 		} elseif ( $vat_rate->get_type() === ITE_EU_VAT_Rate::MOSS ) {
-			$moss_taxes[ $key ]['tax-rate']       = array(
-				'rate'  => $tax_item->get_rate(),
-				'label' => $vat_rate->get_label()
-			);
+			$moss_taxes[ $key ]['tax-rate']       = $vat_rate->to_array();
 			$moss_taxes[ $key ]['total']          = $tax_item->get_total();
 			$moss_taxes[ $key ]['taxable_amount'] = $tax_item->get_aggregate()->get_taxable_amount() * $tax_item->get_aggregate()->get_quantity();
 			$moss_taxes[ $key ]['country']        = $address['country'];
@@ -198,20 +255,18 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = fal
 		}
 	}
 
-	$tax_session['country']                = $address['country'];
-	$tax_session['cart_subtotal']          = $cart_subtotal;
-	$tax_session['vat_moss_cart_subtotal'] = $vat_moss_cart_subtotal;
-	$tax_session['shipping_cost']          = $shipping_cost;
-	$tax_session['applied_coupons']        = $serialized_coupons;
+	$info['country']                = $address['country'];
+	$info['cart_subtotal']          = $cart_subtotal;
+	$info['vat_moss_cart_subtotal'] = $vat_moss_cart_subtotal;
+	$info['shipping_cost']          = $shipping_cost;
+	$info['applied_coupons']        = $serialized_coupons;
 
-	$tax_session['taxes']          = $taxes;
-	$tax_session['total_taxes']    = $total_taxes;
-	$tax_session['product_taxes']  = $product_taxes;
-	$tax_session['vat_moss_taxes'] = $moss_taxes;
+	$info['taxes']          = $taxes;
+	$info['total_taxes']    = $total_taxes;
+	$info['product_taxes']  = $product_taxes;
+	$info['vat_moss_taxes'] = $moss_taxes;
 
-	it_exchange_update_session_data( 'addon_easy_eu_value_added_taxes', $tax_session );
-
-	return true;
+	return $info;
 }
 
 /**
@@ -287,12 +342,16 @@ function it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $country_code, 
  * purchase requriement.
  *
  * @since 1.0.0
+ * @deprecated 1.8.0
  *
- * @param integer $customer_id the customer id. leave blank to use the current customer.
+ * @param int $customer_id the customer id. leave blank to use the current customer.
  *
- * @return array
+ * @return array|int
  */
-function it_exchange_easy_eu_value_added_taxes_get_customer_vat_details( $customer_id = false ) {
+function it_exchange_easy_eu_value_added_taxes_get_customer_vat_details( $customer_id = 0 ) {
+
+	_deprecated_function( __FUNCTION__, '1.8.0' );
+
 	if ( it_exchange_easy_eu_value_added_taxes_setup_session() ) {
 		$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 		//We only want to require the VAT details if the user is in an EU Memberstate

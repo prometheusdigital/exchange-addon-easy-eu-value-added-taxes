@@ -174,6 +174,17 @@ class ITE_EU_VAT_Rate {
 	}
 
 	/**
+	 * Convert the rate to an array.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return array
+	 */
+	public function to_array() {
+		return $this->data;
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function __toString() {
