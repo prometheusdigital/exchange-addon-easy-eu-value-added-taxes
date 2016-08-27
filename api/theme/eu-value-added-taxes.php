@@ -89,12 +89,13 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 	 */
 	public function vat_number() {
 
+		$cart = it_exchange_get_current_cart();
 		$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 
 		$result = '';
 
-		if ( ! empty( $tax_session['vat_country'] ) && ! empty( $tax_session['vat_number'] ) ) {
-			$result .= $tax_session['vat_country'] . '-' . $tax_session['vat_number'];
+		if ( $cart->has_meta( 'eu-vat-country' ) && $cart->has_meta( 'eu-vat-number' ) ) {
+			$result .= $cart->get_meta( 'eu-vat-country' ) . '-' . $cart->get_meta( 'eu-vat-number' );
 		}
 
 		$result .= '<div class="it-exchange-add-edit-vat-number-div">';

@@ -130,10 +130,9 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 
 		if ( $cart->is_current() ) {
 
-			$session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 			$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 
-			if ( ! empty( $session['vat_number'] ) && $settings['vat-country'] !== $country ) {
+			if ( $cart->has_meta( 'eu-vat-number' ) && $settings['vat-country'] !== $country ) {
 				return;
 			}
 		}

@@ -32,12 +32,6 @@ function it_exchange_easy_eu_vat_valid_country_for_tax( $country ) {
  */
 function it_exchange_easy_eu_vat_get_country( ITE_Cart $cart ) {
 
-	if ( ! $cart->is_current() ) {
-		$address = $cart->get_shipping_address() ? $cart->get_shipping_address() : $cart->get_billing_address();
-
-		return empty( $address['country'] ) ? '' : $address['country'];
-	}
-
 	$address = $cart->get_shipping_address() ? $cart->get_shipping_address() : $cart->get_billing_address();
 
 	return empty( $address['country'] ) ? '' : $address['country'];
@@ -188,6 +182,9 @@ function it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( ITE_Cart $car
 	} else {
 		$info['vat_country'] = $address['country'];
 	}
+
+	$info['vat_number']  = $cart->has_meta( 'eu-vat-number' ) ? $cart->get_meta( 'eu-vat-number' ) : '';
+	$info['vat_country'] = $cart->has_meta( 'eu-vat-country' ) ? $cart->get_meta( 'eu-vat-country' ) : '';
 
 	//Is this an intrastate transaction, used for determining VAT MOSS
 	$info['intrastate'] = $settings['vat-country'] === $address['country'];
@@ -341,7 +338,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $country_code, 
  * Among other things this function is used as a callback for the customer EU VAT
  * purchase requriement.
  *
- * @since 1.0.0
+ * @since      1.0.0
  * @deprecated 1.8.0
  *
  * @param int $customer_id the customer id. leave blank to use the current customer.

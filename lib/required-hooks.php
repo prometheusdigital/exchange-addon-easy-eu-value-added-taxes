@@ -55,6 +55,58 @@ function it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters() {
 add_action( 'template_redirect', 'it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters' );
 
 /**
+ * Handle the VAT # being set on a cart.
+ *
+ * @since 1.8.0
+ *
+ * @param string    $key
+ * @param string    $value
+ * @param \ITE_Cart $cart
+ */
+function it_exchange_easy_eu_vat_handle_set_vat_number( $key, $value, ITE_Cart $cart ) {
+
+	if ( $key !== 'eu-vat-number' ) {
+		return;
+	}
+
+	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+
+	// A VAT # only exempts tax for customers in a different state to the shop's base for VAT.
+	if ( $settings['vat-country'] !== it_exchange_easy_eu_vat_get_country( $cart ) ) {
+		$cart->get_items( 'tax', true )->with_only_instances_of( 'ITE_EU_VAT_Line_Item' )->delete();
+	}
+}
+
+add_action( 'it_exchange_set_cart_meta', 'it_exchange_easy_eu_vat_handle_set_vat_number', 10, 3 );
+
+/**
+ * Handle the VAT # being removed from a cart.
+ *
+ * @since 1.8.0
+ *
+ * @param string    $key
+ * @param \ITE_Cart $cart
+ */
+function it_exchange_easy_eu_vat_handle_remove_vat_number( $key, ITE_Cart $cart ) {
+
+	if ( $key !== 'eu-vat-number' ) {
+		return;
+	}
+
+	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+
+	$provider = new ITE_EU_VAT_Tax_Provider();
+
+	if ( $settings['vat-country'] !== it_exchange_easy_eu_vat_get_country( $cart ) ) {
+		foreach ( $cart->get_items() as $item ) {
+			$provider->add_taxes_to( $item, $cart );
+		}
+	}
+}
+
+add_action( 'it_exchange_remove_cart_meta', 'it_exchange_easy_eu_vat_handle_remove_vat_number', 10, 2 );
+
+/**
  * Set VAT manager to checkout mode on the invoice page.
  *
  * @since 1.7.4
@@ -438,7 +490,7 @@ add_action( 'it_exchange_add_transaction_success', 'it_exchange_easy_eu_value_ad
  * @since 1.0.0
  */
 function it_exchange_easy_eu_value_added_taxes_addon_vat_number_manager_backbone_template() {
-	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+	$cart = it_exchange_get_current_cart();
 	?>
 	<div id="it-exchange-easy-eu-value-added-taxes-vat-manager-wrapper" class="it-exchange-hidden"></div>
 	<script type="text/template" id="tmpl-it-exchange-easy-eu-value-added-taxes-vat-manager-container">
@@ -454,17 +506,9 @@ function it_exchange_easy_eu_value_added_taxes_addon_vat_number_manager_backbone
 				<div id="it-exchange-easy-eu-value-added-taxes-vat-manager-error-area"></div>
 				<form id="it-exchange-add-on-easy-eu-value-added-taxes-add-edit-vat" name="it-exchange-add-on-easy-eu-value-added-taxes-add-edit-vat" action="POST">
 				<?php
-				if ( !empty( $tax_session['vat_country'] ) ) {
-					$vat_country = $tax_session['vat_country'];
-				} else {
-					$vat_country = '';
-				}
 
-				if ( !empty( $tax_session['vat_number'] ) ) {
-					$vat_number = $tax_session['vat_number'];
-				} else {
-					$vat_number = '';
-				}
+				$vat_country = $cart->has_meta( 'eu-vat-country' ) ? $cart->get_meta( 'eu-vat-country' ) : '';
+				$vat_number  = $cart->has_meta( 'eu-vat-number' ) ? $cart->get_meta( 'eu-vat-number' ) : '';
 
 				$output = '<select id="it-exchange-euvat-eu-vat-country" name="eu-vat-country">';
 				$memberstates = it_exchange_get_data_set( 'eu-member-states' );
