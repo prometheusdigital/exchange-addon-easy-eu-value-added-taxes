@@ -141,7 +141,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = fal
 	}
 
 	$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
-	$info        = it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( $cart );
+	$info        = it_exchange_easy_eu_vat_get_tax_info_for_cart( $cart );
 
 	if ( count( $info ) === 0 ) {
 		return false;
@@ -171,7 +171,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = fal
  *
  * @return array
  */
-function it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( ITE_Cart $cart ) {
+function it_exchange_easy_eu_vat_get_tax_info_for_cart( ITE_Cart $cart ) {
 
 	$info     = array();
 	$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
@@ -197,7 +197,7 @@ function it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( ITE_Cart $car
 		$info['summary_only'] = true;
 	}
 
-	if ( ! $cart->get_items( 'product' )->count() ) {
+	if ( ! $cart->get_items()->count() ) {
 		return array();
 	}
 
@@ -216,47 +216,71 @@ function it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( ITE_Cart $car
 	$applied_coupons        = it_exchange_get_applied_coupons();
 	$serialized_coupons     = maybe_serialize( $applied_coupons );
 
+	$info['country']                = $address['country'];
+	$info['cart_subtotal']          = $cart_subtotal;
+	$info['vat_moss_cart_subtotal'] = $vat_moss_cart_subtotal;
+	$info['shipping_cost']          = $shipping_cost;
+	$info['applied_coupons']        = $serialized_coupons;
+
+	$info = array_merge(
+		$info,
+		it_exchange_easy_eu_vat_get_tax_summary_for_taxable_items(
+			$cart->get_items()->taxable()->to_array(), $address['country']
+		)
+	);
+
+	return $info;
+}
+
+/**
+ * Get the tax summary for taxable items.
+ *
+ * @since 1.8.0
+ *
+ * @param ITE_Taxable_Line_Item[] $items
+ * @param string                  $country
+ *
+ * @return array
+ */
+function it_exchange_easy_eu_vat_get_tax_summary_for_taxable_items( array $items, $country ) {
+
 	$product_taxes = array();
 	$taxes         = array();
 	$moss_taxes    = array();
 	$total_taxes   = 0;
 
-	/** @var ITE_Cart_Product $product */
-	foreach ( $cart->get_items( 'product' ) as $product ) {
+	foreach ( $items as $item ) {
 
-		foreach ( $product->get_taxes() as $tax ) {
-			if ( $tax instanceof ITE_EU_VAT_Line_Item ) {
-				$tax_item = $tax;
-			}
-		}
+		/** @var ITE_EU_VAT_Line_Item $tax_item */
+		$tax_item = $item->get_taxes()->with_only_instances_of( 'ITE_EU_VAT_Line_Item' )->first();
 
-		if ( ! isset( $tax_item ) ) {
+		if ( ! $tax_item ) {
 			continue;
 		}
 
 		$vat_rate = $tax_item->get_vat_rate();
 		$key      = $vat_rate->get_index();
 
+		if ( $item instanceof ITE_Cart_Product ) {
+			$product_taxes[ $item->get_product()->ID ] = $vat_rate->get_index();
+		}
+
 		if ( $vat_rate->get_type() === ITE_EU_VAT_Rate::VAT ) {
 			$taxes[ $key ]['tax-rate']       = $vat_rate->to_array();
 			$taxes[ $key ]['total']          = $tax_item->get_total();
 			$taxes[ $key ]['taxable_amount'] = $tax_item->get_aggregate()->get_taxable_amount() * $tax_item->get_aggregate()->get_quantity();
-			$taxes[ $key ]['country']        = $address['country'];
+			$taxes[ $key ]['country']        = $country;
 			$total_taxes += $tax_item->get_total();
 		} elseif ( $vat_rate->get_type() === ITE_EU_VAT_Rate::MOSS ) {
 			$moss_taxes[ $key ]['tax-rate']       = $vat_rate->to_array();
 			$moss_taxes[ $key ]['total']          = $tax_item->get_total();
 			$moss_taxes[ $key ]['taxable_amount'] = $tax_item->get_aggregate()->get_taxable_amount() * $tax_item->get_aggregate()->get_quantity();
-			$moss_taxes[ $key ]['country']        = $address['country'];
+			$moss_taxes[ $key ]['country']        = $country;
 			$total_taxes += $tax_item->get_total();
 		}
 	}
 
-	$info['country']                = $address['country'];
-	$info['cart_subtotal']          = $cart_subtotal;
-	$info['vat_moss_cart_subtotal'] = $vat_moss_cart_subtotal;
-	$info['shipping_cost']          = $shipping_cost;
-	$info['applied_coupons']        = $serialized_coupons;
+	$info = array();
 
 	$info['taxes']          = $taxes;
 	$info['total_taxes']    = $total_taxes;
@@ -264,6 +288,35 @@ function it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( ITE_Cart $car
 	$info['vat_moss_taxes'] = $moss_taxes;
 
 	return $info;
+}
+
+/**
+ * Generate taxes for a cart that is summary only.
+ *
+ * Summary only carts just have the VAT info summarized, but the totals aren't charged to the customer,
+ * so we don't save the items to the cart with the taxes provided.
+ *
+ * @since 1.8.0
+ *
+ * @param \ITE_Cart $cart
+ *
+ * @return \ITE_Line_Item_Collection
+ */
+function it_exchange_easy_eu_vat_do_summary_only_taxes( ITE_Cart $cart ) {
+
+	$provider = new ITE_EU_VAT_Tax_Provider();
+
+	$taxable = $cart->get_items()->taxable();
+
+	foreach ( $taxable as $item ) {
+		$tax = $provider->make_tax_for( $item, $cart );
+
+		if ( $tax ) {
+			$item->add_tax( $tax );
+		}
+	}
+
+	return $taxable;
 }
 
 /**

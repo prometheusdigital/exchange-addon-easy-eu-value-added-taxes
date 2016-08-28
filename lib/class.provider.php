@@ -121,33 +121,52 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 	 */
 	public function add_taxes_to( ITE_Taxable_Line_Item $item, ITE_Cart $cart ) {
 
+		$country  = it_exchange_easy_eu_vat_get_country( $cart );
+		$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+
+		if ( $cart->has_meta( 'eu-vat-number' ) && $settings['vat-country'] !== $country ) {
+			return;
+		}
+
+		$tax = $this->make_tax_for( $item, $cart );
+
+		if ( ! $tax ) {
+			return;
+		}
+
+		$item->add_tax( $tax );
+		$cart->get_repository()->save( $item );
+	}
+
+	/**
+	 * Make the tax item for a given taxable line item.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param \ITE_Taxable_Line_Item $item
+	 * @param \ITE_Cart              $cart
+	 *
+	 * @return \ITE_EU_VAT_Line_Item|null
+	 */
+	public function make_tax_for( ITE_Taxable_Line_Item $item, ITE_Cart $cart ) {
+
 		$provider = new ITE_EU_VAT_Tax_Provider();
 		$country  = it_exchange_easy_eu_vat_get_country( $cart );
 
 		if ( ! $country || ! it_exchange_easy_eu_vat_valid_country_for_tax( $country ) ) {
-			return;
-		}
-
-		if ( $cart->is_current() ) {
-
-			$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
-
-			if ( $cart->has_meta( 'eu-vat-number' ) && $settings['vat-country'] !== $country ) {
-				return;
-			}
+			return null;
 		}
 
 		$provider->set_current_country( $country );
 		$code = $item->get_tax_code( $provider );
 
 		if ( ! $code ) {
-			return;
+			return null;
 		}
 
 		$rate = ITE_EU_VAT_Rate::from_code( $code );
-		$tax  = ITE_EU_VAT_Line_Item::create( $rate );
 
-		$cart->add_item( $tax );
+		return ITE_EU_VAT_Line_Item::create( $rate, $item );
 	}
 
 	/**

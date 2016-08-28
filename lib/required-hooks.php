@@ -442,9 +442,22 @@ function it_exchange_easy_eu_value_added_taxes_addon_taxes_modify_total( $total 
 function it_exchange_easy_eu_value_added_taxes_transaction_hook( $transaction_id, \ITE_Cart $cart = null ) {
 
 	if ( $cart ) {
-		$info = it_exchange_easy_eu_vat_get_summarized_tax_info_for_cart( $cart );
+		$info = it_exchange_easy_eu_vat_get_tax_info_for_cart( $cart );
 	} else {
 		$info = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
+	}
+
+	if ( $cart && $info['summary_only'] ) {
+		$info = array_merge( $info,
+			it_exchange_easy_eu_vat_get_tax_summary_for_taxable_items(
+				it_exchange_easy_eu_vat_do_summary_only_taxes( $cart )->to_array(),
+				it_exchange_easy_eu_vat_get_country( $cart )
+			)
+		);
+	}
+
+	if ( ! empty( $info['summary_only'] ) ) {
+		update_post_meta( $transaction_id, '_it_exchange_easy_eu_value_added_taxes_summary_only', $info['summary_only'] );
 	}
 
 	if ( ! empty( $info['taxes'] ) ) {
@@ -469,10 +482,6 @@ function it_exchange_easy_eu_value_added_taxes_transaction_hook( $transaction_id
 
 	if ( ! empty( $info['total_taxes'] ) ) {
 		update_post_meta( $transaction_id, '_it_exchange_easy_eu_value_added_taxes_taxes_total', $info['total_taxes'] );
-	}
-
-	if ( ! empty( $info['summary_only'] ) ) {
-		update_post_meta( $transaction_id, '_it_exchange_easy_eu_value_added_taxes_summary_only', $info['summary_only'] );
 	}
 
 	if ( $cart && $cart->is_current() ) {
