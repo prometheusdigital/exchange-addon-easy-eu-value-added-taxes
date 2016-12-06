@@ -56,6 +56,28 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	}
 
 	/**
+	 * Generate the ID.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param ITE_EU_VAT_Rate $rate
+	 *
+	 * @return string
+	 */
+	protected static function generate_id( $rate ) { return md5( uniqid( 'VAT', true ) . $rate->get_type() ); }
+
+	/**
+	 * @inheritdoc
+	 */
+	public function clone_with_new_id( $include_frozen = true ) {
+		return new static(
+			self::generate_id( $this->get_vat_rate() ),
+			$this->bag,
+			$include_frozen ? $this->frozen : new ITE_Array_Parameter_Bag()
+		);
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function create_scoped_for_taxable( ITE_Taxable_Line_Item $item ) {

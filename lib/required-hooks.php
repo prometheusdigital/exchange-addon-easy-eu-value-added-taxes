@@ -447,7 +447,11 @@ function it_exchange_easy_eu_value_added_taxes_transaction_hook( $transaction_id
 		$info = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
 	}
 
-	if ( $cart && $info['summary_only'] ) {
+	if ( ! $info ) {
+		return;
+	}
+
+	if ( $cart && ! empty( $info['summary_only'] ) ) {
 		$info = array_merge( $info,
 			it_exchange_easy_eu_vat_get_tax_summary_for_taxable_items(
 				it_exchange_easy_eu_vat_do_summary_only_taxes( $cart )->to_array(),
@@ -499,7 +503,7 @@ add_action( 'it_exchange_add_transaction_success', 'it_exchange_easy_eu_value_ad
  * @since 1.0.0
  */
 function it_exchange_easy_eu_value_added_taxes_addon_vat_number_manager_backbone_template() {
-	$cart = it_exchange_get_current_cart();
+	$cart = it_exchange_get_current_cart( false );
 	?>
 	<div id="it-exchange-easy-eu-value-added-taxes-vat-manager-wrapper" class="it-exchange-hidden"></div>
 	<script type="text/template" id="tmpl-it-exchange-easy-eu-value-added-taxes-vat-manager-container">
@@ -516,8 +520,8 @@ function it_exchange_easy_eu_value_added_taxes_addon_vat_number_manager_backbone
 				<form id="it-exchange-add-on-easy-eu-value-added-taxes-add-edit-vat" name="it-exchange-add-on-easy-eu-value-added-taxes-add-edit-vat" action="POST">
 				<?php
 
-				$vat_country = $cart->has_meta( 'eu-vat-country' ) ? $cart->get_meta( 'eu-vat-country' ) : '';
-				$vat_number  = $cart->has_meta( 'eu-vat-number' ) ? $cart->get_meta( 'eu-vat-number' ) : '';
+				$vat_country = $cart && $cart->has_meta( 'eu-vat-country' ) ? $cart->get_meta( 'eu-vat-country' ) : '';
+				$vat_number  = $cart && $cart->has_meta( 'eu-vat-number' ) ? $cart->get_meta( 'eu-vat-number' ) : '';
 
 				$output = '<select id="it-exchange-euvat-eu-vat-country" name="eu-vat-country">';
 				$memberstates = it_exchange_get_data_set( 'eu-member-states' );
