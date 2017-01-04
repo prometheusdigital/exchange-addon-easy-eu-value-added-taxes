@@ -38,6 +38,10 @@ function it_exchange_easy_eu_value_added_taxes_addon_include_vat_filters() {
 
 	if ( $cart && $country = it_exchange_easy_eu_vat_get_country( $cart ) ) {
 		$show = it_exchange_easy_eu_vat_valid_country_for_tax( $country );
+	} elseif ( is_user_logged_in() ) {
+		$customer = it_exchange_get_current_customer();
+		$address  = $customer->get_shipping_address() ?: $customer->get_billing_address();
+		$show     = $address && it_exchange_easy_eu_vat_valid_country_for_tax( $address['country'] );
 	} else {
 		$show = true;
 	}
