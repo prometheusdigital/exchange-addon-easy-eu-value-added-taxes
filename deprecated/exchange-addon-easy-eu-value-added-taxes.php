@@ -48,18 +48,4 @@ add_action( 'admin_notices', 'it_exchange_easy_eu_value_added_taxes_show_soap_na
 function it_exchange_easy_eu_value_added_taxes_set_textdomain() {
 	load_plugin_textdomain( 'LION', false, dirname( plugin_basename( __FILE__  ) ) . '/lang/' );
 }
-//add_action( 'plugins_loaded', 'it_exchange_easy_eu_value_added_taxes_set_textdomain' );
-
-/**
- * Registers Plugin with iThemes updater class
- *
- * @since 1.0.0
- *
- * @param object $updater ithemes updater object
- * @return void
-*/
-function ithemes_exchange_addon_easy_eu_value_added_taxes_updater_register( $updater ) { 
-	$updater->register( 'exchange-addon-easy-eu-value-added-taxes', __FILE__ );
-}
-add_action( 'ithemes_updater_register', 'ithemes_exchange_addon_easy_eu_value_added_taxes_updater_register' );
-require( dirname( __FILE__ ) . '/lib/updater/load.php' );
+add_action( 'plugins_loaded', 'it_exchange_easy_eu_value_added_taxes_set_textdomain' );
