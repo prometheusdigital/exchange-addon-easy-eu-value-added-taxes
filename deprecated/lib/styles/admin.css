@@ -1,0 +1,57 @@
+/** -----------------------------------------------------:[ Settings ]:---------- */
+#value-added-tax-number label {font-weight: 600;}
+#value-added-tax-number input[type="text"] {width: 180px;margin: .5em 0;}
+#value-added-tax-number input#vat-number-country-code {background: none repeat scroll 0 0 #D6D6D6; width: 45px;}
+#value-added-tax-number img {margin: 0 0 0 1em;}
+
+#value-added-tax-rate-table {overflow: hidden;background: #FFF;border: 1px solid #DEDEDE;width: 100%;max-width: 800px;}
+#value-added-tax-rate-table .block-row {border-bottom: 1px solid #DEDEDE;overflow:hidden;}
+#value-added-tax-rate-table .heading-column {font-weight: bold;}
+#value-added-tax-rate-table .heading-column p.heading {margin: 0;}
+
+#value-added-tax-rate-table .block-column {float:left;padding: .5em;}
+#value-added-tax-rate-table .block-column input,
+#value-added-tax-rate-table .block-column select {max-width: 100%;}
+#value-added-tax-rate-table .block-column input {max-width: 75%;}
+#value-added-tax-rate-table .block-column select {margin: 10px 0;}
+#value-added-tax-rate-table .block-column input[type="checkbox"] {margin: 15px 0;}
+#value-added-tax-rate-table .block-column-1 {width: 30%;}
+#value-added-tax-rate-table .block-column-2 {width: 15%;}
+#value-added-tax-rate-table .block-column-3 {width: 20%;}
+#value-added-tax-rate-table .block-column-4 {width: 20%;}
+#value-added-tax-rate-table .block-column-delete {width: 5%; float:right;}
+
+#value-added-tax-vat-moss-rate-tables .hidden-vat-country { display: none; }
+.value-added-tax-vat-moss-rate-table {overflow: hidden;background: #FFF;border: 1px solid #DEDEDE;width: 100%;max-width: 800px;}
+.value-added-tax-vat-moss-rate-table .block-row {border-bottom: 1px solid #DEDEDE;overflow:hidden;}
+.value-added-tax-vat-moss-rate-table .heading-column {font-weight: bold;}
+.value-added-tax-vat-moss-rate-table .heading-column p.heading {margin: 0;}
+
+.value-added-tax-vat-moss-rate-table .block-column {float:left;padding: .5em;}
+.value-added-tax-vat-moss-rate-table .block-column input,
+.value-added-tax-vat-moss-rate-table .block-column select {max-width: 100%;}
+.value-added-tax-vat-moss-rate-table .block-column input {max-width: 75%;}
+.value-added-tax-vat-moss-rate-table .block-column select {margin: 10px 0;}
+.value-added-tax-vat-moss-rate-table .block-column input[type="checkbox"] {margin: 15px 0;}
+.value-added-tax-vat-moss-rate-table .block-column-1 {width: 30%;}
+.value-added-tax-vat-moss-rate-table .block-column-2 {width: 15%;}
+.value-added-tax-vat-moss-rate-table .block-column-3 {width: 20%;}
+.value-added-tax-vat-moss-rate-table .block-column-4 {width: 20%;}
+.value-added-tax-vat-moss-rate-table .block-column-delete {width: 5%; float:right;}
+
+.it-exchange-remove-item {-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;display:inline-block;width:20px;height:20px;margin-top:12px;margin-right:12px;border:2px solid transparent;border-radius:50%;font-size:14px;line-height:1.4em;text-decoration:none;text-align:center;color:#BBB;-webkit-transition:all .2s linear;-moz-transition:all .2s linear;transition:all .2s linear;}
+.it-exchange-remove-item:active{outline:none;opacity:.8;}
+.it-exchange-remove-item:hover{border-color:#E1797A !important;color:#E1797A;}
+
+.block-column-default span{display:block;width:15px;height:15px;background:url('../images/check-gray.png') center center no-repeat;cursor:pointer;margin: 1.25em;}
+.block-column-default span:hover,
+.block-column-default span.it-exchange-easy-eu-value-added-taxes-addon-default-checkmark-checked{background:url('../images/check-green.png') center center no-repeat;border:none;cursor:pointer;}
+
+.it-exchange-easy-eu-value-added-taxes-addon-settings .add-new {margin-bottom: 2em;}
+/** -----------------------------------------------------:[ VAT Summary table ]:---------- */
+.it-exchange-vat-summary-table{display:table;table-layout:fixed;width:100%;border:1px solid #DDD;border-bottom:none;border-collapse:collapse;}
+.it-exchange-vat-summary-table-row{display:table-row-group;overflow:hidden;width:100%;border-bottom:1px solid #DDD;margin:10px;}
+.it-exchange-vat-summary-table-inner-row{display:table-row;}
+.it-exchange-vat-summary-table-column{display:table-cell;vertical-align:middle;}
+.it-exchange-vat-summary-table-column-inner{padding:10px;}
+.vat-summary-heading-row {font-weight: bold;}

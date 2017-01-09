@@ -8,7 +8,7 @@
 /**
  * Is the passed country valid for taxation.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param string $country
  *
@@ -24,7 +24,7 @@ function it_exchange_easy_eu_vat_valid_country_for_tax( $country ) {
 /**
  * Get the customer's country to base VAT off of.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param \ITE_Cart $cart
  *
@@ -40,7 +40,7 @@ function it_exchange_easy_eu_vat_get_country( ITE_Cart $cart ) {
 /**
  * Whether to show the VAT # Manager or not.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param \ITE_Cart|null $cart
  *
@@ -112,7 +112,7 @@ function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate
  * Get a summary of the cart taxes.
  *
  * @since      1.0.0
- * @deprecated 1.8.0
+ * @deprecated 2.0.0
  *
  * @return array|bool
  */
@@ -165,7 +165,7 @@ function it_exchange_easy_eu_value_added_taxes_setup_session( $clear_cache = fal
 /**
  * Get summarized info about taxes for given cart.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param \ITE_Cart $cart
  *
@@ -235,7 +235,7 @@ function it_exchange_easy_eu_vat_get_tax_info_for_cart( ITE_Cart $cart ) {
 /**
  * Get the tax summary for taxable items.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param ITE_Taxable_Line_Item[] $items
  * @param string                  $country
@@ -296,7 +296,7 @@ function it_exchange_easy_eu_vat_get_tax_summary_for_taxable_items( array $items
  * Summary only carts just have the VAT info summarized, but the totals aren't charged to the customer,
  * so we don't save the items to the cart with the taxes provided.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param \ITE_Cart $cart
  *
@@ -392,7 +392,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_verify_vat( $country_code, 
  * purchase requriement.
  *
  * @since      1.0.0
- * @deprecated 1.8.0
+ * @deprecated 2.0.0
  *
  * @param int $customer_id the customer id. leave blank to use the current customer.
  *

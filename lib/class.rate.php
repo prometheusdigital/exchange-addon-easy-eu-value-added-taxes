@@ -2,7 +2,7 @@
 /**
  * Represents a VAT Rate.
  *
- * @since   1.8.0
+ * @since   2.0.0
  * @license GPLv2
  */
 
@@ -59,7 +59,7 @@ class ITE_EU_VAT_Rate {
 	/**
 	 * Create a VAT Rate from a code.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @param string $code
 	 *
@@ -108,7 +108,7 @@ class ITE_EU_VAT_Rate {
 	/**
 	 * Get the percentage rate.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return int
 	 */
@@ -119,7 +119,7 @@ class ITE_EU_VAT_Rate {
 	/**
 	 * Whether this rate should be applied to shipping.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -130,7 +130,7 @@ class ITE_EU_VAT_Rate {
 	/**
 	 * Get the index.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return int
 	 */
@@ -143,7 +143,7 @@ class ITE_EU_VAT_Rate {
 	 *
 	 * Either 'moss' or 'vat'.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -154,7 +154,7 @@ class ITE_EU_VAT_Rate {
 	/**
 	 * Get the rate's label.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -165,7 +165,7 @@ class ITE_EU_VAT_Rate {
 	/**
 	 * Is this the default rate.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -176,7 +176,7 @@ class ITE_EU_VAT_Rate {
 	/**
 	 * Convert the rate to an array.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */

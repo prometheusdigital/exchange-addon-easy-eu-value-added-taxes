@@ -81,38 +81,15 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 	}
 
 	/**
-	 * Print the VAT number.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string
-	 */
-	public function vat_number() {
-
-		$cart = it_exchange_get_current_cart();
-		$tax_session = it_exchange_get_session_data( 'addon_easy_eu_value_added_taxes' );
-
-		$result = '';
-
-		if ( $cart->has_meta( 'eu-vat-country' ) && $cart->has_meta( 'eu-vat-number' ) ) {
-			$result .= $cart->get_meta( 'eu-vat-country' ) . '-' . $cart->get_meta( 'eu-vat-number' );
-		}
-
-		$result .= '<div class="it-exchange-add-edit-vat-number-div">';
-		$result .= '<a href="#" id="it-exchange-add-edit-vat-number">' . sprintf( __( '%s EU VAT Number', 'LION' ), ( !empty( $tax_session['vat_number'] ) ? __( 'Edit', 'LION' ) : __( 'Add', 'LION' ) ) ) . '</a>';
-		$result .= '</div>';
-
-		return $result;
-	}
-
-	/**
 	 * @since 1.0.0
 	 * @return string
 	*/
 	function taxes( $options=array() ) {
 		
+		$settings  = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 		$memberstates = it_exchange_get_data_set( 'eu-member-states' );
 		$result = '';
+		$taxes = 0;
 		
 		$defaults      = array(
 			'before'       => '',
@@ -399,7 +376,7 @@ class IT_Theme_API_EU_Value_Added_Taxes implements IT_Theme_API {
 			
 			$result .= $options['label_tag_open'] . $options['label'] . $options['label_tag_close'];
 			
-			$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s-%s', 'LION' ), $settings['vat-country'], $settings['vat-number'] ) . '</p>';
+			$result .= '<p>' . sprintf( __( 'Merchant VAT Number: %s-%s', 'LION' ), $general_settings['company-base-country'], $settings['vat-number'] ) . '</p>';
 			if ( !empty( $customer_vat ) )
 				$result .= '<p>' . sprintf( __( 'Customer VAT Number: %s-%s', 'LION' ), $customer_country, $customer_vat ) . '</p>';
 			

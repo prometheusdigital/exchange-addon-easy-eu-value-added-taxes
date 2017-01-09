@@ -2,7 +2,7 @@
 /**
  * Do basic setup.
  *
- * @since   1.8.0
+ * @since   2.0.0
  * @license GPLv2
  */
 

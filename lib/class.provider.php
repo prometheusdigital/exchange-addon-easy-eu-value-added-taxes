@@ -85,7 +85,7 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 	/**
 	 * Get the default rate index.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return int
 	 */
@@ -141,7 +141,7 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 	/**
 	 * Make the tax item for a given taxable line item.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @param \ITE_Taxable_Line_Item $item
 	 * @param \ITE_Cart              $cart

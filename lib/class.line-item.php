@@ -33,7 +33,7 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	/**
 	 * Create a new VAT Tax Item.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @param \ITE_EU_VAT_Rate            $rate
 	 * @param \ITE_Taxable_Line_Item|null $item
@@ -58,7 +58,7 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	/**
 	 * Generate the ID.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @param ITE_EU_VAT_Rate $rate
 	 *
@@ -133,7 +133,7 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	/**
 	 * Check if this line item would apply taxes to shipping items.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -166,7 +166,7 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	/**
 	 * Get the VAT rate.
 	 *
-	 * @since 1.8.0
+	 * @since 2.0.0
 	 *
 	 * @return \ITE_EU_VAT_Rate|null
 	 */

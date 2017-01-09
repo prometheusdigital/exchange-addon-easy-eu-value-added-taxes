@@ -12,7 +12,7 @@ add_filter( 'it_exchange_billing_address_purchase_requirement_enabled', '__retur
 /**
  * Register the EU VAT taxes provider.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param \ITE_Tax_Managers $manager
  */
@@ -61,7 +61,7 @@ add_action( 'template_redirect', 'it_exchange_easy_eu_value_added_taxes_addon_in
 /**
  * Handle the VAT # being set on a cart.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param string    $key
  * @param string    $value
@@ -86,7 +86,7 @@ add_action( 'it_exchange_set_cart_meta', 'it_exchange_easy_eu_vat_handle_set_vat
 /**
  * Handle the VAT # being removed from a cart.
  *
- * @since 1.8.0
+ * @since 2.0.0
  *
  * @param string    $key
  * @param \ITE_Cart $cart
@@ -260,7 +260,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_cart_item_with_va
  *
  * @since 1.0.0
  *
- * @deprecated 1.8.0 This is done automatically now.
+ * @deprecated 2.0.0 This is done automatically now.
  *
  * @return void
 */
@@ -296,7 +296,7 @@ function it_exchange_easy_eu_value_added_taxes_api_theme_transaction_product_att
  *
  * @since 1.0.0
  *
- * @deprecated 1.8.0
+ * @deprecated 2.0.0
  *
  * @param array $elements list of existing elements
  * @return array
