@@ -26,7 +26,6 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	public function __construct( $id, ITE_Parameter_Bag $bag, ITE_Parameter_Bag $frozen ) {
 		parent::__construct( $id, $bag, $frozen );
 
-		$this->cart     = it_exchange_get_current_cart( false );
 		$this->vat_rate = ITE_EU_VAT_Rate::from_code( $this->get_param( 'code' ) );
 	}
 
