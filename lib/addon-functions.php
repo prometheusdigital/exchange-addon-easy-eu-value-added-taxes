@@ -32,7 +32,7 @@ function it_exchange_easy_eu_vat_valid_country_for_tax( $country ) {
  */
 function it_exchange_easy_eu_vat_get_country( ITE_Cart $cart ) {
 
-	$address = $cart->get_shipping_address() ? $cart->get_shipping_address() : $cart->get_billing_address();
+	$address = $cart->requires_shipping() ? $cart->get_shipping_address() : $cart->get_billing_address();
 
 	return empty( $address['country'] ) ? '' : $address['country'];
 }
