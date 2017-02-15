@@ -55,4 +55,5 @@ add_action( 'admin_notices', 'it_exchange_easy_eu_value_added_taxes_show_soap_na
 function it_exchange_easy_eu_value_added_taxes_set_textdomain() {
 	load_plugin_textdomain( 'LION', false, dirname( plugin_basename( __FILE__  ) ) . '/lang/' );
 }
-add_action( 'plugins_loaded', 'it_exchange_easy_eu_value_added_taxes_set_textdomain' );
+
+it_exchange_easy_eu_value_added_taxes_set_textdomain();
