@@ -151,31 +151,37 @@ add_filter( 'it_exchange_invoices_user_id_nonce_verification_whitelist', 'it_exc
  *
  * @since 1.0.0
  *
- * @param string $price
+ * @param string $original
  * @param int    $product_id
  *
  * @return string
 */
-function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_price( $price, $product_id ) {
+function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_price( $original, $product_id ) {
 
 	$product = it_exchange_get_product( $product_id );
 
 	if ( it_exchange_get_product_type( $product_id ) === 'invoices-product-type' && get_post_status( $product_id ) === 'publish' ) {
-		return $price;
+		return $original;
 	}
 
 	if ( ! $product->supports_feature( 'value-added-taxes' ) ) {
-		return $price;
+		return $original;
 	}
 
 	$provider = new ITE_EU_VAT_Tax_Provider();
 
 	if ( $provider->is_product_tax_exempt( $product ) ) {
-		return $price;
+		return $original;
 	}
 
-	$cart    = it_exchange_get_current_cart( false );
-	$country = '';
+	$cart     = it_exchange_get_current_cart( false );
+	$country  = '';
+
+	$price = it_exchange_convert_from_database_number( it_exchange_convert_to_database_number( $original ) );
+
+	if ( empty( $price ) || (float) $price === 0.00 ) {
+	    return $original;
+    }
 
 	if ( $cart ) {
 		$country = it_exchange_easy_eu_vat_get_country( $cart );
@@ -192,13 +198,11 @@ function it_exchange_easy_eu_value_added_taxes_addon_api_theme_product_base_pric
 	$code = $provider->get_tax_code_for_product( $product->get_product() );
 
 	if ( ! $code ) {
-		return $price;
+		return $original;
 	}
 
 	$rate = ITE_EU_VAT_Rate::from_code( $code );
 	$tax  = ITE_EU_VAT_Line_Item::create( $rate, $product );
-
-	$price = it_exchange_convert_from_database_number( it_exchange_convert_to_database_number( $price ) );
 	$price += $tax->get_total();
 
 	return it_exchange_format_price( $price );
