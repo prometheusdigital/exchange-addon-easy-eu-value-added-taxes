@@ -112,10 +112,6 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 			return false;
 		}
 
-		if ( $item instanceof ITE_Shipping_Line_Item && ! $this->applies_to_shipping() ) {
-			return false;
-		}
-
 		if ( $item->is_tax_exempt( $this->get_provider() ) ) {
 			return false;
 		}
@@ -155,9 +151,14 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 			$this->cart = it_exchange_get_current_cart();
 		}
 
-		$address = $this->cart->get_shipping_address() ?: $this->cart->get_billing_address();
+		$cart = $this->cart;
 
-		$provider->set_current_country( $address['country'] );
+		$provider->set_current_country( function () use ( $cart ) {
+
+			$address = $cart->get_shipping_address() ?: $cart->get_billing_address();
+
+			return isset( $address['country'] ) ? $address['country'] : '';
+		} );
 
 		return $provider;
 	}

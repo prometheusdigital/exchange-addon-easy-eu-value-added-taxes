@@ -21,36 +21,7 @@ function it_exchange_easy_eu_value_added_taxes_addon_get_eu_member_states( $opti
 
 	$options = ITUtility::merge_defaults( $options, $defaults );
 
-	$countries = array(
-		'BE' => __( 'Belgium', 'LION' ),
-		'BG' => __( 'Bulgaria', 'LION' ),
-		'CZ' => __( 'Czech Republic', 'LION' ),
-		'DK' => __( 'Denmark', 'LION' ),
-		'DE' => __( 'Germany', 'LION' ),
-		'EE' => __( 'Estonia', 'LION' ),
-		'EL' => __( 'Greece', 'LION' ),
-		'ES' => __( 'Spain', 'LION' ),
-		'FR' => __( 'France', 'LION' ),
-		'HR' => __( 'Croatia', 'LION' ),
-		'IE' => __( 'Ireland', 'LION' ),
-		'IT' => __( 'Italy', 'LION' ),
-		'CY' => __( 'Cyprus', 'LION' ),
-		'LV' => __( 'Latvia', 'LION' ),
-		'LT' => __( 'Lithuania', 'LION' ),
-		'LU' => __( 'Luxembourg', 'LION' ),
-		'HU' => __( 'Hungary', 'LION' ),
-		'MT' => __( 'Malta', 'LION' ),
-		'NL' => __( 'Netherlands', 'LION' ),
-		'AT' => __( 'Austria', 'LION' ),
-		'PL' => __( 'Poland', 'LION' ),
-		'PT' => __( 'Portugal', 'LION' ),
-		'RO' => __( 'Romania', 'LION' ),
-		'SI' => __( 'Slovenia', 'LION' ),
-		'SK' => __( 'Slovakia', 'LION' ),
-		'FI' => __( 'Finland', 'LION' ),
-		'SE' => __( 'Sweden', 'LION' ),
-		'GB' => __( 'United Kingdom', 'LION' ),
-	);
+	$countries = it_exchange_get_data_set( 'states', array( 'country' => 'EU' ) );
 
 	// Sort by values, not keys.
 	if ( ! empty( $options['sort-by-values'] ) ) {

@@ -61,6 +61,59 @@ function it_exchange_easy_eu_vat_show_vat_manager( ITE_Cart $cart = null ) {
 	return $provider->is_restricted_to_location()->contains( $address );
 }
 
+/**
+ * Get the default tax rate.
+ *
+ * @since 2.0.0
+ *
+ * @param array $settings
+ *
+ * @return array
+ */
+function it_exchange_easy_eu_vat_get_default_tax_rate( array $settings = array() ) {
+
+	$settings = $settings ?: it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+
+	$tax_rates = $settings['tax-rates'];
+
+	foreach ( $tax_rates as $index => $rate ) {
+		if ( isset( $rate['default'] ) && ( $rate['default'] === 'checked' || $rate['default'] === true ) ) {
+			$rate['index'] = $index;
+
+			return $rate;
+		}
+	}
+
+	return array();
+}
+
+/**
+ * Get the tax rate for a shipping method.
+ *
+ * @since 2.0.0
+ *
+ * @param string $method_slug
+ * @param array  $settings
+ *
+ * @return array The rate configuration. 'rate' will hold the percentage rate.
+ */
+function it_exchange_easy_eu_vat_get_shipping_tax_rate( $method_slug, array $settings = array() ) {
+
+	$settings = $settings ?: it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+
+	$shipping  = isset( $settings['shipping'] ) ? $settings['shipping'] : array();
+	$tax_rates = $settings['tax-rates'];
+
+	if ( isset( $shipping[ $method_slug ], $tax_rates[ $shipping[ $method_slug ] ] ) ) {
+		$rate = $tax_rates[ $shipping[ $method_slug ] ];
+		$rate['index'] = $shipping[ $method_slug ];
+
+		return $rate;
+	}
+
+	return it_exchange_easy_eu_vat_get_default_tax_rate( $settings );
+}
+
 function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate = array(), $memberstate = false ) {
 	if ( empty( $rate ) ) { //just set some defaults
 		$rate = array( //Member State
@@ -73,10 +126,8 @@ function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate
 
 	if ( ! empty( $memberstate ) ) {
 		$name          = 'it-exchange-add-on-easy-eu-value-added-taxes-vat-moss-tax-rates[' . $memberstate . '][' . $key . ']';
-		$default_label = $memberstate . '-';
 	} else {
 		$name          = 'it-exchange-add-on-easy-eu-value-added-taxes-tax-rates[' . $key . ']';
-		$default_label = '';
 	}
 
 	$output = '<div class="item-row block-row">'; //start block-row
@@ -87,11 +138,6 @@ function it_exchange_easy_eu_value_added_taxes_get_tax_row_settings( $key, $rate
 
 	$output .= '<div class="item-column block-column block-column-2">';
 	$output .= '<input type="text" name="' . $name . '[rate]" value="' . $rate['rate'] . '" />';
-	$output .= '</div>';
-
-	$output .= '<div class="item-column block-column block-column-3">';
-	$shipping = empty( $rate['shipping'] ) ? false : true;
-	$output .= '<input type="checkbox" name="' . $name . '[shipping]" ' . checked( $shipping, true, false ) . ' />';
 	$output .= '</div>';
 
 	$output .= '<div class="item-column block-column block-column-default">';
@@ -262,7 +308,7 @@ function it_exchange_easy_eu_vat_get_tax_summary_for_taxable_items( array $items
 		$key      = $vat_rate->get_index();
 
 		if ( $item instanceof ITE_Cart_Product ) {
-			$product_taxes[ $item->get_product()->ID ] = $vat_rate->get_index();
+			$product_taxes[ $item->get_product_id() ] = $vat_rate->get_index();
 		}
 
 		if ( $vat_rate->get_type() === ITE_EU_VAT_Rate::VAT ) {

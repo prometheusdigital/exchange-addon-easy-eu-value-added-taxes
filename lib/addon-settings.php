@@ -24,7 +24,7 @@ function it_exchange_easy_eu_value_added_taxes_settings_callback() {
  * @since 1.0.0
  * @return array settings
 */
-function it_exchange_easy_eu_value_added_taxes_default_settings( $defaults ) {
+function it_exchange_easy_eu_value_added_taxes_default_settings() {
 	$general_settings = it_exchange_get_option( 'settings_general' );
 
 	$defaults = array(
@@ -159,10 +159,18 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 		<?php
 	}
 
-	function get_easy_eu_value_added_taxes_form_table( $form, $settings = array() ) {
-		if ( !empty( $settings ) )
-			foreach ( $settings as $key => $var )
+	/**
+	 * @param ITForm $form
+	 * @param array  $settings
+	 */
+	public function get_easy_eu_value_added_taxes_form_table( $form, $settings = array() ) {
+		if ( !empty( $settings ) ) {
+			foreach ( $settings as $key => $var ) {
 				$form->set_option( $key, $var );
+			}
+		}
+
+		$tax_rates = $settings['tax-rates'];
 		?>
 		
         <div class="it-exchange-addon-settings it-exchange-easy-eu-value-added-taxes-addon-settings">
@@ -200,7 +208,7 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 				<?php
 				$form->add_hidden( 'tax-rates' ); //Placeholder 
 				$headings = array(
-					__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Apply to Shipping?', 'LION' ), __( 'Default?', 'LION' )
+					__( 'Tax Label', 'LION' ), __( 'Tax Rate %', 'LION' ), __( 'Default?', 'LION' )
 				);
 				?>
 				<div class="heading-row block-row">
@@ -215,7 +223,6 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 				</div>
 				<?php
 				$last_key = 0;
-				$tax_rates = $settings['tax-rates'];
 				if ( !empty( $tax_rates ) ) {
 					ksort( $tax_rates );
 					foreach( $tax_rates as $key => $rate ) {
@@ -232,6 +239,39 @@ class IT_Exchange_Easy_Value_Added_Taxes_Add_On {
 			<p class="add-new">
 				<?php $form->add_button( 'new-tax-rate', array( 'value' => __( 'Add New Tax Rate', 'LION' ), 'class' => 'button button-secondary button-large' ) ); ?>
 			</p>
+
+            <?php $shipping_methods = it_exchange_get_registered_shipping_methods();
+            $default = it_exchange_easy_eu_vat_get_default_tax_rate( $settings );
+
+            if ( $default ) {
+                $default = $default['index'];
+            } else {
+                $default = false;
+            }
+            ?>
+
+            <?php if ( $shipping_methods ) : ?>
+                <hr>
+                <h4><?php _e( 'Shipping VAT Rates', 'LION' ); ?></h4>
+
+                <?php foreach ( $shipping_methods as $slug => $_ ) : ?>
+                    <?php $method = it_exchange_get_registered_shipping_method( $slug ); ?>
+
+                    <?php
+                    if ( ! $method ) {
+                        continue;
+                    }
+
+                    if ( $default !== false && $form->get_option("shipping[{$slug}]" ) === null ) {
+                        $form->set_option( "shipping[{$slug}]", $default );
+                    }
+                    ?>
+
+                    <label for="shipping-<?php echo $slug; ?>"><?php echo $method->label; ?></label>
+                    <?php $form->add_drop_down( "shipping[{$slug}]", wp_list_pluck( $tax_rates, 'label' ) ); ?>
+                <?php endforeach; ?>
+                <hr>
+            <?php endif; ?>
 			
 			<div>
 				<p>

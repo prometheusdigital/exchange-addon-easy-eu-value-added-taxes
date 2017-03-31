@@ -19,9 +19,9 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 	/**
 	 * set the current state.
 	 *
-	 * @since 1.36.0
+	 * @since 2.0.0
 	 *
-	 * @param string $country
+	 * @param string|callable $country
 	 *
 	 * @return $this
 	 */
@@ -32,6 +32,21 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 	}
 
 	/**
+	 * Get the current country.
+	 * 
+	 * @since 2.0.0
+	 * 
+	 * @return string
+	 */
+	public function get_current_country() {
+		if ( is_callable( $this->current_country ) ) {
+			return call_user_func( $this->current_country );
+		}
+		
+		return $this->current_country;
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function get_tax_code_for_product( IT_Exchange_Product $product ) {
@@ -39,24 +54,26 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 		if ( ! $product->supports_feature( 'value-added-taxes' ) ) {
 			return false;
 		}
+		
+		$current_country = $this->get_current_country();
 
-		if ( ! $this->current_country ) {
+		if ( ! $current_country ) {
 			return "vat:{$this->get_vat_rate( $product )}";
 		}
 
 		$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
 
-		if ( $this->current_country === $settings['vat-country'] ) {
+		if ( $current_country === $settings['vat-country'] ) {
 			return "vat:{$this->get_vat_rate( $product )}";
 		}
 
 		if ( $product->get_feature( 'value-added-taxes', array( 'setting' => 'vat-moss' ) ) === 'on' ) {
 			$types = $product->get_feature( 'value-added-taxes', array( 'setting' => 'vat-moss-tax-types' ) );
 
-			if ( isset( $types[ $this->current_country ] ) ) {
-				return "moss:{$this->current_country}:{$types[$this->current_country]}";
+			if ( isset( $types[ $current_country ] ) ) {
+				return "moss:{$current_country}:{$types[$current_country]}";
 			} else {
-				return "moss:{$this->current_country}:{$this->get_vat_rate( $product )}";
+				return "moss:{$current_country}:{$this->get_vat_rate( $product )}";
 			}
 		}
 
@@ -64,9 +81,31 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function get_tax_code_for_item( ITE_Line_Item $item ) {
+
+		if ( $item instanceof ITE_Cart_Product ) {
+			return $this->get_tax_code_for_product( $item->get_product() );
+		}
+
+		if ( $item instanceof ITE_Shipping_Line_Item ) {
+			$rate = it_exchange_easy_eu_vat_get_shipping_tax_rate( $item->get_method_slug() );
+
+			if ( ! $rate ) {
+				return '';
+			}
+
+			return "vat:{$rate['index']}";
+		}
+
+		return '';
+	}
+
+	/**
 	 * Get the VAT rate for a product.
 	 *
-	 * @since 1.36.0
+	 * @since 2.0.0
 	 *
 	 * @param \IT_Exchange_Product $product
 	 *
@@ -91,12 +130,10 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 	 */
 	private function get_default() {
 
-		$settings = it_exchange_get_option( 'addon_easy_eu_value_added_taxes' );
+		$rate = it_exchange_easy_eu_vat_get_default_tax_rate();
 
-		foreach ( $settings['tax-rates'] as $i => $rate ) {
-			if ( $rate['default'] === 'checked' ) {
-				return $i;
-			}
+		if ( $rate ) {
+			return $rate['index'];
 		}
 
 		return 0;
@@ -177,4 +214,9 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 			'country' => array_keys( it_exchange_get_data_set( 'eu-member-states' ) )
 		) );
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function inherit_tax_code_from_aggregate() { return false; }
 }
