@@ -117,17 +117,6 @@ class ITE_EU_VAT_Rate {
 	}
 
 	/**
-	 * Whether this rate should be applied to shipping.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return bool
-	 */
-	public function applies_to_shipping() {
-		return ! empty( $this->data['shipping'] );
-	}
-
-	/**
 	 * Get the index.
 	 *
 	 * @since 2.0.0

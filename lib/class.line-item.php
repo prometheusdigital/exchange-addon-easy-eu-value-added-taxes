@@ -126,22 +126,6 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	}
 
 	/**
-	 * Check if this line item would apply taxes to shipping items.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return bool
-	 */
-	protected function applies_to_shipping() {
-
-		if ( $this->has_param( 'applies_to_shipping' ) ) {
-			return (bool) $this->get_param( 'applies_to_shipping' );
-		}
-
-		return $this->get_vat_rate()->applies_to_shipping();
-	}
-
-	/**
 	 * @inheritdoc
 	 */
 	public function get_provider() {
@@ -233,7 +217,6 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	 */
 	public function freeze() {
 		$this->set_param( 'rate', $this->get_rate() );
-		$this->set_param( 'applies_to_shipping', $this->get_vat_rate()->applies_to_shipping() );
 
 		parent::freeze();
 	}
