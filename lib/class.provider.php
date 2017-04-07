@@ -33,16 +33,16 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 
 	/**
 	 * Get the current country.
-	 * 
+	 *
 	 * @since 2.0.0
-	 * 
+	 *
 	 * @return string
 	 */
 	public function get_current_country() {
 		if ( is_callable( $this->current_country ) ) {
 			return call_user_func( $this->current_country );
 		}
-		
+
 		return $this->current_country;
 	}
 
@@ -54,7 +54,7 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 		if ( ! $product->supports_feature( 'value-added-taxes' ) ) {
 			return false;
 		}
-		
+
 		$current_country = $this->get_current_country();
 
 		if ( ! $current_country ) {
@@ -165,6 +165,20 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 			return;
 		}
 
+		$taxable_shipping = $item->get_line_items()->with_only( 'shipping' )->taxable();
+		$save_shipping    = array();
+
+		/** @var ITE_Taxable_Line_Item|ITE_Shipping_Line_Item $shipping */
+		foreach ( $taxable_shipping as $shipping ) {
+			$tax = $this->make_tax_for( $shipping, $cart );
+
+			if ( $tax->applies_to( $shipping ) ) {
+				$shipping->add_tax( $tax );
+
+				$save_shipping[] = $shipping;
+			}
+		}
+
 		$tax = $this->make_tax_for( $item, $cart );
 
 		if ( ! $tax ) {
@@ -172,6 +186,11 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 		}
 
 		$item->add_tax( $tax );
+
+		if ( $save_shipping ) {
+			$cart->get_repository()->save_many( $save_shipping );
+		}
+		
 		$cart->get_repository()->save( $item );
 	}
 
