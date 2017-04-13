@@ -235,4 +235,22 @@ class ITE_EU_VAT_Line_Item extends ITE_Line_Item implements ITE_Tax_Line_Item, I
 	 * @inheritDoc
 	 */
 	public function set_cart( ITE_Cart $cart ) { $this->cart = $cart; }
+
+	/**
+	 * @inheritDoc
+	 */
+	public function __destruct() {
+		unset( $this->cart, $this->taxable );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function __clone() {
+		parent::__clone();
+
+		if ( $this->vat_rate ) {
+			$this->vat_rate = clone $this->vat_rate;
+		}
+	}
 }

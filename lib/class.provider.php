@@ -188,10 +188,10 @@ class ITE_EU_VAT_Tax_Provider extends ITE_Tax_Provider {
 		$item->add_tax( $tax );
 
 		if ( $save_shipping ) {
-			$cart->get_repository()->save_many( $save_shipping );
+			$cart->get_repository()->save_many_items( $save_shipping );
 		}
-		
-		$cart->get_repository()->save( $item );
+
+		$cart->save_item( $item );
 	}
 
 	/**
